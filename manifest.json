@@ -1,0 +1,46 @@
+{
+  "name": "Home Assistant",
+  "id": "homeassistant",
+  "packaging_format": 1,
+   "description": {
+    "en": "Home automation platform",
+    "fr": "Plateforme domotique"
+  },
+  "version": "1.0.0",
+  "url": "https://github.com/home-assistant/home-assistant",
+  "license": "Apache",
+  "maintainer": {
+    "name": "ewilly",
+    "email": "ewilly@ewilly.fr"
+  },
+  "requirements": {
+        "yunohost": ">= 3.2"
+  },
+  "multi_instance": false,
+  "services": [
+      "nginx",
+      "homeassistant@homeassistant"
+  ],
+  "arguments": {
+    "install": [
+      {
+        "name": "domain",
+        "type": "domain",
+        "ask": {
+          "en": "Choose a domain for Home Assistant",
+          "fr": "Choisissez un domaine pour Home Assistant"
+        },
+        "example": "domain.org"
+      },
+      {
+        "name": "is_public",
+        "type": "boolean",
+        "ask": {
+          "en": "Should this application be public ? (if not, Smartphone app will not work)",
+          "fr": "Est-ce que cette application doit être visible publiquement ? (dans le cas contraire, l'application sur Smartphone ne fonctionnera pas)"
+        },
+        "default": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+#!/bin/bash
+# to test the functionnality :
+# yunohost backup create -n "homeassistant-test" --apps homeassistant
+# yunohost backup delete homeassistant-test
+
+set -eu
+source /usr/share/yunohost/helpers
+
+# manage script failure
+ynh_abort_if_errors
+
+# retrieve arguments
+app=$YNH_APP_INSTANCE_NAME
+domain=$(ynh_app_setting_get "$app" domain)
+
+# definie useful vars
+final_path="/srv/$app"
+home_path="/home/$app"
+
+# backup source & conf files
+ynh_backup "$final_path"
+ynh_backup "$home_path"
+ynh_backup "/etc/nginx/conf.d/$domain.d/$app.conf"
+ynh_backup "/etc/systemd/system/$app@$app.service"

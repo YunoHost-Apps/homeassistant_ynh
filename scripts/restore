@@ -1,0 +1,72 @@
+#!/bin/bash
+# to test the functionnality :
+# yunohost backup create -n "homeassistant-test" --ignore-system --apps homeassistant
+# yunohost app remove homeassistant
+# yunohost backup restore "homeassistant-test"
+
+set -eu
+if [ ! -e _common.sh ]; then
+	# Get the _common.sh file if it's not in the current directory
+	cp ../settings/scripts/_common.sh ./_common.sh
+	chmod a+rx _common.sh
+fi
+source _common.sh
+source /usr/share/yunohost/helpers
+
+# manage script failure
+ynh_abort_if_errors
+
+# retrieve arguments
+app=$YNH_APP_INSTANCE_NAME
+domain=$(ynh_app_setting_get "$app" domain)
+port=$(ynh_app_setting_get "$app" port)
+
+# definie useful vars
+final_path="/srv/$app"
+home_path="/home/$app"
+
+# check domain/path availability
+path_url=$(ynh_normalize_url_path "/")
+ynh_webpath_available $domain $path_url \
+	|| ynh_die "Path not available: ${domain}${path_url}"
+ynh_webpath_register $app $domain $path_url
+
+# add required packages
+ynh_install_app_dependencies "$PKG_DEPENDENCIES"
+
+# restore dedicated system user
+ynh_system_user_exists "$app" || \
+	useradd -rm $app -G dialout,gpio
+
+# restore conf files
+ynh_restore_file "/etc/nginx/conf.d/$domain.d/$app.conf"
+ynh_restore_file "/etc/systemd/system/$app@$app.service"
+
+# restore source
+if [ ! -d "$final_path" ]; then
+	ynh_restore_file "$final_path"
+else
+	ynh_die "There is already a directory: $final_path"
+fi
+
+# restore data
+if [ ! -d "$home_path" ]; then
+	ynh_restore_file "$home_path"
+	chown -R $app: "$home_path/.$app"
+else
+	ynh_die "$home_path already exists and will not be overwritten"
+fi
+
+# TODO : restore ports
+
+
+# add service in admin panel
+yunohost service add "$app@$app" --log "$data_path/home-assistant.log"
+
+# enable & restart systemd service
+systemctl --system daemon-reload
+systemctl enable "$app@$app.service"
+systemctl restart "$app@$app.service"
+
+# reload nginx
+systemctl reload nginx

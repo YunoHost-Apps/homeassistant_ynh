@@ -1,0 +1,90 @@
+#!/bin/bash
+
+set -eu
+source _common.sh
+source /usr/share/yunohost/helpers
+
+# manage script failure
+ynh_abort_if_errors
+
+# retrieve arguments
+app=$YNH_APP_INSTANCE_NAME
+domain=$YNH_APP_ARG_DOMAIN
+is_public=$YNH_APP_ARG_IS_PUBLIC
+# definie useful vars
+final_path="/srv/$app"
+data_path="/home/$app/.$app"
+
+# check domain/path availability
+path_url=$(ynh_normalize_url_path "/")
+ynh_webpath_available $domain $path_url
+ynh_webpath_register $app $domain $path_url
+
+# add required packages
+ynh_install_app_dependencies "$PKG_DEPENDENCIES"
+
+# save app settings
+ynh_app_setting_set $app domain $domain
+ynh_app_setting_set $app is_public $is_public
+
+# find a free port & open it
+port=$(ynh_find_port 8123)
+ynh_app_setting_set $app port $port
+yunohost firewall allow TCP $port > /dev/null 2>&1
+
+# create a dedicated system user
+useradd -rm $app -G dialout,gpio
+
+# create a directory for the installation of Home Assistant
+myynh_create_dir $final_path
+chown $app: $final_path
+
+# create a directory for the datas of Home Assistant
+myynh_create_dir $data_path
+chown $app: $data_path
+
+# installation in a virtual environment
+exec_as "$app" -H -s /bin/bash -c " \
+	echo 'create the virtual environment' \
+		&& python3 -m venv $final_path \
+	&& echo 'activate the virtual environment' \
+		&& source $final_path/bin/activate \
+	&& echo 'install a required python package' \
+		&& python3 -m pip install --upgrade wheel \
+	&& echo 'install Home Assistant' \
+		&& pip3 install --upgrade $app \
+	"
+
+# set default configuration files
+ynh_replace_string "__PORT__" "$port" "../conf/homeassistant_conf_files/configuration.yaml"
+ynh_replace_string "__DOMAIN__" "$domain" "../conf/homeassistant_conf_files/configuration.yaml"
+
+## move all homeassistant_conf_files
+cp -r "../conf/homeassistant_conf_files/." "$data_path/"
+chown -R $app: "$data_path"
+
+# setup up autostart using systemd
+ynh_replace_string "__PORT__" "$port" "../conf/$app.service"
+cp "../conf/$app.service" "/etc/systemd/system/$app@$app.service"
+
+# add service in admin panel
+yunohost service add "$app@$app" --log "$data_path/home-assistant.log"
+
+# enable & restart systemd service
+systemctl --system daemon-reload
+systemctl enable "$app@$app.service"
+systemctl restart "$app@$app.service"
+
+# create a dedicated nginx config
+ynh_add_nginx_config
+
+# reload nginx
+systemctl reload nginx
+
+# unprotect app access if public (needed for Android app to work)
+if [ $is_public -eq 1 ]; then
+	ynh_app_setting_set "$app" unprotected_uris "/"
+fi
+
+# alert about administrator creator
+ynh_print_warn "Your installation is not yet secure : please, IMMEDIATELY go to $domain in order to create the admin user of Home Assistant."
