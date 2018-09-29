@@ -14,7 +14,7 @@
     "email": "ewilly@ewilly.fr"
   },
   "requirements": {
-        "yunohost": ">= 3.2"
+        "yunohost": ">= 3.1"
   },
   "multi_instance": false,
   "services": [
