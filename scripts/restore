@@ -24,6 +24,7 @@ port=$(ynh_app_setting_get "$app" port)
 # definie useful vars
 final_path="/srv/$app"
 home_path="/home/$app"
+data_path="/home/$app/.$app"
 
 # check domain/path availability
 path_url=$(ynh_normalize_url_path "/")
