@@ -2,7 +2,7 @@
 # to test the functionnality :
 # yunohost app remove homeassistant
 
-set -u
+source _common.sh
 source /usr/share/yunohost/helpers
 
 # retrieve arguments
@@ -11,7 +11,7 @@ domain=$(ynh_app_setting_get "$app" domain)
 port=$(ynh_app_setting_get $app port)
 
 # definie useful vars
-final_path="/srv/$app"
+final_path="/opt/yunohost/$app"
 home_path="/home/$app"
 
 # remove metapackage and its dependencies
@@ -29,17 +29,16 @@ ynh_secure_remove "$home_path"
 # remove service from admin panel
 if yunohost service status | grep -q "$app@$app"
 then
-	echo "Remove $app@$app service"
 	yunohost service remove "$app@$app"
 fi
 
 # remove systemd service
-systemctl stop "$app@$app.service"
-systemctl disable "$app@$app.service"
-ynh_secure_remove "/etc/systemd/system/$app@$app.service"
+ynh_system_reload --service_name="$app@$app" --action=stop
+ynh_system_reload --service_name="$app@$app" --action=disable
+ynh_secure_remove "/etc/systemd/system/$app.service"
 
 # close port
-yunohost firewall disallow TCP $port > /dev/null 2>&1
+ynh_exec_fully_quiet yunohost firewall disallow TCP $port
 
 # delete a system user
 ynh_system_user_delete "$app"

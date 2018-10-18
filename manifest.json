@@ -8,7 +8,7 @@
   },
   "version": "1.0.0",
   "url": "https://github.com/home-assistant/home-assistant",
-  "license": "Apache",
+  "license": "Apache-2.0",
   "maintainer": {
     "name": "ewilly",
     "email": "ewilly@ewilly.fr"
@@ -18,8 +18,7 @@
   },
   "multi_instance": false,
   "services": [
-      "nginx",
-      "homeassistant@homeassistant"
+      "nginx"
   ],
   "arguments": {
     "install": [

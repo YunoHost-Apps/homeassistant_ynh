@@ -36,7 +36,7 @@ http:
     - 192.168.0.0/24
     - fd00::/8
   # If legacy_api_password is active as auth_provider 
-  api_password: !secret http_password
+  #api_password: !secret http_password
 
 # Show links to resources in log and frontend
 introduction:
@@ -73,10 +73,6 @@ map:
 
 # Track the sun
 sun:
-
-# Weather prediction
-sensor:
-  - platform: yr
 
 # Text to speech
 tts:
