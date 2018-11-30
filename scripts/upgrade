@@ -47,7 +47,7 @@ ynh_add_systemd_config "$app@$app"
 
 # enable & restart systemd service
 ynh_system_reload --service_name="$app@$app" --action=enable
-ynh_check_starting --line_to_match="Home Assistant initialized in " --app_log="systemd" --timeout=1000 --service_name="$app@$app"
+ynh_check_starting --line_to_match="Home Assistant initialized" --app_log="systemd" --timeout=1000 --service_name="$app@$app"
 
 # create a dedicated nginx config
 ynh_add_nginx_config
