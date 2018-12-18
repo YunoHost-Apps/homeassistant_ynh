@@ -23,6 +23,10 @@ if [ -f "/etc/yunohost/apps/$app/scripts/backup" ] ; then
   }
 fi
 
+# grant sudo permissions to the user to manage his own systemd service
+myynh_create_dir "/etc/sudoers.d"
+cp "../sudoers" "/etc/sudoers.d/$app"
+
 # add required packages
 ynh_install_app_dependencies "$PKG_DEPENDENCIES"
 

@@ -33,6 +33,7 @@ ynh_system_user_create "$app"
 
 # restore conf files
 ynh_restore_file "/etc/nginx/conf.d/$domain.d/$app.conf"
+ynh_restore_file "/etc/sudoers.d/$app"
 ynh_restore_file "/etc/systemd/system/$app@$app.service"
 
 # restore source

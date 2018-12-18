@@ -42,3 +42,6 @@ ynh_exec_fully_quiet yunohost firewall disallow TCP $port
 
 # delete a system user
 ynh_system_user_delete "$app"
+
+# remove sudoers file
+ynh_secure_remove "/etc/sudoers.d/$app"

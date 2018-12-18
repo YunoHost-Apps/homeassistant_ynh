@@ -36,6 +36,10 @@ ynh_exec_fully_quiet yunohost firewall allow TCP $port
 # create a dedicated system user
 ynh_system_user_create $app
 
+# grant sudo permissions to the user to manage his own systemd service
+myynh_create_dir "/etc/sudoers.d"
+cp "../sudoers" "/etc/sudoers.d/$app"
+
 # create a directory for the installation of Home Assistant
 myynh_create_dir "$final_path"
 chown $app: "$final_path"
