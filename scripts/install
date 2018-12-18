@@ -38,7 +38,7 @@ ynh_system_user_create $app
 
 # grant sudo permissions to the user to manage his own systemd service
 myynh_create_dir "/etc/sudoers.d"
-cp "../sudoers" "/etc/sudoers.d/$app"
+cp "../conf/sudoers" "/etc/sudoers.d/$app"
 
 # create a directory for the installation of Home Assistant
 myynh_create_dir "$final_path"
