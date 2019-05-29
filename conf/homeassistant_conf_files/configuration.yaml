@@ -38,9 +38,6 @@ http:
   # If legacy_api_password is active as auth_provider 
   #api_password: !secret http_password
 
-# Show links to resources in log and frontend
-introduction:
-
 # Enables the frontend
 frontend:
 
