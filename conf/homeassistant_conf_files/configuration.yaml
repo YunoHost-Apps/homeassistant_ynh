@@ -31,9 +31,6 @@ http:
 lovelace:
   mode: yaml
 
-# Show links to resources in log and frontend
-introduction:
-
 # Enables the frontend
 frontend:
   javascript_version: latest
