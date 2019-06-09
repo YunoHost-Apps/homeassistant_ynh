@@ -63,8 +63,9 @@ exec_as $app -H -s /bin/bash -c " \
 # set default configuration files
 ynh_replace_string "__PORT__" "$port" "../conf/homeassistant_conf_files/configuration.yaml"
 ynh_replace_string "__DOMAIN__" "$domain" "../conf/homeassistant_conf_files/configuration.yaml"
+chmod -R +x "../conf/homeassistant_conf_files/bin/"
 
-## move all homeassistant_conf_files
+# move all homeassistant_conf_files
 cp -r "../conf/homeassistant_conf_files/." "$data_path/"
 chown -R $app: "$data_path"
 

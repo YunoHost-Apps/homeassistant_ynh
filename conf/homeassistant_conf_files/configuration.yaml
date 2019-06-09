@@ -1,60 +1,51 @@
 homeassistant:
-  # Auth providers
-  #auth_providers:
-  # - type: homeassistant
-  # - type: trusted_networks
-  # - type: legacy_api_password
-  # Name of the location where Home Assistant is running
+  auth_providers:
+   - type: command_line
+     command: /home/homeassistant/.homeassistant/bin/ynh_ldap-auth.sh
+     meta: true
+   - type: homeassistant
+   - type: trusted_networks
+     trusted_networks:
+       - 127.0.0.1 
+       - ::1 
+       - 192.168.0.0/24 
+       - fd00::/8
   name: Home
-  # Location required to calculate the time the sun rises and sets
   latitude: 0
   longitude: 0
-  # Impacts weather/sunrise data (altitude above sea level in meters)
   elevation: 0
-  # metric for Metric, imperial for Imperial
   unit_system: metric
-  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
   time_zone: UTC
-  # Customization file
-  customize: !include customize.yaml
 
 http:
-  # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
   base_url: __DOMAIN__:__PORT__
   server_port: __PORT__
-  cors_allowed_origins:
-    - https://google.com
-    - https://www.home-assistant.io
   use_x_forwarded_for: True
   trusted_proxies:
     - 127.0.0.1
     - ::1
   ip_ban_enabled: True
   login_attempts_threshold: 5
-  # If trusted_networks is active as auth_provider 
-  trusted_networks:
-    - 192.168.0.0/24
-    - fd00::/8
-  # If legacy_api_password is active as auth_provider 
-  #api_password: !secret http_password
+
+# Lovelace mode
+lovelace:
+  mode: yaml
 
 # Show links to resources in log and frontend
 introduction:
 
 # Enables the frontend
 frontend:
+  javascript_version: latest
 
 # Enables configuration UI
 config:
 
+# Enables health
+system_health:
+
 # Checks for available updates
-# Note: This component will send some information about your system to
-# the developers to assist with development of Home Assistant.
-# For more information, please see:
-# https://home-assistant.io/blog/2016/10/25/explaining-the-updater/
 updater:
-  # Optional, allows Home Assistant developers to focus on popular components.
-  # include_used_components: true
 
 # Discover some devices automatically
 discovery:
@@ -81,8 +72,28 @@ tts:
 # Cloud
 cloud:
 
-# Display
-group: !include groups.yaml
-automation: !include automations.yaml
-script: !include scripts.yaml
-sensor: !include sensors.yaml
+# Sensors
+sensor:
+  - platform: version
+  - platform: rest
+    resource: https://pypi.python.org/pypi/homeassistant/json
+    name: "Latest Available Version"
+    value_template: '{{ value_json.info.version }}'
+    scan_interval: 3600
+
+# Binary sensors
+binary_sensor:
+  - platform: template
+    sensors:
+      ha_update_available:
+        friendly_name: An update is available
+        value_template: >-
+            {{states.sensor.latest_available_version.state != "unavailable" and states.sensor.latest_available_version.state != states.sensor.current_version.state}}
+
+# Switches
+switch:
+  - platform: command_line
+    switches:   
+      upgrade_homeassistant:
+        command_on: "bash -c /home/homeassistant/.homeassistant/bin/upgrade_homeassistant.sh"
+        friendly_name: Upgrade Home Assistant
