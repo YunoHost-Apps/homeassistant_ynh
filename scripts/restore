@@ -47,6 +47,7 @@ fi
 if [ ! -d "$home_path" ]; then
         ynh_restore_file "$home_path"
         chown -R $app: "$home_path"
+        chmod -R +x "$home_path/.homeassistant/bin"
 else
         ynh_die "$home_path already exists and will not be overwritten"
 fi
@@ -56,7 +57,7 @@ fi
 ynh_exec_fully_quiet yunohost firewall allow TCP $port
 
 # add service in admin panel
-yunohost service add "$app@$app" --log "$data_path/home-assistant.log"
+yunohost service add "$app@$app" --log "$data_path/home-assistant.log" --description "Home Assistant server"
 
 # enable & restart systemd service
 ynh_system_reload --service_name="$app@$app" --action=enable
