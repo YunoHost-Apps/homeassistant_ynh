@@ -38,6 +38,10 @@
           "en": "Should this application be public ? (if not, Smartphone app will not work)",
           "fr": "Est-ce que cette application doit être visible publiquement ? (dans le cas contraire, l'application sur Smartphone ne fonctionnera pas)"
         },
+        "help": {
+          "en": "If not public, Smartphone app will not work",
+          "fr": "Dans le cas contraire, l'application sur Smartphone ne fonctionnera pas"
+        },
         "default": true
       }
     ]
