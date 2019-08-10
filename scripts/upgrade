@@ -43,7 +43,7 @@ exec_as "$app" -H -s /bin/bash -c " \
 	&& echo 'install a required python package' \
 		&& pip install --upgrade wheel \
 	&& echo 'install Home Assistant' \
-		&& pip install --upgrade $app \
+		&& pip install --upgrade $app==0.96.5 \
 	"
 
 # setup up autostart using systemd
