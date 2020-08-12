@@ -2,6 +2,9 @@
 # Common variables & functions
 #
 
+# Release to install
+VERSION=0.114.0
+
 # Package dependencies
 PKG_DEPENDENCIES="python3 python3-venv python3-pip build-essential libssl-dev libffi-dev python3-dev"
 

@@ -60,7 +60,7 @@ exec_as $app -H -s /bin/bash -c " \
 	&& echo 'install a required python package' \
 		&& pip install --upgrade wheel \
 	&& echo 'install Home Assistant' \
-		&& pip install --upgrade $app==0.96.5 \
+		&& pip install --upgrade $app==$VERSION \
 	"
 
 # set default configuration files
