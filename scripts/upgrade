@@ -8,9 +8,15 @@ ynh_abort_if_errors
 
 # retrieve arguments
 app=$YNH_APP_INSTANCE_NAME
-domain=$(ynh_app_setting_get $app domain)
-port=$(ynh_app_setting_get $app port)
-is_public=$(ynh_app_setting_get $app is_public)
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+port=$(ynh_app_setting_get --app=$app --key=port)
+
+# Cleaning legacy permissions
+is_public=$(ynh_app_setting_get --app=$app --key=is_public)
+if [ -n "$is_public" ]; then
+  ynh_app_setting_delete --app=$app --key=is_public
+  ynh_app_setting_delete --app=$app --key=unprotected_uris
+fi
 
 # definie useful vars
 final_path="/opt/yunohost/$app"

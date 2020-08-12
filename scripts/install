@@ -29,7 +29,6 @@ ynh_install_app_dependencies "$PKG_DEPENDENCIES"
 # save app settings
 ynh_script_progression --message="Storing installation settings..."
 ynh_app_setting_set $app domain "$domain"
-ynh_app_setting_set $app is_public $is_public
 
 # find a free port & open it
 ynh_script_progression --message="Looking for a free port and opening it..."
@@ -90,12 +89,7 @@ ynh_add_nginx_config
 ynh_system_reload --service_name=nginx
 
 # unprotect app access if public (needed for Android app to work)
-ynh_script_progression --message="Configuring SSOwat..."
-[ $is_public -eq 1 ] && ynh_app_setting_set $app unprotected_uris "/"
-
-# alert about administrator creator
-message="Your installation is not yet secure : please, IMMEDIATELY go to $domain in order to create the admin user of Home Assistant."
-ynh_script_progression --message="$message"
-ynh_send_readme_to_admin --app_message="$message" --recipients="root"
+ynh_script_progression --message="Configuring permissions..."
+[ $is_public -eq 1 ] && ynh_permission_update --permission "main" --add "visitors"
 
 ynh_script_progression --message="Installation of $app completed" --last
