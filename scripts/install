@@ -81,7 +81,7 @@ yunohost service add "$app@$app" --log "$data_path/home-assistant.log" --descrip
 
 # start systemd service
 ynh_script_progression --message="Starting the Home Assistant server..."
-ynh_systemd_action --service_name="$app@$app" --action=start --line_to_match="Home Assistant initialized" --log_path="systemd" --timeout=1000
+ynh_systemd_action --service_name="$app@$app" --action=start --line_match="Home Assistant initialized" --log_path="systemd" --timeout=1000
 
 # create a dedicated nginx config
 ynh_script_progression --message="Configuring nginx web server..."
