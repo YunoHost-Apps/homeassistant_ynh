@@ -4,6 +4,9 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 # manage script failure
+ynh_clean_setup () {
+  ynh_clean_check_starting
+}
 ynh_abort_if_errors
 
 # retrieve arguments
@@ -65,28 +68,26 @@ exec_as $app -H -s /bin/bash -c " \
 # set default configuration files
 ynh_script_progression --message="Configuring the installation..."
 ynh_replace_string "__PORT__" "$port" "../conf/homeassistant_conf_files/configuration.yaml"
-ynh_replace_string "__DOMAIN__" "$domain" "../conf/homeassistant_conf_files/configuration.yaml"
 chmod -R +x "../conf/homeassistant_conf_files/bin/"
 ## move all homeassistant_conf_files
 cp -r "../conf/homeassistant_conf_files/." "$data_path/"
 chown -R $app: "$data_path"
 
-# setup up autostart using systemd
+# setup up systemd service
 ynh_script_progression --message="Adding the dedicated service..."
-ynh_add_systemd_config "$app@$app"
+ynh_add_systemd_config --service="$app@$app"
 ## add service in admin panel
 yunohost service add "$app@$app" --log "$data_path/home-assistant.log" --description "Home Assistant server"
 
-# enable & restart systemd service
+# start systemd service
 ynh_script_progression --message="Starting the Home Assistant server..."
-ynh_system_reload --service_name="$app@$app" --action=enable
-ynh_check_starting --line_to_match="Home Assistant initialized" --app_log="systemd" --timeout=1000 --service_name="$app@$app"
+ynh_systemd_action --service_name="$app@$app" --action=start --line_to_match="Home Assistant initialized" --log_path="systemd" --timeout=1000
 
 # create a dedicated nginx config
 ynh_script_progression --message="Configuring nginx web server..."
 ynh_add_nginx_config
 ## reload nginx
-ynh_system_reload --service_name=nginx
+ynh_systemd_action --service_name=nginx --action=reload
 
 # unprotect app access if public (needed for Android app to work)
 ynh_script_progression --message="Configuring permissions..."

@@ -8,6 +8,9 @@ source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 # manage script failure
+ynh_clean_setup () {
+  ynh_clean_check_starting
+}
 ynh_abort_if_errors
 
 # retrieve arguments
@@ -51,8 +54,7 @@ ynh_exec_fully_quiet yunohost firewall allow TCP $port
 yunohost service add "$app@$app" --log "$data_path/home-assistant.log" --description "Home Assistant server"
 
 # enable & restart systemd service
-ynh_system_reload --service_name="$app@$app" --action=enable
-ynh_check_starting --line_to_match="Home Assistant initialized" --app_log="systemd" --timeout=1000 --service_name="$app@$app"
+ynh_systemd_action --service_name="$app@$app" --action=start --line_to_match="Home Assistant initialized" --log_path="systemd" --timeout=1000
 
 # reload nginx
-ynh_system_reload --service_name=nginx
+ynh_systemd_action --service_name=nginx --action=reload

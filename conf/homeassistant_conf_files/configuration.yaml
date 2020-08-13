@@ -11,7 +11,6 @@ homeassistant:
   time_zone: UTC
 
 http:
-  base_url: __DOMAIN__:__PORT__
   server_port: __PORT__
   use_x_forwarded_for: True
   trusted_proxies:
