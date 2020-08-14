@@ -4,57 +4,79 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 # manage script failure
+ynh_clean_setup () {
+  ynh_clean_check_starting
+}
 ynh_abort_if_errors
 
 # retrieve arguments
 app=$YNH_APP_INSTANCE_NAME
-domain=$(ynh_app_setting_get $app domain)
-port=$(ynh_app_setting_get $app port)
-is_public=$(ynh_app_setting_get $app is_public)
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+port=$(ynh_app_setting_get --app=$app --key=port)
+
+# Cleaning legacy permissions
+ynh_script_progression --message="Cleaning legacy permissions..."
+is_public=$(ynh_app_setting_get --app=$app --key=is_public)
+if [ -n "$is_public" ]; then
+  ynh_app_setting_delete --app=$app --key=is_public
+  ynh_app_setting_delete --app=$app --key=unprotected_uris
+fi
 
 # definie useful vars
 final_path="/opt/yunohost/$app"
 
 # use prior backup and restore on error only if backup feature exists on installed instance
+ynh_script_progression --message="Creating backup in case of failure..."
 if [ -f "/etc/yunohost/apps/$app/scripts/backup" ] ; then
   ynh_backup_before_upgrade # Backup the current version of the app
   ynh_clean_setup () {
       ynh_restore_upgradebackup
+      ynh_clean_check_starting
   }
 fi
 
 # grant sudo permissions to the user to manage his own systemd service
+ynh_script_progression --message="Creating dedicated user, rights and folders..."
 myynh_create_dir "/etc/sudoers.d"
 cp "../conf/sudoers" "/etc/sudoers.d/$app"
 
 # add required packages
+ynh_script_progression --message="Installing dependencies..."
 ynh_install_app_dependencies "$PKG_DEPENDENCIES"
 
 # stop systemd service
-ynh_system_reload --service_name="$app@$app" --action=stop
-ynh_system_reload --service_name="$app@$app" --action=disable
+ynh_script_progression --message="Stoping service..."
+ynh_systemd_action --service_name="$app@$app" --action=stop
 
-# upgrade
-exec_as "$app" -H -s /bin/bash -c " \
+# installation in a virtual environment
+ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
+exec_as $app -H -s /bin/bash -c " \
 	echo 'create the virtual environment' \
-		&& python3 -m venv $final_path \
+		&& python3 -m venv "$final_path" \
 	&& echo 'activate the virtual environment' \
-		&& source $final_path/bin/activate \
+		&& source "$final_path/bin/activate" \
 	&& echo 'install a required python package' \
-		&& pip install --upgrade wheel \
+		&& python3 -m pip install --upgrade wheel \
 	&& echo 'install Home Assistant' \
-		&& pip install --upgrade $app==0.96.5 \
+		&& pip3 install --upgrade $app==$VERSION \
 	"
 
-# setup up autostart using systemd
-ynh_add_systemd_config "$app@$app"
+# setup up systemd service
+ynh_script_progression --message="Adding the dedicated service..."
+ynh_add_systemd_config --service="$app@$app"
 
-# enable & restart systemd service
-ynh_system_reload --service_name="$app@$app" --action=enable
-ynh_check_starting --line_to_match="Home Assistant initialized" --app_log="systemd" --timeout=1000 --service_name="$app@$app"
+# start systemd service
+ynh_script_progression --message="Starting the Home Assistant server..."
+ynh_systemd_action --service_name="$app@$app" --action=start --line_match="Home Assistant initialized" --log_path="systemd" --timeout=1000
+# remove --verbose from service
+ynh_replace_string " --verbose" "" "/etc/systemd/system/$app@$app.service"
+systemctl daemon-reload
+ynh_systemd_action --service_name="$app@$app" --action=restart
 
 # create a dedicated nginx config
+ynh_script_progression --message="Configuring nginx web server..."
 ynh_add_nginx_config
-
 # reload nginx
-ynh_system_reload --service_name=nginx
+ynh_systemd_action --service_name=nginx --action=reload
+
+ynh_script_progression --message="Installation of $app completed" --last

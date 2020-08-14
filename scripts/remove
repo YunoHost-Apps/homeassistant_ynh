@@ -7,8 +7,8 @@ source /usr/share/yunohost/helpers
 
 # retrieve arguments
 app=$YNH_APP_INSTANCE_NAME
-domain=$(ynh_app_setting_get "$app" domain)
-port=$(ynh_app_setting_get $app port)
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+port=$(ynh_app_setting_get --app=$app --key=port)
 
 # definie useful vars
 final_path="/opt/yunohost/$app"
@@ -18,30 +18,29 @@ home_path="/home/$app"
 ynh_remove_app_dependencies
 
 # remove the app directory securely
-ynh_secure_remove "$final_path"
+ynh_secure_remove --file="$final_path"
 
 # remove the dedicated nginx config
 ynh_remove_nginx_config
 
 # remove a directory securely
-ynh_secure_remove "$home_path"
+ynh_secure_remove --file="$home_path"
 
-# remove service from admin panel
-if yunohost service status | grep -q "$app@$app"
-then
-	yunohost service remove "$app@$app"
+# Remove a service from the admin panel, added by `yunohost service add`
+if yunohost service status "$app@$app" >/dev/null 2>&1 ; then
+  yunohost service remove "$app@$app"
 fi
 
 # remove systemd service
-ynh_system_reload --service_name="$app@$app" --action=stop
-ynh_system_reload --service_name="$app@$app" --action=disable
-ynh_secure_remove "/etc/systemd/system/$app.service"
+ynh_systemd_action --service_name="$app@$app" --action=stop
+ynh_systemd_action --service_name="$app@$app" --action=disable
+ynh_secure_remove --file="/etc/systemd/system/$app@$app.service"
 
 # close port
 ynh_exec_fully_quiet yunohost firewall disallow TCP $port
 
 # delete a system user
-ynh_system_user_delete "$app"
+ynh_system_user_delete --username=$app
 
 # remove sudoers file
-ynh_secure_remove "/etc/sudoers.d/$app"
+ynh_secure_remove --file="/etc/sudoers.d/$app"

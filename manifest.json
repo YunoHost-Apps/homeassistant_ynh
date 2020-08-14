@@ -14,7 +14,7 @@
     "email": "ewilly@ewilly.fr"
   },
   "requirements": {
-        "yunohost": ">= 3.1"
+        "yunohost": ">= 4.0"
   },
   "multi_instance": false,
   "services": [
@@ -29,7 +29,11 @@
           "en": "Choose a domain for Home Assistant",
           "fr": "Choisissez un domaine pour Home Assistant"
         },
-        "example": "domain.org"
+        "help": {
+          "en": "Installation in a path is not possible",
+          "fr": "L'installation sous un chemin de domaine n'est pas possible"
+        },
+        "example": "domain.org or homeassistant.domain.org"
       },
       {
         "name": "is_public",

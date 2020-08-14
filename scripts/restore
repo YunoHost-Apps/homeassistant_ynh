@@ -8,12 +8,15 @@ source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 # manage script failure
+ynh_clean_setup () {
+  ynh_clean_check_starting
+}
 ynh_abort_if_errors
 
 # retrieve arguments
 app=$YNH_APP_INSTANCE_NAME
-domain=$(ynh_app_setting_get "$app" domain)
-port=$(ynh_app_setting_get "$app" port)
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+port=$(ynh_app_setting_get --app=$app --key=port)
 
 # definie useful vars
 final_path="/opt/yunohost/$app"
@@ -28,29 +31,20 @@ ynh_webpath_available $domain $path_url || ynh_die "$domain/$path_url is not ava
 ynh_install_app_dependencies "$PKG_DEPENDENCIES"
 
 # restore dedicated system user
-ynh_system_user_exists "$app" && ynh_die "User $app is not available"
-ynh_system_user_create "$app"
+ynh_system_user_create --username="$app"
 
 # restore conf files
-ynh_restore_file "/etc/nginx/conf.d/$domain.d/$app.conf"
-ynh_restore_file "/etc/sudoers.d/$app"
-ynh_restore_file "/etc/systemd/system/$app@$app.service"
+ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
+ynh_restore_file --origin_path="/etc/sudoers.d/$app"
+ynh_restore_file --origin_path="/etc/systemd/system/$app@$app.service"
 
 # restore source
-if [ ! -d "$final_path" ]; then
-        ynh_restore_file "$final_path"
-else
-        ynh_die "There is already a directory: $final_path"
-fi
+ynh_restore_file --origin_path="$final_path"
 
 # restore data
-if [ ! -d "$home_path" ]; then
-        ynh_restore_file "$home_path"
-        chown -R $app: "$home_path"
-        chmod -R +x "$home_path/.homeassistant/bin"
-else
-        ynh_die "$home_path already exists and will not be overwritten"
-fi
+ynh_restore_file --origin_path="$home_path"
+chown -R $app: "$home_path"
+chmod -R +x "$home_path/.homeassistant/bin"
 
 # restore port
 [ $port -eq $(ynh_find_port $port) ] || ynh_die "$port is not available, please use an other port"
@@ -59,9 +53,8 @@ ynh_exec_fully_quiet yunohost firewall allow TCP $port
 # add service in admin panel
 yunohost service add "$app@$app" --log "$data_path/home-assistant.log" --description "Home Assistant server"
 
-# enable & restart systemd service
-ynh_system_reload --service_name="$app@$app" --action=enable
-ynh_check_starting --line_to_match="Home Assistant initialized" --app_log="systemd" --timeout=1000 --service_name="$app@$app"
+# start systemd service
+ynh_systemd_action --service_name="$app@$app" --action=start
 
 # reload nginx
-ynh_system_reload --service_name=nginx
+ynh_systemd_action --service_name=nginx --action=reload

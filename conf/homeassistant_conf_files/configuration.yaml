@@ -3,13 +3,6 @@ homeassistant:
    - type: command_line
      command: /home/homeassistant/.homeassistant/bin/ynh_ldap-auth.sh
      meta: true
-   - type: homeassistant
-   - type: trusted_networks
-     trusted_networks:
-       - 127.0.0.1 
-       - ::1 
-       - 192.168.0.0/24 
-       - fd00::/8
   name: Home
   latitude: 0
   longitude: 0
@@ -18,7 +11,6 @@ homeassistant:
   time_zone: UTC
 
 http:
-  base_url: __DOMAIN__:__PORT__
   server_port: __PORT__
   use_x_forwarded_for: True
   trusted_proxies:
