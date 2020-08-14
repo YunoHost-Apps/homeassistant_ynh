@@ -60,9 +60,9 @@ exec_as $app -H -s /bin/bash -c " \
 	&& echo 'activate the virtual environment' \
 		&& source "$final_path/bin/activate" \
 	&& echo 'install a required python package' \
-		&& pip install --upgrade wheel \
+		&& python3 -m pip install --upgrade wheel \
 	&& echo 'install Home Assistant' \
-		&& pip install --upgrade $app==$VERSION \
+		&& pip3 install --upgrade $app==$VERSION \
 	"
 
 # set default configuration files

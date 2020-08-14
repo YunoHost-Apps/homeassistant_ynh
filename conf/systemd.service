@@ -6,7 +6,7 @@ After=network-online.target
 Type=simple
 User=homeassistant
 WorkingDirectory=/home/homeassistant/.homeassistant
-ExecStart=/opt/yunohost/homeassistant/bin/hass -c "/home/homeassistant/.homeassistant" --debug
+ExecStart=/opt/yunohost/homeassistant/bin/hass -c "/home/homeassistant/.homeassistant" --verbose
 
 [Install]
 WantedBy=multi-user.target 
