@@ -60,6 +60,11 @@ exec_as $app -H -s /bin/bash -c " \
 	&& echo 'install Home Assistant' \
 		&& pip3 install --upgrade $app==$VERSION \
 	"
+# update script in bin
+ynh_script_progression --message="Updating yunohost script used by homeassitant..."
+cp -r "../conf/homeassistant_conf_files/bin/." "$data_path/bin/"
+chown -R $app: "$data_path/bin"
+chmod -R +x "$data_path/bin/"
 
 # setup up systemd service
 ynh_script_progression --message="Adding the dedicated service..."
