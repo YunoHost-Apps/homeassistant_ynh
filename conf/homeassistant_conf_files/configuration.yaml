@@ -3,12 +3,6 @@ homeassistant:
    - type: command_line
      command: /home/homeassistant/.homeassistant/bin/ynh_ldap-auth.sh
      meta: true
-  name: Home
-  latitude: 0
-  longitude: 0
-  elevation: 0
-  unit_system: metric
-  time_zone: UTC
 
 http:
   server_port: __PORT__
@@ -16,68 +10,9 @@ http:
   trusted_proxies:
     - 127.0.0.1
     - ::1
-  ip_ban_enabled: True
-  login_attempts_threshold: 5
 
-# Lovelace mode
-lovelace:
-  mode: yaml
-
-# Enables the frontend
-frontend:
-  javascript_version: latest
-
-# Enables configuration UI
-config:
-
-# Enables health
-system_health:
-
-# Checks for available updates
-updater:
-
-# Discover some devices automatically
-discovery:
-
-# Allows you to issue voice commands from the frontend in enabled browsers
-conversation:
-
-# Enables support for tracking state changes over time
-history:
-
-# View all events in a logbook
-logbook:
-
-# Enables a map showing the location of tracked devices
-map:
-
-# Track the sun
-sun:
-
-# Text to speech
-tts:
-  - platform: google
-
-# Cloud
-cloud:
-
-# Sensors
-sensor:
-  - platform: version
-  - platform: rest
-    resource: https://pypi.python.org/pypi/homeassistant/json
-    name: "Latest Available Version"
-    value_template: '{{ value_json.info.version }}'
-    scan_interval: 3600
-
-# Binary sensors
-binary_sensor:
-  - platform: template
-    sensors:
-      ha_update_available:
-        friendly_name: An update is available
-        value_template: >-
-            {{states.sensor.latest_available_version.state != "unavailable" and states.sensor.latest_available_version.state != states.sensor.current_version.state}}
+# Apply default set of integrations
+default_config:
 
 # Switches
 switch:

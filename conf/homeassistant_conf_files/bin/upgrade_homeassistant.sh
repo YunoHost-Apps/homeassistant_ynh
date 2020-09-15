@@ -14,10 +14,10 @@ python3 -m venv "$final_path"
 . "$final_path/bin/activate"
 
 # upgrade required python package
-pip install --upgrade wheel
+python3 -m pip install --upgrade wheel
 
 # upgrade homeassistant python package
-pip install --upgrade $app
+pip3 install --upgrade $app
 
 # restart homeassistant systemd service
 sudo systemctl restart $app@$app.service
