@@ -24,6 +24,7 @@ fi
 
 # definie useful vars
 final_path="/opt/yunohost/$app"
+data_path="/home/$app/.$app"
 
 # use prior backup and restore on error only if backup feature exists on installed instance
 ynh_script_progression --message="Creating backup in case of failure..."
