@@ -6,7 +6,7 @@
     "en": "Home automation platform",
     "fr": "Plateforme domotique"
   },
-  "version": "0.117.5~ynh1",
+  "version": "0.117.6~ynh1",
   "url": "https://github.com/home-assistant/home-assistant",
   "license": "Apache-2.0",
   "maintainer": {
@@ -14,7 +14,7 @@
     "email": "ewilly@ewilly.fr"
   },
   "requirements": {
-        "yunohost": ">= 4.0"
+        "yunohost": ">= 4.0.0"
   },
   "multi_instance": false,
   "services": [
@@ -39,8 +39,8 @@
         "name": "is_public",
         "type": "boolean",
         "ask": {
-          "en": "Should this application be public ? (if not, Smartphone app will not work)",
-          "fr": "Est-ce que cette application doit être visible publiquement ? (dans le cas contraire, l'application sur Smartphone ne fonctionnera pas)"
+          "en": "Should this application be public?",
+          "fr": "Est-ce que cette application doit être visible publiquement ?"
         },
         "help": {
           "en": "If not public, Smartphone app will not work",
