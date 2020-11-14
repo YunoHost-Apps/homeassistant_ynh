@@ -65,7 +65,7 @@ Please send your pull request to the [testing branch](https://github.com/YunoHos
 
 To try the testing branch, please proceed like that.
 ```
-sudo yunohost app install https://github.com/YunoHost-Apps/REPLACEBYYOURAPP_ynh/tree/testing --debug
+sudo yunohost app install https://github.com/YunoHost-Apps/homeassistant_ynh/tree/testing --debug
 or
 sudo yunohost app upgrade homeassistant -u https://github.com/YunoHost-Apps/homeassistant_ynh/tree/testing --debug
 ```
