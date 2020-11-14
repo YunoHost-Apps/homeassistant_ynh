@@ -6,7 +6,7 @@
     "en": "Home automation platform",
     "fr": "Plateforme domotique"
   },
-  "version": "1.1.0",
+  "version": "0.117.5~ynh1",
   "url": "https://github.com/home-assistant/home-assistant",
   "license": "Apache-2.0",
   "maintainer": {

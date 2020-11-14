@@ -41,9 +41,8 @@ ynh_script_progression --message="Creating dedicated user, rights and folders...
 myynh_create_dir "/etc/sudoers.d"
 cp "../conf/sudoers" "/etc/sudoers.d/$app"
 
-# add required packages
-ynh_script_progression --message="Installing dependencies..."
-ynh_install_app_dependencies "$PKG_DEPENDENCIES"
+# build (if needed) & install Pyhton
+myynh_install_dependencies
 
 # stop systemd service
 ynh_script_progression --message="Stoping service..."
@@ -51,16 +50,8 @@ ynh_systemd_action --service_name="$app@$app" --action=stop
 
 # installation in a virtual environment
 ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
-exec_as $app -H -s /bin/bash -c " \
-	echo 'create the virtual environment' \
-		&& python3 -m venv "$final_path" \
-	&& echo 'activate the virtual environment' \
-		&& source "$final_path/bin/activate" \
-	&& echo 'install a required python package' \
-		&& python3 -m pip install --upgrade wheel \
-	&& echo 'install Home Assistant' \
-		&& pip3 install --upgrade $app==$VERSION \
-	"
+myynh_install_homeassistant
+
 # update script in bin
 ynh_script_progression --message="Updating yunohost script used by homeassitant..."
 cp -r "../conf/homeassistant_conf_files/bin/." "$data_path/bin/"
@@ -70,10 +61,12 @@ chmod -R +x "$data_path/bin/"
 # setup up systemd service
 ynh_script_progression --message="Adding the dedicated service..."
 ynh_add_systemd_config --service="$app@$app"
+## add service in admin panel
+yunohost service add "$app@$app" --log "$data_path/home-assistant.log" --description "Home Assistant server" --needs_exposed_ports $port
 
 # start systemd service
 ynh_script_progression --message="Starting the Home Assistant server..."
-ynh_systemd_action --service_name="$app@$app" --action=start --line_match="Home Assistant initialized" --log_path="systemd" --timeout=1000
+ynh_systemd_action --service_name="$app@$app" --action=start --line_match="Home Assistant initialized" --log_path="systemd" --timeout=3600
 # remove --verbose from service
 ynh_replace_string " --verbose" "" "/etc/systemd/system/$app@$app.service"
 systemctl daemon-reload

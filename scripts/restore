@@ -28,7 +28,7 @@ path_url=$(ynh_normalize_url_path "/")
 ynh_webpath_available $domain $path_url || ynh_die "$domain/$path_url is not available, please use an other domain."
 
 # add required packages
-ynh_install_app_dependencies "$PKG_DEPENDENCIES"
+myynh_install_dependencies
 
 # restore dedicated system user
 ynh_system_user_create --username="$app"
@@ -51,7 +51,7 @@ chmod -R +x "$home_path/.homeassistant/bin"
 ynh_exec_fully_quiet yunohost firewall allow TCP $port
 
 # add service in admin panel
-yunohost service add "$app@$app" --log "$data_path/home-assistant.log" --description "Home Assistant server"
+yunohost service add "$app@$app" --log "$data_path/home-assistant.log" --description "Home Assistant server" --needs_exposed_ports $port
 
 # start systemd service
 ynh_systemd_action --service_name="$app@$app" --action=start
