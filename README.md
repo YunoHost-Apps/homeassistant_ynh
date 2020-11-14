@@ -48,7 +48,7 @@ How to configure this app: From an admin panel
 
 ## Additional information
 
-* Other info you would like to add about this app.
+* As the pyhton version shipped in Debian stable is not supported, a recent version will be built during the installation process. it may take a while to achive that (15 to 60 minutes)
 
 ## Links
 
