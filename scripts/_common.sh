@@ -10,7 +10,7 @@ PKG_DEPENDENCIES="python3 python3-dev python3-venv python3-pip libffi-dev libssl
 
 # Requirements (Major.Minor.Patch)
 # PY_VERSION=$(curl -s "https://www.python.org/ftp/python/" | grep ">3.8" | tail -n1 | cut -d '/' -f 2 | cut -d '>' -f 2)
-PY_VERSION=3.8.6
+PY_REQUIRED_VERSION=3.8.6
 
 # Execute a command as another user
 # usage: exec_as USER COMMAND [ARG ...]
@@ -56,7 +56,16 @@ myynh_version_compare () {
 }
 
 # Package dependencies
+# usage: myynh_install_dependencies --python="3.8.6"
+# | arg: -p, --python=    - the python version to install
 myynh_install_dependencies () {
+	# Declare an array to define the options of this helper.
+	local legacy_args=u
+	local -A args_array=( [p]=python= )
+	local python
+	# Manage arguments with getopts
+	ynh_handle_getopts_args "$@"
+	
 	# Install main dependencies from apt
 	ynh_script_progression --message="Installing dependencies..."
 	ynh_install_app_dependencies "${PKG_DEPENDENCIES}"
@@ -65,15 +74,15 @@ myynh_install_dependencies () {
 	local PY_APT_VERSION=$(python3 --version | cut -d ' ' -f 2)
 	
 	# Check existing built version of python in /usr/local/bin
-	if [ -e "/usr/local/bin/python${PY_VERSION:0:3}" ]; then
-		local PY_BUILT_VERSION=$(/usr/local/bin/python${PY_VERSION:0:3} --version \
+	if [ -e "/usr/local/bin/python${python:0:3}" ]; then
+		local PY_BUILT_VERSION=$(/usr/local/bin/python${python:0:3} --version \
 			| cut -d ' ' -f 2)
 	else
 		local PY_BUILT_VERSION=0
 	fi
 	
 	# Compare version
-	if [ $(myynh_version_compare $PY_APT_VERSION $PY_VERSION) -le 1 ]; then
+	if [ $(myynh_version_compare $PY_APT_VERSION $python) -le 1 ]; then
 		# APT >= Required
 		ynh_script_progression --message="Using provided python3..."
 		MY_PYTHON="python3"
@@ -82,31 +91,37 @@ myynh_install_dependencies () {
 		ynh_script_progression --message="Installing additional dependencies..."
 		PKG_DEPENDENCIES="${PKG_DEPENDENCIES} tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libbz2-dev libexpat1-dev liblzma-dev wget tar"
 		ynh_install_app_dependencies "${PKG_DEPENDENCIES}"      
-		if [ $(myynh_version_compare $PY_BUILT_VERSION $PY_VERSION) -le 1 ]; then
+		if [ $(myynh_version_compare $PY_BUILT_VERSION $python) -le 1 ]; then
 			# Built >= Required
 			ynh_script_progression --message="Using already used python3 built version..."
 			MY_PYTHON="/usr/local/bin/python${PY_BUILT_VERSION:0:3}"
 		else
             # APT < Minimal & Actual < Minimal => Build & install Python into /usr/local/bin
             ynh_script_progression --message="Building python (may take a while)..."
+            # Store current direcotry 
+            local MY_DIR=$(pwd)
             # Download
-            wget -O "/tmp/Python-$PY_VERSION.tar.xz" "https://www.python.org/ftp/python/$PY_VERSION/Python-$PY_VERSION.tar.xz"
+            wget -O "/tmp/Python-$python.tar.xz" "https://www.python.org/ftp/python/$python/Python-$python.tar.xz"
             # Extract
             cd /tmp
-            tar xf "Python-$PY_VERSION.tar.xz"
+            tar xf "Python-$python.tar.xz"
             # Install
-            cd "Python-$PY_VERSION"
+            cd "Python-$python"
             ./configure --enable-optimizations
             make -j4
             make altinstall
             # Clean
             cd ..
-            ynh_secure_remove "Python-$PY_VERSION"
-            ynh_secure_remove "Python-$PY_VERSION.tar.xz"
+            ynh_secure_remove "Python-$python"
+            ynh_secure_remove "Python-$python.tar.xz"
             # Set version
-            MY_PYTHON="/usr/local/bin/python${PY_VERSION:0:3}"
+            MY_PYTHON="/usr/local/bin/python${python:0:3}"
+            # Go back to working directory
+            cd $MY_DIR
 		fi
 	fi
+	# Save python version in settings 
+	ynh_app_setting_set $app python "$python"
 }
 
 # Install/Upgrade Homeassistant in virtual environement

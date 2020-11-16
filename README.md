@@ -34,8 +34,8 @@ How to configure this app: From an admin panel
 
 #### Multi-user support
 
-* Are LDAP and HTTP auth supported?
-* Can the app be used by multiple users?
+* Are LDAP and HTTP auth supported? LDAP=Yes | HTTP auth=No
+* Can the app be used by multiple users? Yes
 
 #### Supported architectures
 

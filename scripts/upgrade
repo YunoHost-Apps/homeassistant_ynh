@@ -11,15 +11,15 @@ ynh_abort_if_errors
 
 # retrieve arguments
 app=$YNH_APP_INSTANCE_NAME
-domain=$(ynh_app_setting_get --app=$app --key=domain)
-port=$(ynh_app_setting_get --app=$app --key=port)
+domain=$(ynh_app_setting_get --app="$app" --key=domain)
+port=$(ynh_app_setting_get --app="$app" --key=port)
 
 # Cleaning legacy permissions
 ynh_script_progression --message="Cleaning legacy permissions..."
-is_public=$(ynh_app_setting_get --app=$app --key=is_public)
+is_public=$(ynh_app_setting_get --app="$app" --key=is_public)
 if [ -n "$is_public" ]; then
-  ynh_app_setting_delete --app=$app --key=is_public
-  ynh_app_setting_delete --app=$app --key=unprotected_uris
+  ynh_app_setting_delete --app="$app" --key=is_public
+  ynh_app_setting_delete --app="$app" --key=unprotected_uris
 fi
 
 # definie useful vars
@@ -42,7 +42,7 @@ myynh_create_dir "/etc/sudoers.d"
 cp "../conf/sudoers" "/etc/sudoers.d/$app"
 
 # build (if needed) & install Pyhton
-myynh_install_dependencies
+myynh_install_dependencies --python="$PY_REQUIRED_VERSION"
 
 # stop systemd service
 ynh_script_progression --message="Stoping service..."
@@ -68,7 +68,7 @@ yunohost service add "$app@$app" --log "$data_path/home-assistant.log" --descrip
 ynh_script_progression --message="Starting the Home Assistant server..."
 ynh_systemd_action --service_name="$app@$app" --action=start --line_match="Home Assistant initialized" --log_path="systemd" --timeout=3600
 # remove --verbose from service
-ynh_replace_string " --verbose" "" "/etc/systemd/system/$app@$app.service"
+ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app@$app.service"
 systemctl daemon-reload
 ynh_systemd_action --service_name="$app@$app" --action=restart
 

@@ -10,7 +10,7 @@ ynh_abort_if_errors
 
 # retrieve arguments
 app=$YNH_APP_INSTANCE_NAME
-domain=$(ynh_app_setting_get --app=$app --key=domain)
+domain=$(ynh_app_setting_get --app="$app" --key=domain)
 
 # definie useful vars
 final_path="/opt/yunohost/$app"
