@@ -121,7 +121,7 @@ myynh_install_dependencies () {
 		fi
 	fi
 	# Save python version in settings 
-	ynh_app_setting_set $app python "$python"
+	ynh_app_setting_set --app="$app" --key=python --value="$python"
 }
 
 # Install/Upgrade Homeassistant in virtual environement
