@@ -4,20 +4,22 @@
 app="homeassistant"
 final_path="/opt/yunohost/$app"
 
-# stop homeassistant systemd service
-#sudo systemctl stop $app@$app.service
+local MY_PYTHON=$(readlink -e "$final_path/bin/python")
 
 # create the virtual environment
-python3 -m venv "$final_path"
+$MY_PYTHON -m venv "$final_path"
 
 # activate the virtual environment
-. "$final_path/bin/activate"
+source "$final_path/bin/activate"
 
-# upgrade required python package
-python3 -m pip install --upgrade wheel
+# install last version of pip
+pip install --upgrade pip
+
+# install last version of wheel
+pip install --upgrade wheel
 
 # upgrade homeassistant python package
-pip3 install --upgrade $app
+pip install --upgrade $app
 
 # restart homeassistant systemd service
 sudo systemctl restart $app@$app.service

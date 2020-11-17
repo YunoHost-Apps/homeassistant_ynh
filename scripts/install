@@ -18,30 +18,26 @@ is_public=$YNH_APP_ARG_IS_PUBLIC
 final_path="/opt/yunohost/$app"
 home_path="/home/$app"
 data_path="/home/$app/.$app"
+path_url=$(ynh_normalize_url_path --path_url="/")
 
 # check domain/path availability
 ynh_script_progression --message="Validating installation parameters..."
-path_url=$(ynh_normalize_url_path "/")
-ynh_webpath_available "$domain" "$path_url" || ynh_die "$domain/$path_url is not available, please use an other domain."
-ynh_webpath_register $app "$domain" "$path_url"
-
-# add required packages
-ynh_script_progression --message="Installing dependencies..."
-ynh_install_app_dependencies "$PKG_DEPENDENCIES"
+[ ! -d "$final_path" ] || ynh_die --message="This path already contains a folder"
+ynh_webpath_register --app="$app" --domain="$domain" --path_url="$path_url"
 
 # save app settings
 ynh_script_progression --message="Storing installation settings..."
-ynh_app_setting_set $app domain "$domain"
+ynh_app_setting_set --app="$app" --key=domain --value="$domain"
 
 # find a free port & open it
 ynh_script_progression --message="Looking for a free port and opening it..."
 port=$(ynh_find_port 8123)
-ynh_app_setting_set $app port $port
-ynh_exec_fully_quiet yunohost firewall allow TCP $port
+ynh_app_setting_set --app="$app" --key=port --value="$port"
+ynh_exec_fully_quiet yunohost firewall allow TCP "$port"
 
 # create a dedicated system user
 ynh_script_progression --message="Creating dedicated user, rights and folders..."
-ynh_system_user_create $app
+ynh_system_user_create --username="$app"
 ## grant sudo permissions to the user to manage his own systemd service
 myynh_create_dir "/etc/sudoers.d"
 cp "../conf/sudoers" "/etc/sudoers.d/$app"
@@ -52,38 +48,32 @@ chown $app: "$final_path"
 myynh_create_dir "$data_path"
 chown -R $app: "$home_path"
 
+# build (if needed) & install Pyhton
+myynh_install_dependencies --python="$PY_REQUIRED_VERSION"
+
 # installation in a virtual environment
 ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
-exec_as $app -H -s /bin/bash -c " \
-	echo 'create the virtual environment' \
-		&& python3 -m venv "$final_path" \
-	&& echo 'activate the virtual environment' \
-		&& source "$final_path/bin/activate" \
-	&& echo 'install a required python package' \
-		&& python3 -m pip install --upgrade wheel \
-	&& echo 'install Home Assistant' \
-		&& pip3 install --upgrade $app==$VERSION \
-	"
+myynh_install_homeassistant
 
-# set default configuration files
+# set default configuration files and move all homeassistant_conf_files
 ynh_script_progression --message="Configuring the installation..."
-ynh_replace_string "__PORT__" "$port" "../conf/homeassistant_conf_files/configuration.yaml"
-chmod -R +x "../conf/homeassistant_conf_files/bin/"
-## move all homeassistant_conf_files
+ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="../conf/homeassistant_conf_files/configuration.yaml"
 cp -r "../conf/homeassistant_conf_files/." "$data_path/"
 chown -R $app: "$data_path"
+chmod -R +x "$data_path/bin/"
 
 # setup up systemd service
 ynh_script_progression --message="Adding the dedicated service..."
 ynh_add_systemd_config --service="$app@$app"
 ## add service in admin panel
-yunohost service add "$app@$app" --log "$data_path/home-assistant.log" --description "Home Assistant server"
+yunohost service add "$app@$app" --log "$data_path/home-assistant.log" --description "Home Assistant server" --needs_exposed_ports $port
 
 # start systemd service
 ynh_script_progression --message="Starting the Home Assistant server..."
-ynh_systemd_action --service_name="$app@$app" --action=start --line_match="Home Assistant initialized" --log_path="systemd" --timeout=1000
+ynh_systemd_action --service_name="$app@$app" --action=start --line_match="Home Assistant initialized" --log_path="systemd" --timeout=3600
 # remove --verbose from service
-ynh_replace_string " --verbose" "" "/etc/systemd/system/$app@$app.service"
+ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app@$app.service"
+ynh_store_file_checksum --file="/etc/systemd/system/$app@$app.service"
 systemctl daemon-reload
 ynh_systemd_action --service_name="$app@$app" --action=restart
 
@@ -95,6 +85,6 @@ ynh_systemd_action --service_name=nginx --action=reload
 
 # unprotect app access if public (needed for Android app to work)
 ynh_script_progression --message="Configuring permissions..."
-[ $is_public -eq 1 ] && ynh_permission_update --permission "main" --add "visitors"
+[ $is_public -eq 1 ] && ynh_permission_update --permission="main" --add="visitors"
 
 ynh_script_progression --message="Installation of $app completed" --last
