@@ -18,7 +18,7 @@ is_public=$YNH_APP_ARG_IS_PUBLIC
 final_path="/opt/yunohost/$app"
 home_path="/home/$app"
 data_path="/home/$app/.$app"
-path_url=$(ynh_normalize_url_path --path_url="/")
+path_url="/"
 
 # check domain/path availability
 ynh_script_progression --message="Validating installation parameters..."
