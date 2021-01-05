@@ -101,7 +101,7 @@ myynh_install_dependencies () {
             # Store current direcotry 
             local MY_DIR=$(pwd)
             # Download
-            wget -O "/tmp/Python-$python.tar.xz" "https://www.python.org/ftp/python/$python/Python-$python.tar.xz"
+            wget -O "/tmp/Python-$python.tar.xz" "https://www.python.org/ftp/python/$python/Python-$python.tar.xz" 2>&1
             # Extract
             cd /tmp
             tar xf "Python-$python.tar.xz"

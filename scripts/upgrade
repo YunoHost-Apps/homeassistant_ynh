@@ -53,7 +53,7 @@ ynh_script_progression --message="Installing Home Assistant in a virtual environ
 myynh_install_homeassistant
 
 # update script in bin
-ynh_script_progression --message="Updating yunohost script used by homeassitant..."
+ynh_script_progression --message="Updating YunoHost script used by homeassitant..."
 cp -r "../conf/homeassistant_conf_files/bin/." "$data_path/bin/"
 chown -R $app: "$data_path/bin"
 chmod -R +x "$data_path/bin/"
