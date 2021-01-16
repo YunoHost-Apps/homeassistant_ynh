@@ -48,7 +48,7 @@ log() {
 
 # Check permission of ynh user.
 ynh_user_app_permission() {
-	access=$(cat "/etc/ssowat/conf.json" | jq ".users."$username"" | grep "Home Assistant")
+	access=$(cat "/etc/ssowat/conf.json" | jq 'def IN(s): . as $in | first(if (s == $in) then true else empty end) ; .permissions["homeassistant.main"].users as $f | '\"$username\"' | IN($f[])')
 	[ ! -z "$access" ] && return 1
 	return 0
 }
