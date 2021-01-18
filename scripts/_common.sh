@@ -108,8 +108,8 @@ myynh_install_dependencies () {
             # Install
             cd "Python-$python"
             ./configure --enable-optimizations
-            make -j4
-            make altinstall
+            ynh_exec_warn_less make -j4
+            ynh_exec_warn_less make altinstall
             # Clean
             cd ..
             ynh_secure_remove "Python-$python"

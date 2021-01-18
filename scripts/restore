@@ -51,7 +51,7 @@ chmod -R +x "$home_path/.homeassistant/bin"
 
 ynh_script_progression --message="Restoring the packages dependencies..."
 # add required packages
-ynh_exec_warn_less myynh_install_dependencies --python="$python"
+myynh_install_dependencies --python="$python"
 
 ynh_script_progression --message="Restoring the dedicated service..."
 ynh_restore_file --origin_path="/etc/systemd/system/$app@$app.service"
