@@ -49,7 +49,7 @@ myynh_create_dir "$data_path"
 chown -R $app: "$home_path"
 
 # build (if needed) & install Pyhton
-myynh_install_dependencies --python="$PY_REQUIRED_VERSION"
+ynh_exec_warn_less myynh_install_dependencies --python="$PY_REQUIRED_VERSION"
 
 # installation in a virtual environment
 ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
