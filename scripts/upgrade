@@ -42,7 +42,7 @@ myynh_create_dir "/etc/sudoers.d"
 cp "../conf/sudoers" "/etc/sudoers.d/$app"
 
 # build (if needed) & install Pyhton
-myynh_install_dependencies --python="$PY_REQUIRED_VERSION"
+ynh_exec_warn_less myynh_install_dependencies --python="$PY_REQUIRED_VERSION"
 
 # stop systemd service
 ynh_script_progression --message="Stoping service..."
