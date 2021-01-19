@@ -3,14 +3,14 @@
 #
 
 # Release to install
-VERSION=0.117.6
+VERSION=2021.1.4
 
 # Package dependencies
 PKG_DEPENDENCIES="python3 python3-dev python3-venv python3-pip libffi-dev libssl-dev libjpeg-dev zlib1g-dev autoconf build-essential libopenjp2-7 libtiff5"
 
 # Requirements (Major.Minor.Patch)
 # PY_VERSION=$(curl -s "https://www.python.org/ftp/python/" | grep ">3.8" | tail -n1 | cut -d '/' -f 2 | cut -d '>' -f 2)
-PY_REQUIRED_VERSION=3.8.6
+PY_REQUIRED_VERSION=3.8.7
 
 # Execute a command as another user
 # usage: exec_as USER COMMAND [ARG ...]
@@ -108,8 +108,8 @@ myynh_install_dependencies () {
             # Install
             cd "Python-$python"
             ./configure --enable-optimizations
-            make -j4
-            make altinstall
+            ynh_exec_warn_less make -j4
+            ynh_exec_warn_less make altinstall
             # Clean
             cd ..
             ynh_secure_remove "Python-$python"

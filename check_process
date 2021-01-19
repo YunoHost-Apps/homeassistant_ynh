@@ -17,7 +17,7 @@
 		multi_instance=0
 		port_already_use=1
 		change_url=1
-		actions=1
+		actions=0
 		config_panel=0
 ;;; Options
 	Notification=all
