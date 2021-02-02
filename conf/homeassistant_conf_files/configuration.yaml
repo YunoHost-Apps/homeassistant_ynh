@@ -13,11 +13,3 @@ http:
 
 # Apply default set of integrations
 default_config:
-
-# Switches
-switch:
-  - platform: command_line
-    switches:   
-      upgrade_homeassistant:
-        command_on: "bash -c /home/homeassistant/.homeassistant/bin/upgrade_homeassistant.sh"
-        friendly_name: Upgrade Home Assistant
