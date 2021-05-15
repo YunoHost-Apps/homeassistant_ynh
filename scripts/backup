@@ -1,19 +1,35 @@
 #!/bin/bash
-# to test the functionnality :
-# yunohost backup create -n "homeassistant-test" --apps homeassistant
-# yunohost backup delete homeassistant-test
 
+#=================================================
+# GENERIC START
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+# Keep this path for calling _common.sh inside the execution's context of backup and restore scripts
+source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
-# manage script failure
+#=================================================
+# MANAGE SCRIPT FAILURE
+#=================================================
+
+ynh_clean_setup () {
+	true
+}
+# Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
 
-# retrieve arguments
+#=================================================
+# LOAD SETTINGS
+#=================================================
+ynh_print_info --message="Loading installation settings..."
+
 app=$YNH_APP_INSTANCE_NAME
+
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 domain=$(ynh_app_setting_get --app="$app" --key=domain)
 
-# definie useful vars
-final_path="/opt/yunohost/$app"
 home_path="/home/$app"
 
 ynh_print_info --message="Storing the python version in settings..."
@@ -21,13 +37,47 @@ ynh_print_info --message="Storing the python version in settings..."
 python=$(cat "$final_path/bin/python3" --version | cut -d ' ' -f 2)
 ynh_app_setting_set --app="$app" --key=python --value="$python"
 
-# backup source & conf files
-ynh_print_info  --message="Declaring files to be backed up..."
+#=================================================
+# DECLARE DATA AND CONF FILES TO BACKUP
+#=================================================
+ynh_print_info --message="Declaring files to be backed up..."
+
+#=================================================
+# BACKUP THE APP MAIN DIR
+#=================================================
+
 ynh_backup --src_path="$final_path"
-ynh_backup --src_path="$home_path"
+
+#=================================================
+# BACKUP THE NGINX CONFIGURATION
+#=================================================
+
 ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/$app.conf"
-ynh_backup --src_path="/etc/sudoers.d/$app"
-ynh_backup --src_path="/etc/systemd/system/$app@$app.service"
+
+#=================================================
+# SPECIFIC BACKUP
+#=================================================
+# BACKUP LOGROTATE
+#=================================================
+
 ynh_backup --src_path="/etc/logrotate.d/$app"
 
-ynh_print_info --message="Backup of $app completed"
+#=================================================
+# BACKUP SYSTEMD
+#=================================================
+
+ynh_backup --src_path="/etc/systemd/system/$app@$app.service"
+
+#=================================================
+# BACKUP VARIOUS FILES
+#=================================================
+
+ynh_backup --src_path="$home_path" --is_big
+
+ynh_backup --src_path="/etc/sudoers.d/$app"
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info --message="Backup script completed for $app. (YunoHost will then actually copy those files to the archive)."

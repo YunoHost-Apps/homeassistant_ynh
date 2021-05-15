@@ -1,29 +1,22 @@
-#
-# Common variables & functions
-#
+#!/bin/bash
+
+#=================================================
+# COMMON VARIABLES
+#=================================================
+
+# Package dependencies
+pkg_dependencies="python3 python3-dev python3-venv python3-pip libffi-dev libssl-dev libjpeg-dev zlib1g-dev autoconf build-essential libopenjp2-7 libtiff5"
 
 # Release to install
 VERSION=2021.4.6
-
-# Package dependencies
-PKG_DEPENDENCIES="python3 python3-dev python3-venv python3-pip libffi-dev libssl-dev libjpeg-dev zlib1g-dev autoconf build-essential libopenjp2-7 libtiff5"
 
 # Requirements (Major.Minor.Patch)
 # PY_VERSION=$(curl -s "https://www.python.org/ftp/python/" | grep ">3.8" | tail -n1 | cut -d '/' -f 2 | cut -d '>' -f 2)
 PY_REQUIRED_VERSION=3.8.7
 
-# Execute a command as another user
-# usage: exec_as USER COMMAND [ARG ...]
-exec_as() {
-	local USER=$1
-	shift 1
-	
-	if [[ $USER = $(whoami) ]]; then
-		eval "$@"
-	else
-		sudo -u "$USER" "$@"
-	fi
-}
+#=================================================
+# PERSONAL HELPERS
+#=================================================
 
 # Compare version in arguments
 myynh_version_compare () {
@@ -126,7 +119,7 @@ myynh_install_dependencies () {
 
 # Install/Upgrade Homeassistant in virtual environement
 myynh_install_homeassistant () {
-    exec_as $app -H -s /bin/bash -c " \
+    ynh_exec_as $app -H -s /bin/bash -c " \
         echo 'create the virtual environment' \
             && $MY_PYTHON -m venv "$final_path" \
         && echo 'activate the virtual environment' \
@@ -138,16 +131,4 @@ myynh_install_homeassistant () {
         && echo 'install Home Assistant' \
             && pip install --upgrade $app==$VERSION \
         "
-}
-
-# Check if directory/file already exists (path in argument)
-myynh_check_path () {
-	[ -z "$1" ] && ynh_die "No argument supplied"
-	[ ! -e "$1" ] || ynh_die "$1 already exists"
-}
-
-# Create directory only if not already exists (path in argument)
-myynh_create_dir () {
-	[ -z "$1" ] && ynh_die "No argument supplied"
-	[ -d "$1" ] || mkdir -p "$1"
 }

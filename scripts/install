@@ -1,51 +1,110 @@
 #!/bin/bash
 
+#=================================================
+# GENERIC START
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
 source _common.sh
 source /usr/share/yunohost/helpers
 
-# manage script failure
+#=================================================
+# MANAGE SCRIPT FAILURE
+#=================================================
+
 ynh_clean_setup () {
   ynh_clean_check_starting
 }
+# Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
 
-# retrieve arguments
-app=$YNH_APP_INSTANCE_NAME
+#=================================================
+# RETRIEVE ARGUMENTS FROM THE MANIFEST
+#=================================================
+
 domain=$YNH_APP_ARG_DOMAIN
+path_url="/"
 is_public=$YNH_APP_ARG_IS_PUBLIC
 
-# definie useful vars
-final_path="/opt/yunohost/$app"
+app=$YNH_APP_INSTANCE_NAME
+
+#=================================================
+# CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
+#=================================================
+ynh_script_progression --message="Validating installation parameters..."
+
+final_path=/opt/yunohost/$app
+test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
+
+# Register (book) web path
+ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
+
+#=================================================
+# STORE SETTINGS FROM MANIFEST
+#=================================================
+ynh_script_progression --message="Storing installation settings..."
+
+ynh_app_setting_set --app=$app --key=domain --value=$domain
+
+#=================================================
+# STANDARD MODIFICATIONS
+#=================================================
+# FIND AND OPEN A PORT
+#=================================================
+ynh_script_progression --message="Finding an available port..."
+
+# Find an available port
+port=$(ynh_find_port --port=8123)
+ynh_app_setting_set --app=$app --key=port --value=$port
+
+# Open the port
+# ynh_script_progression --message="Configuring firewall..."
+ynh_exec_warn_less yunohost firewall allow TCP $port
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Configuring system user..."
+
+# Create a system user
+ynh_system_user_create --username=$app --home_dir=$final_path
+
+## grant sudo permissions to the user to manage his own systemd service
+mkdir -p  "/etc/sudoers.d"
+cp "../conf/sudoers" "/etc/sudoers.d/$app"
+
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+ynh_script_progression --message="Setting up source files..."
+
+ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+mkdir -p "$final_path"
+
+chmod 750 "$final_path"
+chmod -R o-rwx "$final_path"
+chown -R $app:www-data "$final_path"
+
+#=================================================
+# NGINX CONFIGURATION
+#=================================================
+ynh_script_progression --message="Configuring NGINX web server..."
+
+# Create a dedicated NGINX config
+ynh_add_nginx_config
+
+#=================================================
+# SPECIFIC SETUP
+#=================================================
+# ...
+#=================================================
+
+## create a directory for the datas of Home Assistant
 home_path="/home/$app"
 data_path="/home/$app/.$app"
-path_url="/"
 
-# check domain/path availability
-ynh_script_progression --message="Validating installation parameters..."
-[ ! -d "$final_path" ] || ynh_die --message="This path already contains a folder"
-ynh_webpath_register --app="$app" --domain="$domain" --path_url="$path_url"
-
-# save app settings
-ynh_script_progression --message="Storing installation settings..."
-ynh_app_setting_set --app="$app" --key=domain --value="$domain"
-
-# find a free port & open it
-ynh_script_progression --message="Looking for a free port and opening it..."
-port=$(ynh_find_port 8123)
-ynh_app_setting_set --app="$app" --key=port --value="$port"
-ynh_exec_fully_quiet yunohost firewall allow TCP "$port"
-
-# create a dedicated system user
-ynh_script_progression --message="Creating dedicated user, rights and folders..."
-ynh_system_user_create --username="$app"
-## grant sudo permissions to the user to manage his own systemd service
-myynh_create_dir "/etc/sudoers.d"
-cp "../conf/sudoers" "/etc/sudoers.d/$app"
-## create a directory for the installation of Home Assistant
-myynh_create_dir "$final_path"
-chown $app: "$final_path"
-## create a directory for the datas of Home Assistant
-myynh_create_dir "$data_path"
+mkdir -p "$data_path"
 chown -R $app: "$home_path"
 
 # build (if needed) & install Pyhton
@@ -62,32 +121,68 @@ cp -r "../conf/homeassistant_conf_files/." "$data_path/"
 chown -R $app: "$data_path"
 chmod -R +x "$data_path/bin/"
 
-# setup up systemd service
-ynh_script_progression --message="Adding the dedicated service..."
+#=================================================
+# SETUP SYSTEMD
+#=================================================
+ynh_script_progression --message="Configuring a systemd service..."
+
+# Create a dedicated systemd config
 ynh_add_systemd_config --service="$app@$app"
-## add service in admin panel
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# SETUP LOGROTATE
+#=================================================
+ynh_script_progression --message="Configuring log rotation..."
+
+# Use logrotate to manage application logfile(s)
+ynh_use_logrotate --logfile="$data_path/home-assistant.log"
+
+#=================================================
+# INTEGRATE SERVICE IN YUNOHOST
+#=================================================
+ynh_script_progression --message="Integrating service in YunoHost..."
+
 yunohost service add "$app@$app" --log "$data_path/home-assistant.log" --description "Home Assistant server" --needs_exposed_ports $port
 
-# start systemd service
-ynh_script_progression --message="Starting the Home Assistant server..."
-ynh_systemd_action --service_name="$app@$app" --action=start --line_match="Home Assistant initialized" --log_path="systemd" --timeout=3600
+#=================================================
+# START SYSTEMD SERVICE
+#=================================================
+ynh_script_progression --message="Starting a systemd service..."
+
+# Start a systemd service
+ynh_systemd_action --service_name="$app@$app" --action="start" --line_match="Home Assistant initialized" --log_path="systemd" --timeout=3600
+
 # remove --verbose from service
 ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app@$app.service"
 ynh_store_file_checksum --file="/etc/systemd/system/$app@$app.service"
 systemctl daemon-reload
 ynh_systemd_action --service_name="$app@$app" --action=restart
 
-# enable logrotate
-ynh_use_logrotate --logfile="$data_path/home-assistant.log"
 
-# create a dedicated nginx config
-ynh_script_progression --message="Configuring nginx web server..."
-ynh_add_nginx_config
-## reload nginx
+#=================================================
+# SETUP SSOWAT
+#=================================================
+ynh_script_progression --message="Configuring permissions..."
+
+# Make app public if necessary
+if [ $is_public -eq 1 ]
+then
+	# Everyone can access the app.
+	# The "main" permission is automatically created before the install script.
+	ynh_permission_update --permission="main" --add="visitors"
+fi
+
+#=================================================
+# RELOAD NGINX
+#=================================================
+ynh_script_progression --message="Reloading NGINX web server..."
+
 ynh_systemd_action --service_name=nginx --action=reload
 
-# unprotect app access if public (needed for Android app to work)
-ynh_script_progression --message="Configuring permissions..."
-[ $is_public -eq 1 ] && ynh_permission_update --permission="main" --add="visitors"
+#=================================================
+# END OF SCRIPT
+#=================================================
 
 ynh_script_progression --message="Installation of $app completed" --last

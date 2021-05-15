@@ -1,49 +1,120 @@
 #!/bin/bash
-# to test the functionnality :
-# yunohost app remove homeassistant
+
+#=================================================
+# GENERIC START
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
 
 source _common.sh
 source /usr/share/yunohost/helpers
 
-# retrieve arguments
+#=================================================
+# LOAD SETTINGS
+#=================================================
+ynh_script_progression --message="Loading installation settings..."
+
 app=$YNH_APP_INSTANCE_NAME
+
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 port=$(ynh_app_setting_get --app=$app --key=port)
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 
 # definie useful vars
-final_path="/opt/yunohost/$app"
 home_path="/home/$app"
 
-# remove metapackage and its dependencies
-ynh_remove_app_dependencies
+#=================================================
+# STANDARD REMOVE
+#=================================================
+# REMOVE SERVICE INTEGRATION IN YUNOHOST
+#=================================================
 
-# remove the app directory securely
-ynh_secure_remove --file="$final_path"
-
-# remove the dedicated nginx config
-ynh_remove_nginx_config
-
-# remove a directory securely
-ynh_secure_remove --file="$home_path"
-
-# Remove a service from the admin panel, added by `yunohost service add`
-if yunohost service status "$app@$app" >/dev/null 2>&1 ; then
-  yunohost service remove "$app@$app"
+# Remove the service from the list of services known by YunoHost (added from `yunohost service add`)
+if ynh_exec_warn_less yunohost service status $app >/dev/null
+then
+	ynh_script_progression --message="Removing $app service integration..."
+	yunohost service remove "$app@$app"
 fi
 
-# remove systemd service
+#=================================================
+# STOP AND REMOVE SERVICE
+#=================================================
+ynh_script_progression --message="Stopping and removing the systemd service..."
+
+# Remove the dedicated systemd config
 ynh_systemd_action --service_name="$app@$app" --action=stop
 ynh_systemd_action --service_name="$app@$app" --action=disable
 ynh_secure_remove --file="/etc/systemd/system/$app@$app.service"
 
-# remove logrotate config
+#=================================================
+# REMOVE DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Removing dependencies..."
+
+# Remove metapackage and its dependencies
+ynh_remove_app_dependencies
+
+#=================================================
+# REMOVE APP MAIN DIR
+#=================================================
+ynh_script_progression --message="Removing app main directory..."
+
+# Remove the app directory securely
+ynh_secure_remove --file="$final_path"
+
+#=================================================
+# REMOVE NGINX CONFIGURATION
+#=================================================
+ynh_script_progression --message="Removing NGINX web server configuration..."
+
+# Remove the dedicated NGINX config
+ynh_remove_nginx_config
+
+#=================================================
+# REMOVE LOGROTATE CONFIGURATION
+#=================================================
+ynh_script_progression --message="Removing logrotate configuration..."
+
+# Remove the app-specific logrotate config
 ynh_remove_logrotate
 
-# close port
-ynh_exec_fully_quiet yunohost firewall disallow TCP $port
+#=================================================
+# CLOSE A PORT
+#=================================================
 
-# delete a system user
-ynh_system_user_delete --username="$app"
+if yunohost firewall list | grep -q "\- $port$"
+then
+	ynh_script_progression --message="Closing port $port..."
+	ynh_exec_warn_less yunohost firewall disallow TCP $port
+fi
+
+#=================================================
+# SPECIFIC REMOVE
+#=================================================
+# REMOVE VARIOUS FILES
+#=================================================
+ynh_script_progression --message="Removing various files..."
+
+# Remove a directory securely
+ynh_secure_remove --file="$home_path"
+
+
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# REMOVE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Removing the dedicated system user..."
+
+# Delete a system user
+ynh_system_user_delete --username=$app
 
 # remove sudoers file
 ynh_secure_remove --file="/etc/sudoers.d/$app"
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Removal of $app completed"

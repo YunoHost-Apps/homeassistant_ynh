@@ -1,52 +1,99 @@
 #!/bin/bash
 
+#=================================================
+# GENERIC START
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
 source _common.sh
 source /usr/share/yunohost/helpers
 
-# manage script failure
-ynh_clean_setup () {
-  ynh_clean_check_starting
-}
-ynh_abort_if_errors
+#=================================================
+# LOAD SETTINGS
+#=================================================
+ynh_script_progression --message="Loading installation settings..."
 
-# retrieve arguments
 app=$YNH_APP_INSTANCE_NAME
-domain=$(ynh_app_setting_get --app="$app" --key=domain)
-port=$(ynh_app_setting_get --app="$app" --key=port)
 
-# Cleaning legacy permissions
-ynh_script_progression --message="Cleaning legacy permissions..."
-is_public=$(ynh_app_setting_get --app="$app" --key=is_public)
-if [ -n "$is_public" ]; then
-  ynh_app_setting_delete --app="$app" --key=is_public
-  ynh_app_setting_delete --app="$app" --key=unprotected_uris
-fi
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+port=$(ynh_app_setting_get --app=$app --key=port)
 
 # definie useful vars
 final_path="/opt/yunohost/$app"
 data_path="/home/$app/.$app"
 
-# use prior backup and restore on error only if backup feature exists on installed instance
-ynh_script_progression --message="Creating backup in case of failure..."
-if [ -f "/etc/yunohost/apps/$app/scripts/backup" ] ; then
-  ynh_backup_before_upgrade # Backup the current version of the app
-  ynh_clean_setup () {
-      ynh_restore_upgradebackup
-      ynh_clean_check_starting
-  }
+#=================================================
+# CHECK VERSION
+#=================================================
+ynh_script_progression --message="Checking version..."
+
+upgrade_type=$(ynh_check_app_version_changed)
+
+#=================================================
+# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
+#=================================================
+ynh_script_progression --message="Backing up the app before upgrading (may take a while)..."
+
+# Backup the current version of the app
+ynh_backup_before_upgrade
+ynh_clean_setup () {
+	# Restore it if the upgrade fails
+	ynh_restore_upgradebackup
+	ynh_clean_check_starting
+}
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
+
+#=================================================
+# STANDARD UPGRADE STEPS
+#=================================================
+# STOP SYSTEMD SERVICE
+#=================================================
+ynh_script_progression --message="Stopping a systemd service..."
+
+ynh_systemd_action --service_name="$app@$app" --action=stop
+
+#=================================================
+# ENSURE DOWNWARD COMPATIBILITY
+#=================================================
+ynh_script_progression --message="Ensuring downward compatibility..."
+
+# Cleaning legacy permissions
+ynh_script_progression --message="Cleaning legacy permissions..."
+is_public=$(ynh_app_setting_get --app="$app" --key=is_public)
+if [ -n "$is_public" ]; then
+  ynh_app_setting_delete --app=$app --key=is_public
+  ynh_app_setting_delete --app=$app --key=unprotected_uris
 fi
 
-# grant sudo permissions to the user to manage his own systemd service
-ynh_script_progression --message="Creating dedicated user, rights and folders..."
-myynh_create_dir "/etc/sudoers.d"
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Making sure dedicated system user exists..."
+
+# Create a dedicated user (if not existing)
+ynh_system_user_create --username=$app --home_dir=$final_path
+
+mkdir -p "/etc/sudoers.d"
 cp "../conf/sudoers" "/etc/sudoers.d/$app"
+
+#=================================================
+# NGINX CONFIGURATION
+#=================================================
+ynh_script_progression --message="Upgrading NGINX web server configuration..."
+
+# Create a dedicated NGINX config
+ynh_add_nginx_config
+
+#=================================================
+# SPECIFIC UPGRADE
+#=================================================
+# ...
+#=================================================
 
 # build (if needed) & install Pyhton
 myynh_install_dependencies --python="$PY_REQUIRED_VERSION"
-
-# stop systemd service
-ynh_script_progression --message="Stoping service..."
-ynh_systemd_action --service_name="$app@$app" --action=stop
 
 # installation in a virtual environment
 ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
@@ -58,14 +105,36 @@ cp -r "../conf/homeassistant_conf_files/bin/." "$data_path/bin/"
 chown -R $app: "$data_path/bin"
 chmod -R +x "$data_path/bin/"
 
-# setup up systemd service
-ynh_script_progression --message="Adding the dedicated service..."
+#=================================================
+# SETUP SYSTEMD
+#=================================================
+ynh_script_progression --message="Upgrading systemd configuration..."
+
+# Create a dedicated systemd config
 ynh_add_systemd_config --service="$app@$app"
-## add service in admin panel
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# SETUP LOGROTATE
+#=================================================
+ynh_script_progression --message="Upgrading logrotate configuration..."
+
+# Use logrotate to manage app-specific logfile(s)
+ynh_use_logrotate --logfile="$data_path/home-assistant.log" --nonappend
+
+#=================================================
+# INTEGRATE SERVICE IN YUNOHOST
+#=================================================
+ynh_script_progression --message="Integrating service in YunoHost..."
+
 yunohost service add "$app@$app" --log "$data_path/home-assistant.log" --description "Home Assistant server" --needs_exposed_ports $port
 
-# start systemd service
-ynh_script_progression --message="Starting the Home Assistant server..."
+#=================================================
+# START SYSTEMD SERVICE
+#=================================================
+ynh_script_progression --message="Starting a systemd service..."
+
 ynh_systemd_action --service_name="$app@$app" --action=start --line_match="Home Assistant initialized" --log_path="systemd" --timeout=3600
 # remove --verbose from service
 ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app@$app.service"
@@ -73,13 +142,15 @@ ynh_store_file_checksum --file="/etc/systemd/system/$app@$app.service"
 systemctl daemon-reload
 ynh_systemd_action --service_name="$app@$app" --action=restart
 
-# enable logrotate
-ynh_use_logrotate --logfile="$data_path/home-assistant.log" --nonappend
+#=================================================
+# RELOAD NGINX
+#=================================================
+ynh_script_progression --message="Reloading NGINX web server..."
 
-# create a dedicated nginx config
-ynh_script_progression --message="Configuring nginx web server..."
-ynh_add_nginx_config
-# reload nginx
 ynh_systemd_action --service_name=nginx --action=reload
 
-ynh_script_progression --message="Installation of $app completed" --last
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Upgrade of $app completed" --last

@@ -1,7 +1,7 @@
 ;; Test complet
 	; Manifest
-		domain="domain.tld"	(DOMAIN)
-		is_public=1			(PUBLIC|public=1|private=0)
+		domain="domain.tld"
+		is_public=1
 	; Actions
 		is_public=1|0
 	; Checks
