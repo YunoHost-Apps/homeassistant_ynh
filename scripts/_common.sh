@@ -61,7 +61,7 @@ myynh_install_dependencies () {
 	
 	# Install main dependencies from apt
 	ynh_script_progression --message="Installing dependencies..."
-	ynh_install_app_dependencies "${PKG_DEPENDENCIES}"
+	ynh_install_app_dependencies "${pkg_dependencies}"
 	
 	# Check python version from APT
 	local PY_APT_VERSION=$(python3 --version | cut -d ' ' -f 2)
@@ -82,8 +82,8 @@ myynh_install_dependencies () {
 	else
 		# Either python already built or to build 
 		ynh_script_progression --message="Installing additional dependencies..."
-		PKG_DEPENDENCIES="${PKG_DEPENDENCIES} tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libbz2-dev libexpat1-dev liblzma-dev wget tar"
-		ynh_install_app_dependencies "${PKG_DEPENDENCIES}"      
+		pkg_dependencies="${pkg_dependencies} tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libbz2-dev libexpat1-dev liblzma-dev wget tar"
+		ynh_install_app_dependencies "${pkg_dependencies}"      
 		if [ $(myynh_version_compare $PY_BUILT_VERSION $python) -le 1 ]; then
 			# Built >= Required
 			ynh_script_progression --message="Using already used python3 built version..."
