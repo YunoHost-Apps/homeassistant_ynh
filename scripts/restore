@@ -32,8 +32,7 @@ ynh_webpath_available --domain="$domain" --path_url="$path_url" || ynh_die "$dom
 
 ynh_script_progression --message="Restoring the port and opening it..."
 # restore port
-[ $port -eq $(ynh_find_port $port) ] || ynh_die "$port is not available, please use an other port"
-ynh_exec_fully_quiet yunohost firewall allow TCP $port
+ynh_exec_warn_less yunohost firewall allow TCP $port
 
 ynh_script_progression --message="Restoring dedicated user, rights and folders..."
 # restore dedicated system user
