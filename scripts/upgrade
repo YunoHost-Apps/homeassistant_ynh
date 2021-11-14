@@ -50,7 +50,7 @@ ynh_systemd_action --service_name="$app@$app" --action=stop
 
 # installation in a virtual environment
 ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
-myynh_install_homeassistant
+myynh_install_homeassistant "$home_path"
 
 # move $home_path to new directory
 if [ -d "$home_path" ] ; then
