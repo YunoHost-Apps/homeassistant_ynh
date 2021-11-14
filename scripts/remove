@@ -12,7 +12,7 @@ port=$(ynh_app_setting_get --app=$app --key=port)
 
 # definie useful vars
 final_path="/opt/yunohost/$app"
-home_path="/home/$app"
+home_path="/home/yunohost.app/$app"
 
 # remove metapackage and its dependencies
 ynh_remove_app_dependencies

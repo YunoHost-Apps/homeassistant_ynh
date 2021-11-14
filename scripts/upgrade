@@ -24,7 +24,7 @@ fi
 
 # definie useful vars
 final_path="/opt/yunohost/$app"
-data_path="/home/$app/.$app"
+home_path="/home/yunohost.app/$app"
 
 # use prior backup and restore on error only if backup feature exists on installed instance
 ynh_script_progression --message="Creating backup in case of failure..."
@@ -52,17 +52,23 @@ ynh_systemd_action --service_name="$app@$app" --action=stop
 ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
 myynh_install_homeassistant
 
+# move $home_path to new directory
+if [ -d "$home_path" ] ; then
+  mv "/home/$app" "$home_path"
+  chown -R $app: "$home_path"
+fi
+
 # update script in bin
 ynh_script_progression --message="Updating YunoHost script used by homeassitant..."
-cp -r "../conf/homeassistant_conf_files/bin/." "$data_path/bin/"
-chown -R $app: "$data_path/bin"
-chmod -R +x "$data_path/bin/"
+cp -r "../conf/homeassistant_conf_files/bin/." "$home_path/.$app/bin/"
+chown -R $app: "$home_path/.$app/bin"
+chmod -R +x "$home_path/.$app/bin/"
 
 # setup up systemd service
 ynh_script_progression --message="Adding the dedicated service..."
 ynh_add_systemd_config --service="$app@$app"
 ## add service in admin panel
-yunohost service add "$app@$app" --log "$data_path/home-assistant.log" --description "Home Assistant server" --needs_exposed_ports $port
+yunohost service add "$app@$app" --log "$home_path/.$app/home-assistant.log" --description "Home Assistant server" --needs_exposed_ports $port
 
 # start systemd service
 ynh_script_progression --message="Starting the Home Assistant server..."
@@ -74,7 +80,7 @@ systemctl daemon-reload
 ynh_systemd_action --service_name="$app@$app" --action=restart
 
 # enable logrotate
-ynh_use_logrotate --logfile="$data_path/home-assistant.log" --nonappend
+ynh_use_logrotate --logfile="$home_path/.$app/home-assistant.log" --nonappend
 
 # create a dedicated nginx config
 ynh_script_progression --message="Configuring nginx web server..."

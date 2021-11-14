@@ -21,8 +21,7 @@ python=$(ynh_app_setting_get --app="$app" --key=python)
 
 # definie useful vars
 final_path="/opt/yunohost/$app"
-home_path="/home/$app"
-data_path="/home/$app/.$app"
+home_path="/home/yunohost.app/$app"
 path_url="/"
 
 ynh_script_progression --message="Validating recovery parameters..."
@@ -55,7 +54,7 @@ myynh_install_dependencies --python="$python"
 ynh_script_progression --message="Restoring the dedicated service..."
 ynh_restore_file --origin_path="/etc/systemd/system/$app@$app.service"
 # add service in admin panel
-yunohost service add "$app@$app" --log "$data_path/home-assistant.log" --description "Home Assistant server" --needs_exposed_ports $port
+yunohost service add "$app@$app" --log "$home_path/.$app/home-assistant.log" --description "Home Assistant server" --needs_exposed_ports $port
 
 ynh_script_progression --message="Starting the Home Assistant server..."
 # add --verbose to service

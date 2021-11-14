@@ -16,8 +16,7 @@ is_public=$YNH_APP_ARG_IS_PUBLIC
 
 # definie useful vars
 final_path="/opt/yunohost/$app"
-home_path="/home/$app"
-data_path="/home/$app/.$app"
+home_path="/home/yunohost.app/$app"
 path_url="/"
 
 # check domain/path availability
@@ -45,7 +44,7 @@ cp "../conf/sudoers" "/etc/sudoers.d/$app"
 myynh_create_dir "$final_path"
 chown $app: "$final_path"
 ## create a directory for the datas of Home Assistant
-myynh_create_dir "$data_path"
+myynh_create_dir "$home_path/.$app"
 chown -R $app: "$home_path"
 
 # build (if needed) & install Pyhton
@@ -58,15 +57,15 @@ myynh_install_homeassistant
 # set default configuration files and move all homeassistant_conf_files
 ynh_script_progression --message="Configuring the installation..."
 ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="../conf/homeassistant_conf_files/configuration.yaml"
-cp -r "../conf/homeassistant_conf_files/." "$data_path/"
-chown -R $app: "$data_path"
-chmod -R +x "$data_path/bin/"
+cp -r "../conf/homeassistant_conf_files/." "$home_path/.$app/"
+chown -R $app: "$home_path/.$app"
+chmod -R +x "$home_path/.$app/bin/"
 
 # setup up systemd service
 ynh_script_progression --message="Adding the dedicated service..."
 ynh_add_systemd_config --service="$app@$app"
 ## add service in admin panel
-yunohost service add "$app@$app" --log "$data_path/home-assistant.log" --description "Home Assistant server" --needs_exposed_ports $port
+yunohost service add "$app@$app" --log "$home_path/.$app/home-assistant.log" --description "Home Assistant server" --needs_exposed_ports $port
 
 # start systemd service
 ynh_script_progression --message="Starting the Home Assistant server..."
@@ -78,7 +77,7 @@ systemctl daemon-reload
 ynh_systemd_action --service_name="$app@$app" --action=restart
 
 # enable logrotate
-ynh_use_logrotate --logfile="$data_path/home-assistant.log"
+ynh_use_logrotate --logfile="$home_path/.$app/home-assistant.log"
 
 # create a dedicated nginx config
 ynh_script_progression --message="Configuring nginx web server..."
