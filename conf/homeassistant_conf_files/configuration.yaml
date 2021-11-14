@@ -13,3 +13,11 @@ http:
 
 # Apply default set of integrations
 default_config:
+
+# Switches
+switch:
+  - platform: command_line
+    switches:   
+      upgrade_homeassistant:
+        command_on: "nohup bash -c /home/yunohost.app/homeassistant/.homeassistant/bin/upgrade_homeassistant.sh $1 > /dev/null  2>&1 &"
+        friendly_name: Upgrade Home Assistant
