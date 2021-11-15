@@ -3,7 +3,7 @@
 #
 
 # Release to install
-VERSION=2021.11.3
+VERSION=2021.6.5
 
 # Package dependencies
 PKG_DEPENDENCIES="python3 python3-dev python3-venv python3-pip libffi-dev libssl-dev libjpeg-dev zlib1g-dev autoconf build-essential libopenjp2-7 libtiff5"
@@ -23,6 +23,18 @@ exec_as() {
 	else
 		sudo -u "$USER" "$@"
 	fi
+}
+
+# Check if directory/file already exists (path in argument)
+myynh_check_path () {
+	[ -z "$1" ] && ynh_die "No argument supplied"
+	[ ! -e "$1" ] || ynh_die "$1 already exists"
+}
+
+# Create directory only if not already exists (path in argument)
+myynh_create_dir () {
+	[ -z "$1" ] && ynh_die "No argument supplied"
+	[ -d "$1" ] || mkdir -p "$1"
 }
 
 # Compare version in arguments
@@ -127,27 +139,17 @@ myynh_install_dependencies () {
 # Install/Upgrade Homeassistant in virtual environement
 myynh_install_homeassistant () {
     exec_as $app -H -s /bin/bash -c " \
-        echo 'create the virtual environment' \
+        echo 'create the cache direcotry' \
+            && myynh_create_dir "$1/.cache" \
+        && echo 'create the virtual environment' \
             && $MY_PYTHON -m venv "$final_path" \
         && echo 'activate the virtual environment' \
             && source "$final_path/bin/activate" \
         && echo 'install last version of pip' \
-            && pip --cache-dir $1 install --upgrade pip \
+            && pip --cache-dir "$1/.cache" install --upgrade pip \
         && echo 'install last version of wheel' \
-            && pip --cache-dir $1 install --upgrade wheel \
+            && pip --cache-dir "$1/.cache" install --upgrade wheel \
         && echo 'install Home Assistant' \
-            && pip --cache-dir $1 install --upgrade $app==$VERSION \
+            && pip --cache-dir "$1/.cache" install --upgrade $app==$VERSION \
         "
-}
-
-# Check if directory/file already exists (path in argument)
-myynh_check_path () {
-	[ -z "$1" ] && ynh_die "No argument supplied"
-	[ ! -e "$1" ] || ynh_die "$1 already exists"
-}
-
-# Create directory only if not already exists (path in argument)
-myynh_create_dir () {
-	[ -z "$1" ] && ynh_die "No argument supplied"
-	[ -d "$1" ] || mkdir -p "$1"
 }
