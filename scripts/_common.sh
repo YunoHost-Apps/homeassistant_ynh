@@ -3,14 +3,14 @@
 #
 
 # Release to install
-VERSION=2021.6.5
+VERSION=2021.11.4
 
 # Package dependencies
 PKG_DEPENDENCIES="python3 python3-dev python3-venv python3-pip libffi-dev libssl-dev libjpeg-dev zlib1g-dev autoconf build-essential libopenjp2-7 libtiff5"
 
 # Requirements (Major.Minor.Patch)
 # PY_VERSION=$(curl -s "https://www.python.org/ftp/python/" | grep ">3.8" | tail -n1 | cut -d '/' -f 2 | cut -d '>' -f 2)
-PY_REQUIRED_VERSION=3.8.7
+PY_REQUIRED_VERSION=3.9.2
 
 # Execute a command as another user
 # usage: exec_as USER COMMAND [ARG ...]
@@ -23,6 +23,18 @@ exec_as() {
 	else
 		sudo -u "$USER" "$@"
 	fi
+}
+
+# Check if directory/file already exists (path in argument)
+myynh_check_path () {
+	[ -z "$1" ] && ynh_die "No argument supplied"
+	[ ! -e "$1" ] || ynh_die "$1 already exists"
+}
+
+# Create directory only if not already exists (path in argument)
+myynh_create_dir () {
+	[ -z "$1" ] && ynh_die "No argument supplied"
+	[ -d "$1" ] || mkdir -p "$1"
 }
 
 # Compare version in arguments
@@ -132,22 +144,10 @@ myynh_install_homeassistant () {
         && echo 'activate the virtual environment' \
             && source "$final_path/bin/activate" \
         && echo 'install last version of pip' \
-            && pip install --upgrade pip \
+            && pip --cache-dir "$1/.cache" install --upgrade pip \
         && echo 'install last version of wheel' \
-            && pip install --upgrade wheel \
+            && pip --cache-dir "$1/.cache" install --upgrade wheel \
         && echo 'install Home Assistant' \
-            && pip install --upgrade $app==$VERSION \
+            && pip --cache-dir "$1/.cache" install --upgrade $app==$VERSION \
         "
-}
-
-# Check if directory/file already exists (path in argument)
-myynh_check_path () {
-	[ -z "$1" ] && ynh_die "No argument supplied"
-	[ ! -e "$1" ] || ynh_die "$1 already exists"
-}
-
-# Create directory only if not already exists (path in argument)
-myynh_create_dir () {
-	[ -z "$1" ] && ynh_die "No argument supplied"
-	[ -d "$1" ] || mkdir -p "$1"
 }

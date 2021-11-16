@@ -16,8 +16,8 @@ is_public=$YNH_APP_ARG_IS_PUBLIC
 
 # definie useful vars
 final_path="/opt/yunohost/$app"
-home_path="/home/$app"
-data_path="/home/$app/.$app"
+home_path="/home/yunohost.app/$app"
+data_path="$home_path/.$app"
 path_url="/"
 
 # check domain/path availability
@@ -38,13 +38,16 @@ ynh_exec_fully_quiet yunohost firewall allow TCP "$port"
 # create a dedicated system user
 ynh_script_progression --message="Creating dedicated user, rights and folders..."
 ynh_system_user_create --username="$app"
-## grant sudo permissions to the user to manage his own systemd service
+
+# grant sudo permissions to the user to manage his own systemd service
 myynh_create_dir "/etc/sudoers.d"
-cp "../conf/sudoers" "/etc/sudoers.d/$app"
-## create a directory for the installation of Home Assistant
+ynh_add_config --template="../conf/sudoers" --destination="/etc/sudoers.d/$app"
+
+# create a directory for the installation of Home Assistant
 myynh_create_dir "$final_path"
 chown $app: "$final_path"
-## create a directory for the datas of Home Assistant
+
+# create a directory for the datas of Home Assistant
 myynh_create_dir "$data_path"
 chown -R $app: "$home_path"
 
@@ -53,24 +56,28 @@ myynh_install_dependencies --python="$PY_REQUIRED_VERSION"
 
 # installation in a virtual environment
 ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
-myynh_install_homeassistant
+myynh_install_homeassistant "$home_path"
 
 # set default configuration files and move all homeassistant_conf_files
 ynh_script_progression --message="Configuring the installation..."
 ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="../conf/homeassistant_conf_files/configuration.yaml"
+ynh_replace_string --match_string="__PATH__" --replace_string="$data_path" --target_file="../conf/homeassistant_conf_files/configuration.yaml"
 cp -r "../conf/homeassistant_conf_files/." "$data_path/"
 chown -R $app: "$data_path"
 chmod -R +x "$data_path/bin/"
 
 # setup up systemd service
 ynh_script_progression --message="Adding the dedicated service..."
+ynh_replace_string --match_string="__PATH__" --replace_string="$data_path" --target_file="../conf/systemd.service"
 ynh_add_systemd_config --service="$app@$app"
+
 ## add service in admin panel
 yunohost service add "$app@$app" --log "$data_path/home-assistant.log" --description "Home Assistant server" --needs_exposed_ports $port
 
 # start systemd service
 ynh_script_progression --message="Starting the Home Assistant server..."
 ynh_systemd_action --service_name="$app@$app" --action=start --line_match="Home Assistant initialized" --log_path="systemd" --timeout=3600
+
 # remove --verbose from service
 ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app@$app.service"
 ynh_store_file_checksum --file="/etc/systemd/system/$app@$app.service"
@@ -83,7 +90,8 @@ ynh_use_logrotate --logfile="$data_path/home-assistant.log"
 # create a dedicated nginx config
 ynh_script_progression --message="Configuring nginx web server..."
 ynh_add_nginx_config
-## reload nginx
+
+# reload nginx
 ynh_systemd_action --service_name=nginx --action=reload
 
 # unprotect app access if public (needed for Android app to work)
