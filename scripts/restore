@@ -21,8 +21,7 @@ python=$(ynh_app_setting_get --app="$app" --key=python)
 
 # definie useful vars
 final_path="/opt/yunohost/$app"
-home_path="/home/yunohost.app/$app"
-data_path="$home_path/.$app"
+data_path="/home/yunohost.app/$app"
 path_url="/"
 
 # check domain/path availability
@@ -45,9 +44,9 @@ chown -R $app: "$final_path"
 
 # restore data
 ynh_script_progression --message="Restoring the data..."
-ynh_restore_file --origin_path="$home_path"
-chown -R $app: "$home_path"
-chmod -R +x "$data_path/bin"
+ynh_restore_file --origin_path="$data_path"
+chown -R $app: "$data_path"
+chmod -R +x "$data_path/.$app/bin"
 
 # add required packages
 ynh_script_progression --message="Restoring the packages dependencies..."
@@ -58,7 +57,7 @@ ynh_script_progression --message="Restoring the dedicated service..."
 ynh_restore_file --origin_path="/etc/systemd/system/$app@$app.service"
 
 # add service in admin panel
-yunohost service add "$app@$app" --log "$data_path/home-assistant.log" --description "Home Assistant server" --needs_exposed_ports $port
+yunohost service add "$app@$app" --log "$data_path/.$app/home-assistant.log" --description "Home Assistant server" --needs_exposed_ports $port
 
 # restart the app
 ynh_script_progression --message="Starting the Home Assistant server..."

@@ -137,7 +137,12 @@ myynh_install_dependencies () {
 }
 
 # Install/Upgrade Homeassistant in virtual environement
+# | arg: -p, --path=    - the parent path of cache directory
 myynh_install_homeassistant () {
+	# Declare an array to define the options of this helper.
+	local legacy_args=u
+	local -A args_array=( [p]=path= )
+	local path
     exec_as $app -H -s /bin/bash -c " \
         echo 'create the virtual environment' \
             && $MY_PYTHON -m venv "$final_path" \

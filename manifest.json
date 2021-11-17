@@ -9,12 +9,12 @@
   "version": "2021.11.4~ynh1",
   "url": "https://github.com/home-assistant/home-assistant",
   "upstream": {
-    "license": "Apache License 2.0",
+    "license": "Apache-2.0",
     "website": "https://www.home-assistant.io",
     "demo": "https://demo.home-assistant.io",
     "admindoc": "https://www.home-assistant.io/docs/"
   },
-  "license": "Apache License 2.0",
+  "license": "Apache-2.0",
   "maintainer": {
     "name": "ewilly",
     "email": "ewilly@ewilly.fr"
@@ -35,6 +35,10 @@
       {
         "name": "is_public",
         "type": "boolean",
+        "help": {
+          "en": "If not public, Smartphone app will not work",
+          "fr": "Dans le cas contraire, l'application sur Smartphone ne fonctionnera pas"
+        },
         "default": true
       }
     ]
