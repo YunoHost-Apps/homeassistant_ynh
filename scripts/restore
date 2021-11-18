@@ -62,7 +62,7 @@ yunohost service add "$app@$app" --log "$data_path/.$app/home-assistant.log" --d
 # restart the app
 ynh_script_progression --message="Starting the Home Assistant server..."
 sed --in-place "/ExecStart/s/$/ --verbose/" "/etc/systemd/system/$app@$app.service"
-ynh_systemd_action --service_name="$app@$app" --action=start --line_match="Home Assistant initialized" --log_path="systemd" --timeout=3600
+ynh_systemd_action --service_name="$app@$app" --action=start --line_match="Home Assistant initialized" --log_path="systemd" --timeout=900
 
 # remove --verbose from service and restart
 ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app@$app.service"

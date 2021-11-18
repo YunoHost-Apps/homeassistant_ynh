@@ -31,7 +31,7 @@ fi
 # move $data_path to new directory
 ynh_script_progression --message="Moving existing datas to new location..."
 if [ ! -d "$data_path" ] ; then
-  mv "/home/$app" "$data_path"
+  mv "/""home""/$app" "$data_path"
   ynh_replace_string --match_string="/home/homeassistant/.homeassistant" --replace_string="$data_path/.$app" --target_file="$data_path/.$app/configuration.yaml"
   chown -R $app: "$data_path"
 fi
@@ -45,7 +45,7 @@ myynh_install_dependencies --python="$PY_REQUIRED_VERSION"
 
 # stop systemd service
 ynh_script_progression --message="Stoping service..."
-ynh_systemd_action --service_name="$app@$app" --action=stop --line_match="Stopped Home Assistant" --log_path="systemd" --timeout=3600
+ynh_systemd_action --service_name="$app@$app" --action=stop --line_match="Stopped Home Assistant" --log_path="systemd" --timeout=300
 
 # installation in a virtual environment
 ynh_script_progression --message="Installing Home Assistant in a virtual environment..."

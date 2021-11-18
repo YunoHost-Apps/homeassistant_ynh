@@ -21,10 +21,6 @@ ynh_print_info --message="Storing the python version in settings..."
 python=$(cat "$final_path/bin/python3" --version | cut -d ' ' -f 2)
 ynh_app_setting_set --app="$app" --key=python --value="$python"
 
-# stop systemd service to avoid dump in database
-ynh_print_info --message="Stoping service..."
-ynh_systemd_action --service_name="$app@$app" --action=stop --line_match="Stopped Home Assistant" --log_path="systemd" --timeout=3600
-
 # backup source & conf files
 ynh_print_info  --message="Declaring files to be backed up..."
 ynh_backup --src_path="$final_path"
@@ -33,9 +29,5 @@ ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 ynh_backup --src_path="/etc/sudoers.d/$app"
 ynh_backup --src_path="/etc/systemd/system/$app@$app.service"
 ynh_backup --src_path="/etc/logrotate.d/$app"
-
-# restart systemd service
-ynh_print_info --message="Restarting the Home Assistant server..."
-ynh_systemd_action --service_name="$app@$app" --action=restart
 
 ynh_print_info --message="Backup of $app completed"
