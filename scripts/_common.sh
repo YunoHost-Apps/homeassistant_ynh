@@ -148,8 +148,6 @@ myynh_install_homeassistant () {
             && $MY_PYTHON -m venv "$final_path" \
         && echo 'activate the virtual environment' \
             && source "$final_path/bin/activate" \
-        && echo 'install last version of pip' \
-            && pip --cache-dir "$1/.cache" install --upgrade pip \
         && echo 'install last version of wheel' \
             && pip --cache-dir "$1/.cache" install --upgrade wheel \
         && echo 'install Home Assistant' \
