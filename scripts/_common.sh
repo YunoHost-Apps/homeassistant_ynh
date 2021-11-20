@@ -143,14 +143,17 @@ myynh_install_homeassistant () {
 	local legacy_args=u
 	local -A args_array=( [p]=path= )
 	local path
+	# Manage arguments with getopts
+	ynh_handle_getopts_args "$@"
+	
     exec_as $app -H -s /bin/bash -c " \
         echo 'create the virtual environment' \
             && $MY_PYTHON -m venv "$final_path" \
         && echo 'activate the virtual environment' \
             && source "$final_path/bin/activate" \
         && echo 'install last version of wheel' \
-            && pip --cache-dir "$1/.cache" install --upgrade wheel \
+            && pip --cache-dir "$path/.cache" install --upgrade wheel \
         && echo 'install Home Assistant' \
-            && pip --cache-dir "$1/.cache" install --upgrade $app==$VERSION \
+            && pip --cache-dir "$path/.cache" install --upgrade $app==$VERSION \
         "
 }

@@ -48,6 +48,7 @@ chown $app: "$final_path"
 
 # create a directory for the datas of Home Assistant
 myynh_create_dir "$data_path/.$app"
+myynh_create_dir "$data_path/.cache"
 chown -R $app: "$data_path"
 
 # build (if needed) & install Pyhton
@@ -55,7 +56,7 @@ myynh_install_dependencies --python="$PY_REQUIRED_VERSION"
 
 # installation in a virtual environment
 ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
-myynh_install_homeassistant --path="$data_path"
+ynh_exec_fully_quiet myynh_install_homeassistant --path="$data_path"
 
 # set default configuration files and move all homeassistant_conf_files
 ynh_script_progression --message="Configuring the installation..."
