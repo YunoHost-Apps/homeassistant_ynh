@@ -1,6 +1,6 @@
 #!/bin/bash
 # to test the functionnality :
-# yunohost app remove homeassistant
+# yunohost app remove homeassistant --purge
 
 source _common.sh
 source /usr/share/yunohost/helpers
@@ -12,38 +12,52 @@ port=$(ynh_app_setting_get --app=$app --key=port)
 
 # definie useful vars
 final_path="/opt/yunohost/$app"
-home_path="/home/$app"
-
-# remove metapackage and its dependencies
-ynh_remove_app_dependencies
-
-# remove the app directory securely
-ynh_secure_remove --file="$final_path"
-
-# remove the dedicated nginx config
-ynh_remove_nginx_config
-
-# remove a directory securely
-ynh_secure_remove --file="$home_path"
+data_path="/home/yunohost.app/$app"
 
 # Remove a service from the admin panel, added by `yunohost service add`
-if yunohost service status "$app@$app" >/dev/null 2>&1 ; then
-  yunohost service remove "$app@$app"
+if ynh_exec_warn_less yunohost service status "$app@$app" >/dev/null ; then
+	ynh_script_progression --message="Removing $app service integration..."
+	yunohost service remove "$app@$app"
 fi
 
 # remove systemd service
-ynh_systemd_action --service_name="$app@$app" --action=stop
-ynh_systemd_action --service_name="$app@$app" --action=disable
-ynh_secure_remove --file="/etc/systemd/system/$app@$app.service"
+ynh_script_progression --message="Stopping and removing the systemd service..."
+ynh_remove_systemd_config --service="$app@$app"
 
-# remove logrotate config
+# remove the app-specific logrotate config
+ynh_script_progression --message="Removing logrotate configuration..."
 ynh_remove_logrotate
 
-# close port
-ynh_exec_fully_quiet yunohost firewall disallow TCP $port
+# remove metapackage and its dependencies
+ynh_script_progression --message="Removing dependencies..."
+ynh_remove_app_dependencies
 
-# delete a system user
-ynh_system_user_delete --username="$app"
+# remove the app directory securely
+ynh_script_progression --message="Removing app main directory..."
+ynh_secure_remove --file="$final_path"
+
+# remove a directory securely if --purge option is used
+if [ "${YNH_APP_PURGE:-0}" -eq 1 ] ; then
+	ynh_script_progression --message="Removing app data directory..."
+	ynh_secure_remove --file="$data_path"
+fi
+
+# remove the dedicated nginx config
+ynh_script_progression --message="Removing NGINX web server configuration..."
+ynh_remove_nginx_config
+
+# close port
+if yunohost firewall list | grep -q "\- $port$" ; then
+	ynh_script_progression --message="Closing port $port..."
+	ynh_exec_warn_less yunohost firewall disallow TCP $port
+fi
 
 # remove sudoers file
+ynh_script_progression --message="Removing various files..."
 ynh_secure_remove --file="/etc/sudoers.d/$app"
+
+# delete a system user
+ynh_script_progression --message="Removing the dedicated system user..."
+ynh_system_user_delete --username="$app"
+
+ynh_script_progression --message="Removal of $app completed" --last

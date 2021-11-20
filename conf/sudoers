@@ -1,5 +1,5 @@
 # Grant sudo permissions to the user to manage his own systemd service
-homeassistant ALL=(ALL) NOPASSWD: /bin/systemctl stop homeassistant@homeassistant.service
-homeassistant ALL=(ALL) NOPASSWD: /bin/systemctl start homeassistant@homeassistant.service
-homeassistant ALL=(ALL) NOPASSWD: /bin/systemctl restart homeassistant@homeassistant.service
-homeassistant ALL=(ALL) NOPASSWD: /bin/systemctl status homeassistant@homeassistant.service
+__NAME__ ALL=(ALL) NOPASSWD: /bin/systemctl stop __NAME__@__NAME__.service
+__NAME__ ALL=(ALL) NOPASSWD: /bin/systemctl start __NAME__@__NAME__.service
+__NAME__ ALL=(ALL) NOPASSWD: /bin/systemctl restart __NAME__@__NAME__.service
+__NAME__ ALL=(ALL) NOPASSWD: /bin/systemctl status __NAME__@__NAME__.service

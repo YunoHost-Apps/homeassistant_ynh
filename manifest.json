@@ -6,15 +6,21 @@
     "en": "Home automation platform",
     "fr": "Plateforme domotique"
   },
-  "version": "2021.6.5~ynh1",
+  "version": "2021.11.4~ynh1",
   "url": "https://github.com/home-assistant/home-assistant",
+  "upstream": {
+    "license": "Apache-2.0",
+    "website": "https://www.home-assistant.io",
+    "demo": "https://demo.home-assistant.io",
+    "admindoc": "https://www.home-assistant.io/docs/"
+  },
   "license": "Apache-2.0",
   "maintainer": {
     "name": "ewilly",
     "email": "ewilly@ewilly.fr"
   },
   "requirements": {
-        "yunohost": ">= 4.0.0"
+        "yunohost": ">= 4.1.0"
   },
   "multi_instance": false,
   "services": [
@@ -24,24 +30,11 @@
     "install": [
       {
         "name": "domain",
-        "type": "domain",
-        "ask": {
-          "en": "Choose a domain for Home Assistant",
-          "fr": "Choisissez un domaine pour Home Assistant"
-        },
-        "help": {
-          "en": "Installation in a path is not possible",
-          "fr": "L'installation sous un chemin de domaine n'est pas possible"
-        },
-        "example": "domain.org or homeassistant.domain.org"
+        "type": "domain"
       },
       {
         "name": "is_public",
         "type": "boolean",
-        "ask": {
-          "en": "Should this application be public?",
-          "fr": "Est-ce que cette application doit être visible publiquement ?"
-        },
         "help": {
           "en": "If not public, Smartphone app will not work",
           "fr": "Dans le cas contraire, l'application sur Smartphone ne fonctionnera pas"
