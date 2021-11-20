@@ -1,8 +1,9 @@
 #!/bin/bash
 # to test the functionnality :
 # yunohost backup create -n "homeassistant-test" --apps homeassistant
-# yunohost app remove homeassistant
+# yunohost app remove homeassistant --purge
 # yunohost backup restore "homeassistant-test"
+# yunohost backup delete "homeassistant-test"
 
 source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
@@ -69,6 +70,7 @@ ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file
 ynh_store_file_checksum --file="/etc/systemd/system/$app@$app.service"
 systemctl daemon-reload
 ynh_systemd_action --service_name="$app@$app" --action=restart
+sleep 60s
 
 # restore logrotate
 ynh_script_progression --message="Restoring logrotate..."
