@@ -45,7 +45,7 @@ myynh_install_dependencies --python="$PY_REQUIRED_VERSION"
 
 # stop systemd service
 ynh_script_progression --message="Stoping service..."
-ynh_systemd_action --service_name="$app@$app" --action=stop --line_match="Stopped Home Assistant" --log_path="systemd" --timeout=300
+ynh_systemd_action --service_name="$app@$app" --action=stop --line_match="Stopped Home Assistant" --log_path="/var/log/$app.log" --timeout=300
 
 # installation in a virtual environment
 ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
@@ -68,7 +68,7 @@ yunohost service add "$app@$app" --log "$data_path/.$app/home-assistant.log" --d
 # start systemd service
 ynh_script_progression --message="Starting the Home Assistant server..."
 systemctl daemon-reload
-ynh_systemd_action --service_name="$app@$app" --action=start --line_match="Home Assistant initialized" --log_path="systemd" --timeout=3600
+ynh_systemd_action --service_name="$app@$app" --action=start --line_match="Home Assistant initialized" --log_path="/var/log/$app.log" --timeout=3600
 
 # remove --verbose from service
 ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app@$app.service"
