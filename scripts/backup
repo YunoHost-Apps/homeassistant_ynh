@@ -27,7 +27,7 @@ ynh_backup --src_path="$final_path"
 ynh_backup --src_path="$data_path"
 ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 ynh_backup --src_path="/etc/sudoers.d/$app"
-ynh_backup --src_path="/etc/systemd/system/$app@$app.service"
+ynh_backup --src_path="/etc/systemd/system/$app.service"
 ynh_backup --src_path="/etc/logrotate.d/$app"
 
 ynh_print_info --message="Backup of $app completed"

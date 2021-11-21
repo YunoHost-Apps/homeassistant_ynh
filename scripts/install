@@ -69,20 +69,20 @@ chmod -R +x "$data_path/.$app/bin/"
 # setup up systemd service
 ynh_script_progression --message="Adding the dedicated service..."
 ynh_replace_string --match_string="__PATH__" --replace_string="$data_path/.$app" --target_file="../conf/systemd.service"
-ynh_add_systemd_config --service="$app@$app"
+ynh_add_systemd_config --service="$app"
 
 ## add service in admin panel
-yunohost service add "$app@$app" --log "$data_path/.$app/home-assistant.log" --description "Home Assistant server" --needs_exposed_ports $port
+yunohost service add "$app" --log "$data_path/.$app/home-assistant.log" --description "Home Assistant server" --needs_exposed_ports $port
 
 # start systemd service
 ynh_script_progression --message="Starting the Home Assistant server..."
-ynh_systemd_action --service_name="$app@$app" --action=start --line_match="Home Assistant initialized" --log_path="/var/log/$app.log" --timeout=3600
+ynh_systemd_action --service_name="$app" --action=start --line_match="Home Assistant initialized" --log_path="systemd" --timeout=3600
 
 # remove --verbose from service
-ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app@$app.service"
-ynh_store_file_checksum --file="/etc/systemd/system/$app@$app.service"
+ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app.service"
+ynh_store_file_checksum --file="/etc/systemd/system/$app.service"
 systemctl daemon-reload
-ynh_systemd_action --service_name="$app@$app" --action=restart
+ynh_systemd_action --service_name="$app" --action=restart
 
 # enable logrotate
 ynh_use_logrotate --logfile="$data_path/.$app/home-assistant.log"

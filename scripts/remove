@@ -15,14 +15,14 @@ final_path="/opt/yunohost/$app"
 data_path="/home/yunohost.app/$app"
 
 # Remove a service from the admin panel, added by `yunohost service add`
-if ynh_exec_warn_less yunohost service status "$app@$app" >/dev/null ; then
+if ynh_exec_warn_less yunohost service status "$app" >/dev/null ; then
 	ynh_script_progression --message="Removing $app service integration..."
-	yunohost service remove "$app@$app"
+	yunohost service remove "$app"
 fi
 
 # remove systemd service
 ynh_script_progression --message="Stopping and removing the systemd service..."
-ynh_remove_systemd_config --service="$app@$app"
+ynh_remove_systemd_config --service="$app"
 
 # remove the app-specific logrotate config
 ynh_script_progression --message="Removing logrotate configuration..."
