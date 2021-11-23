@@ -17,6 +17,7 @@ is_public=$YNH_APP_ARG_IS_PUBLIC
 # definie useful vars
 final_path="/opt/yunohost/$app"
 data_path="/home/yunohost.app/$app"
+log_file="$data_path/.$app/home-assistant.log"
 path_url="/"
 
 # check domain/path availability
@@ -46,6 +47,11 @@ ynh_add_config --template="../conf/sudoers" --destination="/etc/sudoers.d/$app"
 myynh_create_dir "$final_path"
 chown $app: "$final_path"
 
+# create a directory with its log file
+myynh_create_dir "/var/log/$app"
+touch "/var/log/$app/$app.log"
+chown $app: "/var/log/$app/$app.log"
+
 # create a directory for the datas of Home Assistant
 myynh_create_dir "$data_path/.$app"
 myynh_create_dir "$data_path/.cache"
@@ -72,11 +78,11 @@ ynh_replace_string --match_string="__PATH__" --replace_string="$data_path/.$app"
 ynh_add_systemd_config --service="$app"
 
 ## add service in admin panel
-yunohost service add "$app" --log "$data_path/.$app/home-assistant.log" --description "Home Assistant server" --needs_exposed_ports $port
+yunohost service add "$app" --log "$log_file" --description "Home Assistant server" --needs_exposed_ports $port
 
 # start systemd service
 ynh_script_progression --message="Starting the Home Assistant server..."
-ynh_systemd_action --service_name="$app" --action=start --line_match="Home Assistant initialized" --log_path="systemd" --timeout=3600
+ynh_systemd_action --service_name="$app" --action=start --line_match="Home Assistant initialized" --log_path="/var/log/$app" --timeout=3600
 
 # remove --verbose from service
 ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app.service"
@@ -85,7 +91,7 @@ systemctl daemon-reload
 ynh_systemd_action --service_name="$app" --action=restart
 
 # enable logrotate
-ynh_use_logrotate --logfile="$data_path/.$app/home-assistant.log"
+ynh_use_logrotate --logfile="$log_file"
 
 # create a dedicated nginx config
 ynh_script_progression --message="Configuring nginx web server..."
