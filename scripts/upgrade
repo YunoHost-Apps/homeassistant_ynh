@@ -17,7 +17,7 @@ port=$(ynh_app_setting_get --app="$app" --key=port)
 # definie useful vars
 final_path="/opt/yunohost/$app"
 data_path="/home/yunohost.app/$app"
-log_file="$data_path/.$app/home-assistant.log"
+log_file="/var/log/$app/$app.log"
 
 # use prior backup and restore on error only if backup feature exists on installed instance
 ynh_script_progression --message="Creating backup in case of failure..."
@@ -46,7 +46,7 @@ myynh_install_dependencies --python="$PY_REQUIRED_VERSION"
 
 # stop systemd service
 ynh_script_progression --message="Stoping service..."
-ynh_systemd_action --service_name="$app" --action=stop --line_match="Stopped Home Assistant" --log_path="/var/log" --timeout=300
+ynh_systemd_action --service_name="$app" --action=stop --line_match="Stopped Home Assistant" --log_path="$log_file" --timeout=300
 
 # installation in a virtual environment
 ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
@@ -69,7 +69,7 @@ yunohost service add "$app" --log "$log_file" --description "Home Assistant serv
 # start systemd service
 ynh_script_progression --message="Starting the Home Assistant server..."
 systemctl daemon-reload
-ynh_systemd_action --service_name="$app" --action=start --line_match="Home Assistant initialized" --log_path="systemd" --timeout=3600
+ynh_systemd_action --service_name="$app" --action=start --line_match="Home Assistant initialized" --log_path="$log_file" --timeout=3600
 
 # remove --verbose from service
 ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app.service"
