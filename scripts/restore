@@ -81,4 +81,6 @@ ynh_script_progression --message="Restoring nginx web server..."
 ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 ynh_systemd_action --service_name=nginx --action=reload
 
+ynh_local_curl
+
 ynh_script_progression --message="Recovery of $app completed" --last
