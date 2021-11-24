@@ -1,7 +1,7 @@
 homeassistant:
   auth_providers:
    - type: command_line
-     command: __PATH__/bin/ynh_ldap-auth.sh
+     command: __DATA_PATH__/.__APP__/bin/ynh_ldap-auth.sh
      meta: true
 
 http:
@@ -19,5 +19,5 @@ switch:
   - platform: command_line
     switches:   
       upgrade_homeassistant:
-        command_on: "nohup bash -c __PATH__/bin/upgrade_homeassistant.sh $1 > /dev/null  2>&1 &"
+        command_on: "nohup bash -c __DATA_PATH__/.__APP__/bin/upgrade_homeassistant.sh $1 > /dev/null  2>&1 &"
         friendly_name: Upgrade Home Assistant
