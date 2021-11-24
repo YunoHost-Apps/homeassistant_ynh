@@ -48,9 +48,9 @@ myynh_create_dir "$final_path"
 chown $app: "$final_path"
 
 # create a directory with its log file
-myynh_create_dir "/var/log/$app"
-touch "/var/log/$app/$app.log"
-chown $app: "/var/log/$app/$app.log"
+myynh_create_dir "$(dirname "$log_file")"
+touch "$log_file"
+chown $app: "$log_file"
 
 # create a directory for the datas of Home Assistant
 myynh_create_dir "$data_path/.$app"
@@ -58,6 +58,7 @@ myynh_create_dir "$data_path/.cache"
 chown -R $app: "$data_path"
 
 # build (if needed) & install Pyhton
+ynh_script_progression --message="Installing dependencies..."
 myynh_install_dependencies --python="$PY_REQUIRED_VERSION"
 
 # installation in a virtual environment
@@ -74,7 +75,6 @@ chmod -R +x "$data_path/.$app/bin/"
 
 # setup up systemd service
 ynh_script_progression --message="Adding the dedicated service..."
-ynh_replace_string --match_string="__PATH__" --replace_string="$data_path/.$app" --target_file="../conf/systemd.service"
 ynh_add_systemd_config --service="$app"
 
 ## add service in admin panel

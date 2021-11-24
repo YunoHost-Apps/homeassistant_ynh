@@ -18,6 +18,7 @@ port=$(ynh_app_setting_get --app="$app" --key=port)
 final_path="/opt/yunohost/$app"
 data_path="/home/yunohost.app/$app"
 log_file="/var/log/$app/$app.log"
+path_url="/"
 
 # use prior backup and restore on error only if backup feature exists on installed instance
 ynh_script_progression --message="Creating backup in case of failure..."
@@ -29,24 +30,39 @@ if [ -f "/etc/yunohost/apps/$app/scripts/backup" ] ; then
   }
 fi
 
-# move $data_path to new directory
-ynh_script_progression --message="Moving existing datas to new location..."
-if [ ! -d "$data_path" ] ; then
-  mv "/""home""/$app" "$data_path"
-  ynh_replace_string --match_string="/home/homeassistant/.homeassistant" --replace_string="$data_path/.$app" --target_file="$data_path/.$app/configuration.yaml"
-  chown -R $app: "$data_path"
-fi
-
 # grant sudo permissions to the user to manage his own systemd service
 ynh_script_progression --message="Creating dedicated user, rights and folders..."
 ynh_add_config --template="../conf/sudoers" --destination="/etc/sudoers.d/$app"
 
 # build (if needed) & install Pyhton
+ynh_script_progression --message="Installing dependencies..."
 myynh_install_dependencies --python="$PY_REQUIRED_VERSION"
 
 # stop systemd service
 ynh_script_progression --message="Stoping service..."
 ynh_systemd_action --service_name="$app" --action=stop --line_match="Stopped Home Assistant" --log_path="$log_file" --timeout=300
+
+# migrate to new app architecture
+ynh_script_progression --message="If needed, migrating to new app architecture..."
+if [ ! -d "$data_path" ]; then
+  # move $data_path to new directory
+  mv "/""home""/$app" "$data_path"
+  ynh_replace_string --match_string="/home/homeassistant/.homeassistant" --replace_string="$data_path/.$app" --target_file="$data_path/.$app/configuration.yaml"
+  chown -R $app: "$data_path"
+fi
+if [ ! -f "$log_file" ]; then
+  # create a directory with its log file
+  myynh_create_dir "$(dirname "$log_file")"
+  touch "$log_file"
+  chown $app: "$log_file"
+fi
+if [ -f "/etc/systemd/system/$app@$app.service" ]; then
+  # remove old systemd service
+  if ynh_exec_warn_less yunohost service status "$app@$app" >/dev/null ; then
+    yunohost service remove "$app@$app"
+  fi
+  ynh_remove_systemd_config --service="$app@$app"
+fi
 
 # installation in a virtual environment
 ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
@@ -60,7 +76,6 @@ chmod -R +x "$data_path/.$app/bin/"
 
 # setup up systemd service
 ynh_script_progression --message="Adding the dedicated service..."
-ynh_replace_string --match_string="__PATH__" --replace_string="$data_path/.$app" --target_file="../conf/systemd.service"
 ynh_add_systemd_config --service="$app"
 
 # add service in admin panel

@@ -16,11 +16,6 @@ domain=$(ynh_app_setting_get --app="$app" --key=domain)
 final_path="/opt/yunohost/$app"
 data_path="/home/yunohost.app/$app"
 
-ynh_print_info --message="Storing the python version in settings..."
-# store python version
-python=$(cat "$final_path/bin/python3" --version | cut -d ' ' -f 2)
-ynh_app_setting_set --app="$app" --key=python --value="$python"
-
 # backup source & conf files
 ynh_print_info  --message="Declaring files to be backed up..."
 ynh_backup --src_path="$final_path"

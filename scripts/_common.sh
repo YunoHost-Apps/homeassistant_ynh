@@ -79,7 +79,6 @@ myynh_install_dependencies () {
 	ynh_handle_getopts_args "$@"
 	
 	# Install main dependencies from apt
-	ynh_script_progression --message="Installing dependencies..."
 	ynh_install_app_dependencies "${PKG_DEPENDENCIES}"
 	
 	# Check python version from APT
@@ -96,20 +95,20 @@ myynh_install_dependencies () {
 	# Compare version
 	if [ $(myynh_version_compare $PY_APT_VERSION $python) -le 1 ]; then
 		# APT >= Required
-		ynh_script_progression --message="Using provided python3..."
+		ynh_print_info --message="Using provided python3..."
 		MY_PYTHON="python3"
 	else
 		# Either python already built or to build 
-		ynh_script_progression --message="Installing additional dependencies..."
+		ynh_print_info --message="Installing additional dependencies..."
 		PKG_DEPENDENCIES="${PKG_DEPENDENCIES} tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libbz2-dev libexpat1-dev liblzma-dev wget tar"
 		ynh_install_app_dependencies "${PKG_DEPENDENCIES}"      
 		if [ $(myynh_version_compare $PY_BUILT_VERSION $python) -le 1 ]; then
 			# Built >= Required
-			ynh_script_progression --message="Using already used python3 built version..."
+			ynh_print_info --message="Using already used python3 built version..."
 			MY_PYTHON="/usr/local/bin/python${PY_BUILT_VERSION:0:3}"
 		else
             # APT < Minimal & Actual < Minimal => Build & install Python into /usr/local/bin
-            ynh_script_progression --message="Building python (may take a while)..."
+            ynh_print_info --message="Building python (may take a while)..."
             # Store current direcotry 
             local MY_DIR=$(pwd)
             # Download
