@@ -17,7 +17,7 @@ is_public=$YNH_APP_ARG_IS_PUBLIC
 # definie useful vars
 final_path="/opt/yunohost/$app"
 data_path="/home/yunohost.app/$app"
-log_file="$data_path/.$app/home-assistant.log"
+log_file="/var/log/$app/$app.log"
 path_url="/"
 
 # check domain/path availability
@@ -82,7 +82,7 @@ yunohost service add "$app" --log "$log_file" --description "Home Assistant serv
 
 # start systemd service
 ynh_script_progression --message="Starting the Home Assistant server..."
-ynh_systemd_action --service_name="$app" --action=start --line_match="Home Assistant initialized" --log_path="/var/log/$app" --timeout=3600
+ynh_systemd_action --service_name="$app" --action=start --line_match="Home Assistant initialized" --log_path="$log_file" --timeout=3600
 
 # remove --verbose from service
 ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app.service"

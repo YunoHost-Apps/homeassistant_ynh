@@ -7,8 +7,6 @@ Type=simple
 User=__APP__
 WorkingDirectory=__PATH__
 ExecStart=/opt/yunohost/__APP__/bin/hass --config "__PATH__" --log-file "/var/log/__APP__/__APP__.log" --verbose
-StandardOutput=append:/var/log/__APP__/__APP__.log
-StandardError=inherit
 
 # Sandboxing options to harden security
 # Depending on specificities of your service/app, you may need to tweak these 
