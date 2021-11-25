@@ -14,6 +14,7 @@ port=$(ynh_app_setting_get --app=$app --key=port)
 final_path="/opt/yunohost/$app"
 data_path="/home/yunohost.app/$app"
 log_file="/var/log/$app/$app.log"
+path_url="/"
 
 # Remove a service from the admin panel, added by `yunohost service add`
 if ynh_exec_warn_less yunohost service status "$app" >/dev/null ; then
