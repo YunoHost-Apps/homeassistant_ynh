@@ -9,12 +9,11 @@ source /usr/share/yunohost/helpers
 app=$YNH_APP_INSTANCE_NAME
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 port=$(ynh_app_setting_get --app=$app --key=port)
-
-# definie useful vars
-final_path="/opt/yunohost/$app"
-data_path="/home/yunohost.app/$app"
-log_file="/var/log/$app/$app.log"
-path_url="/"
+final_path=$(ynh_app_setting_get --app="$app" --key=final_path)
+data_path=$(ynh_app_setting_get --app="$app" --key=data_path)
+log_file=$(ynh_app_setting_get --app="$app" --key=log_file)
+path_url=$(ynh_app_setting_get --app="$app" --key=path_url)
+python=$(ynh_app_setting_get --app="$app" --key=python)
 
 # Remove a service from the admin panel, added by `yunohost service add`
 if ynh_exec_warn_less yunohost service status "$app" >/dev/null ; then

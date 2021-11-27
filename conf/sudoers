@@ -1,5 +1,5 @@
 # Grant sudo permissions to the user to manage his own systemd service
-__NAME__ ALL=(ALL) NOPASSWD: /bin/systemctl stop __NAME__@__NAME__.service
-__NAME__ ALL=(ALL) NOPASSWD: /bin/systemctl start __NAME__@__NAME__.service
-__NAME__ ALL=(ALL) NOPASSWD: /bin/systemctl restart __NAME__@__NAME__.service
-__NAME__ ALL=(ALL) NOPASSWD: /bin/systemctl status __NAME__@__NAME__.service
+__APP__ ALL=(ALL) NOPASSWD: /bin/systemctl stop __APP__.service
+__APP__ ALL=(ALL) NOPASSWD: /bin/systemctl start __APP__.service
+__APP__ ALL=(ALL) NOPASSWD: /bin/systemctl restart __APP__.service
+__APP__ ALL=(ALL) NOPASSWD: /bin/systemctl status __APP__.service

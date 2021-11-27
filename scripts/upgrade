@@ -15,10 +15,22 @@ domain=$(ynh_app_setting_get --app="$app" --key=domain)
 port=$(ynh_app_setting_get --app="$app" --key=port)
 
 # definie useful vars
-final_path="/opt/yunohost/$app"
-data_path="/home/yunohost.app/$app"
-log_file="/var/log/$app/$app.log"
-path_url="/"
+if [ -z $(ynh_app_setting_get --app="$app" --key=final_path) ]; then
+  final_path="/opt/yunohost/$app"
+  data_path="/home/yunohost.app/$app"
+  log_file="/var/log/$app/$app.log"
+  path_url="/"
+  ynh_app_setting_set --app="$app" --key=final_path --value="$final_path"
+  ynh_app_setting_set --app="$app" --key=data_path --value="$data_path"
+  ynh_app_setting_set --app="$app" --key=log_file --value="$log_file"
+  ynh_app_setting_set --app="$app" --key=path_url --value="$path_url"
+else
+  final_path=$(ynh_app_setting_get --app="$app" --key=final_path)
+  data_path=$(ynh_app_setting_get --app="$app" --key=data_path)
+  log_file=$(ynh_app_setting_get --app="$app" --key=log_file)
+  path_url=$(ynh_app_setting_get --app="$app" --key=path_url)
+  python=$(ynh_app_setting_get --app="$app" --key=python)
+fi
 
 # use prior backup and restore on error only if backup feature exists on installed instance
 ynh_script_progression --message="Creating backup in case of failure..."

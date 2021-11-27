@@ -18,13 +18,11 @@ ynh_abort_if_errors
 app=$YNH_APP_INSTANCE_NAME
 domain=$(ynh_app_setting_get --app="$app" --key=domain)
 port=$(ynh_app_setting_get --app="$app" --key=port)
+final_path=$(ynh_app_setting_get --app="$app" --key=final_path)
+data_path=$(ynh_app_setting_get --app="$app" --key=data_path)
+log_file=$(ynh_app_setting_get --app="$app" --key=log_file)
+path_url=$(ynh_app_setting_get --app="$app" --key=path_url)
 python=$(ynh_app_setting_get --app="$app" --key=python)
-
-# definie useful vars
-final_path="/opt/yunohost/$app"
-data_path="/home/yunohost.app/$app"
-log_file="/var/log/$app/$app.log"
-path_url="/"
 
 # check domain/path availability
 ynh_script_progression --message="Validating recovery parameters..."
