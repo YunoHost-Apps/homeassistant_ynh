@@ -88,7 +88,8 @@ chmod -R +x "$data_path/.$app/bin/"
 
 # setup up systemd service
 ynh_script_progression --message="Adding the dedicated service..."
-ynh_replace_string --match_string="__DATA_PATH__" --replace_string="$data_path" --target_file="../conf/systemd.service"
+ynh_replace_string --match_string="__DATAPATH__" --replace_string="$data_path" --target_file="../conf/systemd.service"
+ynh_replace_string --match_string="__LOGFILE__" --replace_string="$log_file" --target_file="../conf/systemd.service"
 ynh_add_systemd_config --service="$app"
 
 # add service in admin panel

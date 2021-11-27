@@ -82,6 +82,9 @@ ynh_restore_file --origin_path="/etc/logrotate.d/$app"
 # restore nginx
 ynh_script_progression --message="Restoring nginx web server..."
 ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
+
+sleep 10s #Only necessary for CI test otherwise curl failed to nginx page
+
 ynh_systemd_action --service_name=nginx --action=reload
 
 sleep 10s #Only necessary for CI test otherwise curl failed to nginx page
