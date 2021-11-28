@@ -39,10 +39,6 @@ ynh_app_setting_set --app="$app" --key=data_path --value="$data_path"
 ynh_app_setting_set --app="$app" --key=log_file --value="$log_file"
 ynh_app_setting_set --app="$app" --key=path_url --value="$path_url"
 
-# grant sudo permissions to the user to manage his own systemd service
-myynh_create_dir "/etc/sudoers.d"
-ynh_add_config --template="../conf/sudoers" --destination="/etc/sudoers.d/$app"
-
 # create a dedicated system user
 ynh_script_progression --message="Creating dedicated user, rights and folders..."
 ynh_system_user_create --username="$app"
@@ -77,6 +73,11 @@ ynh_replace_string --match_string="__DATAPATH__" --replace_string="$data_path" -
 cp -r "../conf/homeassistant_conf_files/." "$data_path/.$app/"
 chown -R $app: "$data_path/.$app"
 chmod -R +x "$data_path/.$app/bin/"
+
+# grant sudo permissions to the user to manage his own systemd service
+myynh_create_dir "/etc/sudoers.d"
+ynh_add_config --template="../conf/sudoers" --destination="/etc/sudoers.d/$app"
+chown -R root: "/etc/sudoers.d/$app"
 
 # setup up systemd service
 ynh_script_progression --message="Adding the dedicated service..."
