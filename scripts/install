@@ -54,7 +54,7 @@ chown $app: "$final_path"
 # create a directory with its log file
 myynh_create_dir "$(dirname "$log_file")"
 touch "$log_file"
-chown $app: "$log_file"
+chown -R $app: "$(dirname "$log_file")"
 
 # create a directory for the datas of Home Assistant
 myynh_create_dir "$data_path/.$app"
@@ -67,9 +67,7 @@ myynh_install_dependencies --python="$PY_REQUIRED_VERSION"
 
 # installation in a virtual environment
 ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
-ynh_print_info --message="$(whoami)"
 ynh_exec_fully_quiet myynh_install_homeassistant --path="$data_path"
-ynh_print_info --message="$(whoami)"
 
 # set default configuration files and move all homeassistant_conf_files
 ynh_script_progression --message="Configuring the installation..."
@@ -79,14 +77,12 @@ ynh_replace_string --match_string="__DATAPATH__" --replace_string="$data_path" -
 cp -r "../conf/homeassistant_conf_files/." "$data_path/.$app/"
 chown -R $app: "$data_path/.$app"
 chmod -R +x "$data_path/.$app/bin/"
-ynh_print_info --message="$(whoami)"
 
 # setup up systemd service
 ynh_script_progression --message="Adding the dedicated service..."
 ynh_replace_string --match_string="__DATAPATH__" --replace_string="$data_path" --target_file="../conf/systemd.service"
 ynh_replace_string --match_string="__LOGFILE__" --replace_string="$log_file" --target_file="../conf/systemd.service"
-ynh_add_systemd_config --service="$app"
-ynh_print_info --message="$(whoami)"
+ynh_add_systemd_config
 
 ## add service in admin panel
 yunohost service add "$app" --log "$log_file" --description "Home Assistant server" --needs_exposed_ports $port

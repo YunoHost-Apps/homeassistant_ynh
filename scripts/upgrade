@@ -66,7 +66,7 @@ if [ ! -f "$log_file" ]; then
   # create a directory with its log file
   myynh_create_dir "$(dirname "$log_file")"
   touch "$log_file"
-  chown $app: "$log_file"
+  chown -R $app: "$(dirname "$log_file")"
 fi
 if [ -f "/etc/systemd/system/$app@$app.service" ]; then
   # remove old systemd service
@@ -90,7 +90,7 @@ chmod -R +x "$data_path/.$app/bin/"
 ynh_script_progression --message="Adding the dedicated service..."
 ynh_replace_string --match_string="__DATAPATH__" --replace_string="$data_path" --target_file="../conf/systemd.service"
 ynh_replace_string --match_string="__LOGFILE__" --replace_string="$log_file" --target_file="../conf/systemd.service"
-ynh_add_systemd_config --service="$app"
+ynh_add_systemd_config
 
 # add service in admin panel
 yunohost service add "$app" --log "$log_file" --description "Home Assistant server" --needs_exposed_ports $port
