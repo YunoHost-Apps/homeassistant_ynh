@@ -13,19 +13,6 @@ PKG_DEPENDENCIES="python3 python3-dev python3-venv python3-pip libffi-dev libssl
 # Pyhton 3.9.2 will be shiped with bullseye
 PY_REQUIRED_VERSION=3.9.2
 
-# Execute a command as another user
-# usage: exec_as USER COMMAND [ARG ...]
-exec_as() {
-	local USER=$1
-	shift 1
-	
-	if [[ $USER = $(whoami) ]]; then
-		eval "$@"
-	else
-		sudo -u "$USER" "$@"
-	fi
-}
-
 # Check if directory/file already exists (path in argument)
 myynh_check_path () {
 	[ -z "$1" ] && ynh_die "No argument supplied"
@@ -146,7 +133,7 @@ myynh_install_homeassistant () {
 	# Manage arguments with getopts
 	ynh_handle_getopts_args "$@"
 	
-	exec_as $app -H -s /bin/bash -c " \
+	ynh_exec_as $app -H -s /bin/bash -c " \
 		echo 'create the virtual environment' \
 			&& $MY_PYTHON -m venv "$final_path" \
 		&& echo 'activate the virtual environment' \
