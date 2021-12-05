@@ -7,6 +7,8 @@ Type=simple
 User=__APP__
 WorkingDirectory=__DATAPATH__/.__APP__
 ExecStart=__FINALPATH__/bin/hass --config "__DATAPATH__/.__APP__" --log-file "__LOGFILE__" --verbose
+StandardOutput=append:__LOGFILE__
+StandardError=inherit
 
 # Sandboxing options to harden security
 # Depending on specificities of your service/app, you may need to tweak these 
