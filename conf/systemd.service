@@ -5,8 +5,8 @@ After=network.target
 [Service]
 Type=simple
 User=__APP__
-WorkingDirectory=__DATA_PATH__/.__APP__
-ExecStart=__FINALPATH__/bin/hass --config "__DATA_PATH__/.__APP__" --log-file "__LOG_FILE__" --verbose
+WorkingDirectory=__DATA_PATH__
+ExecStart=__FINALPATH__/bin/hass --config "__DATA_PATH__" --log-file "__LOG_FILE__" --verbose
 StandardOutput=append:__LOG_FILE__
 StandardError=inherit
 

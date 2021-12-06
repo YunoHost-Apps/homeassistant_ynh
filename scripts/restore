@@ -46,7 +46,7 @@ chown -R $app: "$final_path"
 ynh_script_progression --message="Restoring the data..."
 ynh_restore_file --origin_path="$data_path"
 chown -R $app: "$data_path"
-chmod -R +x "$data_path/.$app/bin"
+chmod -R +x "$data_path/bin"
 
 # restore log
 ynh_script_progression --message="Restoring the app..."

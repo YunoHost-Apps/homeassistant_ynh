@@ -55,7 +55,7 @@ ynh_script_progression --message="If needed, migrating to new app architecture..
 if [ ! -d "$data_path" ]; then
   # move $data_path to new directory
   mv "/""home""/$app" "$data_path"
-  ynh_replace_string --match_string="/home/homeassistant/.homeassistant" --replace_string="$data_path/.$app" --target_file="$data_path/.$app/configuration.yaml"
+  ynh_replace_string --match_string="/home/homeassistant/.homeassistant" --replace_string="$data_path" --target_file="$data_path/configuration.yaml"
   chown -R $app: "$data_path"
 fi
 if [ ! -f "$log_file" ]; then
@@ -78,9 +78,9 @@ ynh_exec_fully_quiet myynh_install_homeassistant --path="$data_path"
 
 # update script in bin
 ynh_script_progression --message="Updating YunoHost script used by homeassitant..."
-cp -r "../conf/homeassistant_conf_files/bin/." "$data_path/.$app/bin/"
-chown -R $app: "$data_path/.$app/bin"
-chmod -R +x "$data_path/.$app/bin/"
+cp -r "../conf/homeassistant_conf_files/bin/." "$data_path/bin/"
+chown -R $app: "$data_path/bin"
+chmod -R +x "$data_path/bin/"
 
 # setup up systemd service
 ynh_script_progression --message="Adding the dedicated service..."

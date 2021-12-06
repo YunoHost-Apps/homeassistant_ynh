@@ -53,7 +53,7 @@ touch "$log_file"
 chown -R $app: "$(dirname "$log_file")"
 
 # create a directory for the datas of Home Assistant
-myynh_create_dir "$data_path/.$app"
+myynh_create_dir "$data_path"
 myynh_create_dir "$data_path/.cache"
 chown -R $app: "$data_path"
 
@@ -67,10 +67,10 @@ ynh_exec_fully_quiet myynh_install_homeassistant --path="$data_path"
 
 # set default configuration files and move all homeassistant_conf_files
 ynh_script_progression --message="Configuring the installation..."
-cp -r "../conf/homeassistant_conf_files/." "$data_path/.$app/"
-ynh_add_config --template="../conf/homeassistant_conf_files/configuration.yaml" --destination="$data_path/.$app/configuration.yaml"
-chown -R $app: "$data_path/.$app"
-chmod -R +x "$data_path/.$app/bin/"
+cp -r "../conf/homeassistant_conf_files/." "$data_path/"
+ynh_add_config --template="../conf/homeassistant_conf_files/configuration.yaml" --destination="$data_path/configuration.yaml"
+chown -R $app: "$data_path"
+chmod -R +x "$data_path/bin/"
 
 # grant sudo permissions to the user to manage his own systemd service
 myynh_create_dir "/etc/sudoers.d"
