@@ -67,10 +67,8 @@ ynh_exec_fully_quiet myynh_install_homeassistant --path="$data_path"
 
 # set default configuration files and move all homeassistant_conf_files
 ynh_script_progression --message="Configuring the installation..."
-ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="../conf/homeassistant_conf_files/configuration.yaml"
-ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../conf/homeassistant_conf_files/configuration.yaml"
-ynh_replace_string --match_string="__DATAPATH__" --replace_string="$data_path" --target_file="../conf/homeassistant_conf_files/configuration.yaml"
 cp -r "../conf/homeassistant_conf_files/." "$data_path/.$app/"
+ynh_add_config --template="../conf/homeassistant_conf_files/configuration.yaml" --destination="$data_path/.$app/configuration.yaml"
 chown -R $app: "$data_path/.$app"
 chmod -R +x "$data_path/.$app/bin/"
 
@@ -81,8 +79,6 @@ chown -R root: "/etc/sudoers.d/$app"
 
 # setup up systemd service
 ynh_script_progression --message="Adding the dedicated service..."
-ynh_replace_string --match_string="__DATAPATH__" --replace_string="$data_path" --target_file="../conf/systemd.service"
-ynh_replace_string --match_string="__LOGFILE__" --replace_string="$log_file" --target_file="../conf/systemd.service"
 ynh_add_systemd_config
 
 ## add service in admin panel

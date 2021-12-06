@@ -5,9 +5,9 @@ After=network.target
 [Service]
 Type=simple
 User=__APP__
-WorkingDirectory=__DATAPATH__/.__APP__
-ExecStart=__FINALPATH__/bin/hass --config "__DATAPATH__/.__APP__" --log-file "__LOGFILE__" --verbose
-StandardOutput=append:__LOGFILE__
+WorkingDirectory=__DATA_PATH__/.__APP__
+ExecStart=__FINALPATH__/bin/hass --config "__DATA_PATH__/.__APP__" --log-file "__LOG_FILE__" --verbose
+StandardOutput=append:__LOG_FILE__
 StandardError=inherit
 
 # Sandboxing options to harden security
@@ -24,7 +24,7 @@ DevicePolicy=closed
 ProtectSystem=full
 ProtectControlGroups=yes
 ProtectKernelModules=yes
-ProtectKernelTunables=yes
+# ProtectKernelTunables=yes
 LockPersonality=yes
 SystemCallFilter=~@clock @debug @module @mount @obsolete @reboot @setuid @swap
 
