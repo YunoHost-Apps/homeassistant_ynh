@@ -45,17 +45,13 @@ ynh_system_user_create --username="$app"
 
 # create a directory for the installation of Home Assistant
 myynh_create_dir "$final_path"
-chown $app: "$final_path"
 
 # create a directory with its log file
 myynh_create_dir "$(dirname "$log_file")"
 touch "$log_file"
-chown -R $app: "$(dirname "$log_file")"
 
 # create a directory for the datas of Home Assistant
 myynh_create_dir "$data_path"
-myynh_create_dir "$data_path/.cache"
-chown -R $app: "$data_path"
 
 # build (if needed) & install Pyhton
 ynh_script_progression --message="Installing dependencies..."
@@ -69,20 +65,20 @@ ynh_exec_fully_quiet myynh_install_homeassistant
 ynh_script_progression --message="Configuring the installation..."
 cp -r "../conf/homeassistant_conf_files/." "$data_path/"
 ynh_add_config --template="../conf/homeassistant_conf_files/configuration.yaml" --destination="$data_path/configuration.yaml"
-chown -R $app: "$data_path"
-chmod -R +x "$data_path/bin/"
 
 # grant sudo permissions to the user to manage his own systemd service
 myynh_create_dir "/etc/sudoers.d"
 ynh_add_config --template="../conf/sudoers" --destination="/etc/sudoers.d/$app"
-chown -R root: "/etc/sudoers.d/$app"
 
 # setup up systemd service
 ynh_script_progression --message="Adding the dedicated service..."
 ynh_add_systemd_config
 
-## add service in admin panel
+# add service in admin panel
 yunohost service add "$app" --log "$log_file" --description "Home Assistant server" --needs_exposed_ports $port
+
+# set permissions
+myynh_set_permissions
 
 # start systemd service
 ynh_script_progression --message="Starting the Home Assistant server..."

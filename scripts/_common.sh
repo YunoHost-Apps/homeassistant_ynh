@@ -136,3 +136,19 @@ myynh_install_homeassistant () {
 			&& pip --no-cache-dir install --upgrade $app==$VERSION \
 		"
 }
+
+# Set permissions
+myynh_set_permissions () {
+	chown -R $app: "$final_path"
+	chmod 750 "$final_path"
+	chmod -R o-rwx "$final_path"
+
+	chown -R $app: "$data_path"
+	chmod 750 "$data_path"
+	chmod -R o-rwx "$data_path"
+	chmod -R +x "$data_path/bin/"
+
+	chown -R $app: "$(dirname "$log_file")"
+
+	chown -R root: "/etc/sudoers.d/$app"
+}

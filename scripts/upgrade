@@ -55,7 +55,6 @@ ynh_script_progression --message="If needed, migrating to new app architecture..
 if [ ! -d "$final_path" ]; then
   # move $final_path to new directory
   mv "/opt/yunohost/$app" "$final_path"
-  chown -R $app: "$final_path"
 fi
 if [ ! -d "$data_path" ]; then
   # remove pip cache
@@ -63,13 +62,11 @@ if [ ! -d "$data_path" ]; then
   # move $data_path to new directory
   mv "/""home""/$app" "$data_path"
   ynh_replace_string --match_string="/home/homeassistant/.homeassistant" --replace_string="$data_path" --target_file="$data_path/configuration.yaml"
-  chown -R $app: "$data_path"
 fi
 if [ ! -f "$log_file" ]; then
   # create a directory with its log file
   myynh_create_dir "$(dirname "$log_file")"
   touch "$log_file"
-  chown -R $app: "$(dirname "$log_file")"
 fi
 if [ -f "/etc/systemd/system/$app@$app.service" ]; then
   # remove old systemd service
@@ -86,8 +83,6 @@ ynh_exec_fully_quiet myynh_install_homeassistant
 # update script in bin
 ynh_script_progression --message="Updating YunoHost script used by homeassitant..."
 cp -r "../conf/homeassistant_conf_files/bin/." "$data_path/bin/"
-chown -R $app: "$data_path/bin"
-chmod -R +x "$data_path/bin/"
 
 # setup up systemd service
 ynh_script_progression --message="Adding the dedicated service..."
@@ -96,10 +91,12 @@ ynh_add_systemd_config
 # grant sudo permissions to the user to manage his own systemd service
 ynh_script_progression --message="Creating dedicated user, rights and folders..."
 ynh_add_config --template="../conf/sudoers" --destination="/etc/sudoers.d/$app"
-chown -R root: "/etc/sudoers.d/$app"
 
 # add service in admin panel
 yunohost service add "$app" --log "$log_file" --description "Home Assistant server" --needs_exposed_ports $port
+
+# set permissions
+myynh_set_permissions
 
 # start systemd service
 ynh_script_progression --message="Starting the Home Assistant server..."
