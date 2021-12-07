@@ -57,10 +57,10 @@ if [ ! -d "$final_path" ]; then
   mv "/opt/yunohost/$app" "$final_path"
 fi
 if [ ! -d "$data_path" ]; then
-  # remove pip cache
-  ynh_secure_remove --file="/home/homeassistant/.cache"
   # move $data_path to new directory
   mv "/""home""/$app" "$data_path"
+  mv "$data_path/.$app/." "$data_path"
+  rmdir "$data_path/.$app"
   ynh_replace_string --match_string="/home/homeassistant/.homeassistant" --replace_string="$data_path" --target_file="$data_path/configuration.yaml"
 fi
 if [ ! -f "$log_file" ]; then

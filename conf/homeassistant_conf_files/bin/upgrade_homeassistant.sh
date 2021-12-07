@@ -9,6 +9,7 @@ DEBUG=0
 # define usefull variables
 app="homeassistant"
 final_path="/var/www/$app"
+data_path="/home/yunohost.app/$app"
 
 ########## END OF CONFIGURATION ##########
 
@@ -50,10 +51,10 @@ $MY_PYTHON -m venv "$final_path"
 source "$final_path/bin/activate"
 
 # install last version of wheel
-pip --no-cache-dir install --upgrade wheel
+pip --cache-dir "$data_path/.cache" install --upgrade wheel
 
 # upgrade homeassistant python package
-pip --no-cache-dir install --upgrade $app
+pip --cache-dir "$data_path/.cache" install --upgrade $app
 
 # restart homeassistant systemd service
 sudo systemctl restart $app.service

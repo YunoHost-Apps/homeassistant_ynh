@@ -131,9 +131,9 @@ myynh_install_homeassistant () {
 		&& echo 'activate the virtual environment' \
 			&& source "$final_path/bin/activate" \
 		&& echo 'install last version of wheel' \
-			&& pip --no-cache-dir install --upgrade wheel \
+			&& pip --cache-dir "$data_path/.cache" install --upgrade wheel \
 		&& echo 'install Home Assistant' \
-			&& pip --no-cache-dir install --upgrade $app==$VERSION \
+			&& pip --cache-dir "$data_path/.cache" install --upgrade $app==$VERSION \
 		"
 }
 

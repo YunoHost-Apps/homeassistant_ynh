@@ -51,7 +51,7 @@ myynh_create_dir "$(dirname "$log_file")"
 touch "$log_file"
 
 # create a directory for the datas of Home Assistant
-myynh_create_dir "$data_path"
+myynh_create_dir "$data_path/.cache"
 
 # build (if needed) & install Pyhton
 ynh_script_progression --message="Installing dependencies..."
