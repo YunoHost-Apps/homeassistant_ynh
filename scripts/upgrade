@@ -61,6 +61,7 @@ if [ ! -d "$data_path" ]; then
   # move $data_path to new directory
   mv "/""home""/$app" "$data_path"
   mv "$data_path/.$app/{.,}*" "$data_path/"
+  find "$data_path/.$app" -maxdepth 1 -mindepth 1 -exec mv {} "$data_path" \;
   rmdir "$data_path/.$app"
   ynh_replace_string --match_string="/home/homeassistant/.homeassistant" --replace_string="$data_path" --target_file="$data_path/configuration.yaml"
   chown -R $app: "$data_path"
