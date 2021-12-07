@@ -8,7 +8,7 @@ DEBUG=0
 
 # define usefull variables
 app="homeassistant"
-final_path="/opt/yunohost/$app"
+final_path="/var/www/$app"
 
 ########## END OF CONFIGURATION ##########
 

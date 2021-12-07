@@ -15,7 +15,7 @@ domain=$YNH_APP_ARG_DOMAIN
 is_public=$YNH_APP_ARG_IS_PUBLIC
 
 # definie useful vars
-final_path="/opt/yunohost/$app"
+final_path="/var/www/$app"
 data_path="/home/yunohost.app/$app"
 log_file="/var/log/$app/$app.log"
 path_url="/"

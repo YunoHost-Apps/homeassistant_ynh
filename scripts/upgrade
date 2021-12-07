@@ -16,7 +16,7 @@ port=$(ynh_app_setting_get --app="$app" --key=port)
 
 # definie useful vars
 if [ -z $(ynh_app_setting_get --app="$app" --key=final_path) ]; then
-  final_path="/opt/yunohost/$app"
+  final_path="/var/www/$app"
   data_path="/home/yunohost.app/$app"
   log_file="/var/log/$app/$app.log"
   path_url="/"
@@ -52,6 +52,11 @@ ynh_systemd_action --service_name="$app" --action=stop --line_match="Stopped Hom
 
 # migrate to new app architecture
 ynh_script_progression --message="If needed, migrating to new app architecture..."
+if [ ! -d "$final_path" ]; then
+  # move $final_path to new directory
+  mv "/opt/yunohost/$app" "$final_path"
+  chown -R $app: "$final_path"
+fi
 if [ ! -d "$data_path" ]; then
   # remove pip cache
   ynh_secure_remove --file="/home/homeassistant/.cache"
