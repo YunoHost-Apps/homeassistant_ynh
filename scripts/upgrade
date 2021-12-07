@@ -52,6 +52,13 @@ ynh_systemd_action --service_name="$app" --action=stop --line_match="Stopped Hom
 
 # migrate to new app architecture
 ynh_script_progression --message="If needed, migrating to new app architecture..."
+if [ -f "/etc/systemd/system/$app@$app.service" ]; then
+  # remove old systemd service
+  if ynh_exec_warn_less yunohost service status "$app@$app" >/dev/null ; then
+    yunohost service remove "$app@$app"
+  fi
+  ynh_remove_systemd_config --service="$app@$app"
+fi
 if [ ! -d "$final_path" ]; then
   # move $final_path to new directory
   mv "/opt/yunohost/$app" "$final_path"
@@ -69,13 +76,6 @@ if [ ! -f "$log_file" ]; then
   # create a directory with its log file
   myynh_create_dir "$(dirname "$log_file")"
   touch "$log_file"
-fi
-if [ -f "/etc/systemd/system/$app@$app.service" ]; then
-  # remove old systemd service
-  if ynh_exec_warn_less yunohost service status "$app@$app" >/dev/null ; then
-    yunohost service remove "$app@$app"
-  fi
-  ynh_remove_systemd_config --service="$app@$app"
 fi
 
 # installation in a virtual environment
