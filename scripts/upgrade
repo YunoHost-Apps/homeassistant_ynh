@@ -55,6 +55,7 @@ ynh_script_progression --message="If needed, migrating to new app architecture..
 if [ ! -d "$final_path" ]; then
   # move $final_path to new directory
   mv "/opt/yunohost/$app" "$final_path"
+  chown -R $app: "$final_path"
 fi
 if [ ! -d "$data_path" ]; then
   # move $data_path to new directory
@@ -62,6 +63,7 @@ if [ ! -d "$data_path" ]; then
   mv "$data_path/.$app/." "$data_path"
   rmdir "$data_path/.$app"
   ynh_replace_string --match_string="/home/homeassistant/.homeassistant" --replace_string="$data_path" --target_file="$data_path/configuration.yaml"
+  chown -R $app: "$data_path"
 fi
 if [ ! -f "$log_file" ]; then
   # create a directory with its log file

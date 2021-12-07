@@ -45,6 +45,7 @@ ynh_system_user_create --username="$app"
 
 # create a directory for the installation of Home Assistant
 myynh_create_dir "$final_path"
+chown -R $app: "$final_path"
 
 # create a directory with its log file
 myynh_create_dir "$(dirname "$log_file")"
@@ -52,6 +53,7 @@ touch "$log_file"
 
 # create a directory for the datas of Home Assistant
 myynh_create_dir "$data_path/.cache"
+chown -R $app: "$data_path"
 
 # build (if needed) & install Pyhton
 ynh_script_progression --message="Installing dependencies..."
