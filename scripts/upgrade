@@ -53,6 +53,8 @@ ynh_systemd_action --service_name="$app" --action=stop --line_match="Stopped Hom
 # migrate to new app architecture
 ynh_script_progression --message="If needed, migrating to new app architecture..."
 if [ ! -d "$data_path" ]; then
+  # remove pip cache
+  ynh_secure_remove --file="/home/homeassistant/.cache"
   # move $data_path to new directory
   mv "/""home""/$app" "$data_path"
   ynh_replace_string --match_string="/home/homeassistant/.homeassistant" --replace_string="$data_path" --target_file="$data_path/configuration.yaml"
@@ -74,7 +76,7 @@ fi
 
 # installation in a virtual environment
 ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
-ynh_exec_fully_quiet myynh_install_homeassistant --path="$data_path"
+ynh_exec_fully_quiet myynh_install_homeassistant
 
 # update script in bin
 ynh_script_progression --message="Updating YunoHost script used by homeassitant..."
