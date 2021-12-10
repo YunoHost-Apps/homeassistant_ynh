@@ -3,27 +3,15 @@
 #
 
 # Release to install
-VERSION=2021.11.4
+VERSION=2021.11.5
 
 # Package dependencies
 PKG_DEPENDENCIES="python3 python3-dev python3-venv python3-pip libffi-dev libssl-dev libjpeg-dev zlib1g-dev autoconf build-essential libopenjp2-7 libtiff5"
 
 # Requirements (Major.Minor.Patch)
-# PY_VERSION=$(curl -s "https://www.python.org/ftp/python/" | grep ">3.8" | tail -n1 | cut -d '/' -f 2 | cut -d '>' -f 2)
+# PY_VERSION=$(curl -s "https://www.python.org/ftp/python/" | grep ">3.9" | tail -n1 | cut -d '/' -f 2 | cut -d '>' -f 2)
+# Pyhton 3.9.2 will be shiped with bullseye
 PY_REQUIRED_VERSION=3.9.2
-
-# Execute a command as another user
-# usage: exec_as USER COMMAND [ARG ...]
-exec_as() {
-	local USER=$1
-	shift 1
-	
-	if [[ $USER = $(whoami) ]]; then
-		eval "$@"
-	else
-		sudo -u "$USER" "$@"
-	fi
-}
 
 # Check if directory/file already exists (path in argument)
 myynh_check_path () {
@@ -79,7 +67,6 @@ myynh_install_dependencies () {
 	ynh_handle_getopts_args "$@"
 	
 	# Install main dependencies from apt
-	ynh_script_progression --message="Installing dependencies..."
 	ynh_install_app_dependencies "${PKG_DEPENDENCIES}"
 	
 	# Check python version from APT
@@ -96,40 +83,40 @@ myynh_install_dependencies () {
 	# Compare version
 	if [ $(myynh_version_compare $PY_APT_VERSION $python) -le 1 ]; then
 		# APT >= Required
-		ynh_script_progression --message="Using provided python3..."
+		ynh_print_info --message="Using provided python3..."
 		MY_PYTHON="python3"
 	else
 		# Either python already built or to build 
-		ynh_script_progression --message="Installing additional dependencies..."
-		PKG_DEPENDENCIES="${PKG_DEPENDENCIES} tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libbz2-dev libexpat1-dev liblzma-dev wget tar"
-		ynh_install_app_dependencies "${PKG_DEPENDENCIES}"      
 		if [ $(myynh_version_compare $PY_BUILT_VERSION $python) -le 1 ]; then
 			# Built >= Required
-			ynh_script_progression --message="Using already used python3 built version..."
+			ynh_print_info --message="Using already used python3 built version..."
 			MY_PYTHON="/usr/local/bin/python${PY_BUILT_VERSION:0:3}"
 		else
-            # APT < Minimal & Actual < Minimal => Build & install Python into /usr/local/bin
-            ynh_script_progression --message="Building python (may take a while)..."
-            # Store current direcotry 
-            local MY_DIR=$(pwd)
-            # Download
-            wget -O "/tmp/Python-$python.tar.xz" "https://www.python.org/ftp/python/$python/Python-$python.tar.xz" 2>&1
-            # Extract
-            cd /tmp
-            tar xf "Python-$python.tar.xz"
-            # Install
-            cd "Python-$python"
-            ./configure --enable-optimizations
-            ynh_exec_warn_less make -j4
-            ynh_exec_warn_less make altinstall
-            # Clean
-            cd ..
-            ynh_secure_remove "Python-$python"
-            ynh_secure_remove "Python-$python.tar.xz"
-            # Set version
-            MY_PYTHON="/usr/local/bin/python${python:0:3}"
-            # Go back to working directory
-            cd $MY_DIR
+			ynh_print_info --message="Installing additional dependencies to build python..."
+			PKG_DEPENDENCIES="${PKG_DEPENDENCIES} tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libbz2-dev libexpat1-dev liblzma-dev wget tar"
+			ynh_install_app_dependencies "${PKG_DEPENDENCIES}"
+			# APT < Minimal & Actual < Minimal => Build & install Python into /usr/local/bin
+			ynh_print_info --message="Building python (may take a while)..."
+			# Store current direcotry 
+			local MY_DIR=$(pwd)
+			# Download
+			wget -O "/tmp/Python-$python.tar.xz" "https://www.python.org/ftp/python/$python/Python-$python.tar.xz" 2>&1
+			# Extract
+			cd /tmp
+			tar xf "Python-$python.tar.xz"
+			# Install
+			cd "Python-$python"
+			./configure --enable-optimizations
+			ynh_exec_warn_less make -j4
+			ynh_exec_warn_less make altinstall
+			# Clean
+			cd ..
+			ynh_secure_remove "Python-$python"
+			ynh_secure_remove "Python-$python.tar.xz"
+			# Set version
+			MY_PYTHON="/usr/local/bin/python${python:0:3}"
+			# Go back to working directory
+			cd $MY_DIR
 		fi
 	fi
 	# Save python version in settings 
@@ -137,23 +124,31 @@ myynh_install_dependencies () {
 }
 
 # Install/Upgrade Homeassistant in virtual environement
-# | arg: -p, --path=    - the parent path of cache directory
 myynh_install_homeassistant () {
-	# Declare an array to define the options of this helper.
-	local legacy_args=u
-	local -A args_array=( [p]=path= )
-	local path
-	# Manage arguments with getopts
-	ynh_handle_getopts_args "$@"
-	
-    exec_as $app -H -s /bin/bash -c " \
-        echo 'create the virtual environment' \
-            && $MY_PYTHON -m venv "$final_path" \
-        && echo 'activate the virtual environment' \
-            && source "$final_path/bin/activate" \
-        && echo 'install last version of wheel' \
-            && pip --cache-dir "$path/.cache" install --upgrade wheel \
-        && echo 'install Home Assistant' \
-            && pip --cache-dir "$path/.cache" install --upgrade $app==$VERSION \
-        "
+	ynh_exec_as $app -H -s /bin/bash -c " \
+		echo 'create the virtual environment' \
+			&& $MY_PYTHON -m venv "$final_path" \
+		&& echo 'activate the virtual environment' \
+			&& source "$final_path/bin/activate" \
+		&& echo 'install last version of wheel' \
+			&& pip --cache-dir "$data_path/.cache" install --upgrade wheel \
+		&& echo 'install Home Assistant' \
+			&& pip --cache-dir "$data_path/.cache" install --upgrade $app==$VERSION \
+		"
+}
+
+# Set permissions
+myynh_set_permissions () {
+	chown -R $app: "$final_path"
+	chmod 750 "$final_path"
+	chmod -R o-rwx "$final_path"
+
+	chown -R $app: "$data_path"
+	chmod 750 "$data_path"
+	chmod -R o-rwx "$data_path"
+	chmod -R +x "$data_path/bin/"
+
+	chown -R $app: "$(dirname "$log_file")"
+
+	chown -R root: "/etc/sudoers.d/$app"
 }

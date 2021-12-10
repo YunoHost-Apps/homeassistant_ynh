@@ -9,20 +9,21 @@ source /usr/share/yunohost/helpers
 app=$YNH_APP_INSTANCE_NAME
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 port=$(ynh_app_setting_get --app=$app --key=port)
-
-# definie useful vars
-final_path="/opt/yunohost/$app"
-data_path="/home/yunohost.app/$app"
+final_path=$(ynh_app_setting_get --app="$app" --key=final_path)
+data_path=$(ynh_app_setting_get --app="$app" --key=data_path)
+log_file=$(ynh_app_setting_get --app="$app" --key=log_file)
+path_url=$(ynh_app_setting_get --app="$app" --key=path_url)
+python=$(ynh_app_setting_get --app="$app" --key=python)
 
 # Remove a service from the admin panel, added by `yunohost service add`
-if ynh_exec_warn_less yunohost service status "$app@$app" >/dev/null ; then
+if ynh_exec_warn_less yunohost service status "$app" >/dev/null ; then
 	ynh_script_progression --message="Removing $app service integration..."
-	yunohost service remove "$app@$app"
+	yunohost service remove "$app"
 fi
 
 # remove systemd service
 ynh_script_progression --message="Stopping and removing the systemd service..."
-ynh_remove_systemd_config --service="$app@$app"
+ynh_remove_systemd_config --service="$app"
 
 # remove the app-specific logrotate config
 ynh_script_progression --message="Removing logrotate configuration..."
@@ -52,9 +53,11 @@ if yunohost firewall list | grep -q "\- $port$" ; then
 	ynh_exec_warn_less yunohost firewall disallow TCP $port
 fi
 
-# remove sudoers file
 ynh_script_progression --message="Removing various files..."
+# remove sudoers file
 ynh_secure_remove --file="/etc/sudoers.d/$app"
+# Remove the log files
+ynh_secure_remove --file="$(dirname "$log_file")"
 
 # delete a system user
 ynh_script_progression --message="Removing the dedicated system user..."

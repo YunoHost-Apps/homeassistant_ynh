@@ -18,12 +18,11 @@ ynh_abort_if_errors
 app=$YNH_APP_INSTANCE_NAME
 domain=$(ynh_app_setting_get --app="$app" --key=domain)
 port=$(ynh_app_setting_get --app="$app" --key=port)
+final_path=$(ynh_app_setting_get --app="$app" --key=final_path)
+data_path=$(ynh_app_setting_get --app="$app" --key=data_path)
+log_file=$(ynh_app_setting_get --app="$app" --key=log_file)
+path_url=$(ynh_app_setting_get --app="$app" --key=path_url)
 python=$(ynh_app_setting_get --app="$app" --key=python)
-
-# definie useful vars
-final_path="/opt/yunohost/$app"
-data_path="/home/yunohost.app/$app"
-path_url="/"
 
 # check domain/path availability
 ynh_script_progression --message="Validating recovery parameters..."
@@ -41,13 +40,14 @@ ynh_restore_file --origin_path="/etc/sudoers.d/$app"
 # restore source
 ynh_script_progression --message="Restoring the app..."
 ynh_restore_file --origin_path="$final_path"
-chown -R $app: "$final_path"
 
 # restore data
 ynh_script_progression --message="Restoring the data..."
 ynh_restore_file --origin_path="$data_path"
-chown -R $app: "$data_path"
-chmod -R +x "$data_path/.$app/bin"
+
+# restore log
+ynh_script_progression --message="Restoring the app..."
+ynh_restore_file --origin_path="$(dirname "$log_file")"
 
 # add required packages
 ynh_script_progression --message="Restoring the packages dependencies..."
@@ -55,21 +55,24 @@ myynh_install_dependencies --python="$python"
 
 # restore the systemd service
 ynh_script_progression --message="Restoring the dedicated service..."
-ynh_restore_file --origin_path="/etc/systemd/system/$app@$app.service"
+ynh_restore_file --origin_path="/etc/systemd/system/$app.service"
 
 # add service in admin panel
-yunohost service add "$app@$app" --log "$data_path/.$app/home-assistant.log" --description "Home Assistant server" --needs_exposed_ports $port
+yunohost service add "$app" --log "$log_file" --description "Home Assistant server" --needs_exposed_ports $port
+
+# set permissions
+myynh_set_permissions
 
 # restart the app
 ynh_script_progression --message="Starting the Home Assistant server..."
-sed --in-place "/ExecStart/s/$/ --verbose/" "/etc/systemd/system/$app@$app.service"
-ynh_systemd_action --service_name="$app@$app" --action=start --line_match="Home Assistant initialized" --log_path="/var/log/$app.log" --timeout=900
+sed --in-place "/ExecStart/s/$/ --verbose/" "/etc/systemd/system/$app.service"
+ynh_systemd_action --service_name="$app" --action=start --line_match="Home Assistant initialized" --log_path="$log_file" --timeout=900
 
 # remove --verbose from service and restart
-ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app@$app.service"
-ynh_store_file_checksum --file="/etc/systemd/system/$app@$app.service"
+ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app.service"
+ynh_store_file_checksum --file="/etc/systemd/system/$app.service"
 systemctl daemon-reload
-ynh_systemd_action --service_name="$app@$app" --action=restart
+ynh_systemd_action --service_name="$app" --action=restart
 
 # restore logrotate
 ynh_script_progression --message="Restoring logrotate..."
@@ -79,6 +82,5 @@ ynh_restore_file --origin_path="/etc/logrotate.d/$app"
 ynh_script_progression --message="Restoring nginx web server..."
 ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 ynh_systemd_action --service_name=nginx --action=reload
-ynh_exec_fully_quiet sleep 60s #Only necessary for CI test otherwise curl failed to nginx page
 
 ynh_script_progression --message="Recovery of $app completed" --last
