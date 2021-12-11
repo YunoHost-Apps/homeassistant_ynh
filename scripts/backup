@@ -11,23 +11,21 @@ ynh_abort_if_errors
 # retrieve arguments
 app=$YNH_APP_INSTANCE_NAME
 domain=$(ynh_app_setting_get --app="$app" --key=domain)
-
-# definie useful vars
-final_path="/opt/yunohost/$app"
-home_path="/home/$app"
-
-ynh_print_info --message="Storing the python version in settings..."
-# store python version
-python=$(cat "$final_path/bin/python3" --version | cut -d ' ' -f 2)
-ynh_app_setting_set --app="$app" --key=python --value="$python"
+port=$(ynh_app_setting_get --app="$app" --key=port)
+final_path=$(ynh_app_setting_get --app="$app" --key=final_path)
+data_path=$(ynh_app_setting_get --app="$app" --key=data_path)
+log_file=$(ynh_app_setting_get --app="$app" --key=log_file)
+path_url=$(ynh_app_setting_get --app="$app" --key=path_url)
+python=$(ynh_app_setting_get --app="$app" --key=python)
 
 # backup source & conf files
 ynh_print_info  --message="Declaring files to be backed up..."
 ynh_backup --src_path="$final_path"
-ynh_backup --src_path="$home_path"
+ynh_backup --src_path="$data_path"
 ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 ynh_backup --src_path="/etc/sudoers.d/$app"
-ynh_backup --src_path="/etc/systemd/system/$app@$app.service"
+ynh_backup --src_path="/etc/systemd/system/$app.service"
 ynh_backup --src_path="/etc/logrotate.d/$app"
+ynh_backup --src_path="$(dirname "$log_file")"
 
 ynh_print_info --message="Backup of $app completed"
