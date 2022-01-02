@@ -34,7 +34,7 @@ ynh_exec_warn_less yunohost firewall allow TCP $port
 
 # restore dedicated system user
 ynh_script_progression --message="Restoring dedicated user and rights folders..."
-ynh_system_user_create --username="$app" --groups="$GROUPS"
+ynh_system_user_create --username="$app" --groups="$USER_GROUPS"
 ynh_restore_file --origin_path="/etc/sudoers.d/$app"
 
 # restore source
