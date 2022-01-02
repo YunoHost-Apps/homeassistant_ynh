@@ -13,6 +13,9 @@ PKG_DEPENDENCIES="python3 python3-dev python3-venv python3-pip libffi-dev libssl
 # Pyhton 3.9.2 will be shiped with bullseye
 PY_REQUIRED_VERSION=3.9.2
 
+# System groups allowed to homeassistant user
+GROUPS="dialout,gpio,i2c"
+
 # Check if directory/file already exists (path in argument)
 myynh_check_path () {
 	[ -z "$1" ] && ynh_die "No argument supplied"
