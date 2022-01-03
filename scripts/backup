@@ -17,6 +17,7 @@ data_path=$(ynh_app_setting_get --app="$app" --key=data_path)
 log_file=$(ynh_app_setting_get --app="$app" --key=log_file)
 path_url=$(ynh_app_setting_get --app="$app" --key=path_url)
 python=$(ynh_app_setting_get --app="$app" --key=python)
+db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 
 # backup source & conf files
 ynh_print_info  --message="Declaring files to be backed up..."
@@ -27,5 +28,9 @@ ynh_backup --src_path="/etc/sudoers.d/$app"
 ynh_backup --src_path="/etc/systemd/system/$app.service"
 ynh_backup --src_path="/etc/logrotate.d/$app"
 ynh_backup --src_path="$(dirname "$log_file")"
+
+# backup the MySQL database
+ynh_print_info --message="Backing up the MySQL database..."
+ynh_mysql_dump_db --database="$db_name" > db.sql
 
 ynh_print_info --message="Backup of $app completed"

@@ -6,7 +6,7 @@
 VERSION=2021.12.7
 
 # Package dependencies
-PKG_DEPENDENCIES="python3 python3-dev python3-venv python3-pip libffi-dev libssl-dev libjpeg-dev zlib1g-dev autoconf build-essential libopenjp2-7 libtiff5"
+PKG_DEPENDENCIES="python3 python3-dev python3-venv python3-pip libffi-dev libssl-dev libjpeg-dev zlib1g-dev autoconf build-essential libopenjp2-7 libtiff5 libmariadbclient-dev libmariadb-dev-compat"
 
 # Requirements (Major.Minor.Patch)
 # PY_VERSION=$(curl -s "https://www.python.org/ftp/python/" | grep ">3.9" | tail -n1 | cut -d '/' -f 2 | cut -d '>' -f 2)
@@ -135,6 +135,8 @@ myynh_install_homeassistant () {
 			&& source "$final_path/bin/activate" \
 		&& echo 'install last version of wheel' \
 			&& pip --cache-dir "$data_path/.cache" install --upgrade wheel \
+		&& echo 'install last version of mysqlclient' \
+			&& pip --cache-dir "$data_path/.cache" install --upgrade mysqlclient \
 		&& echo 'install Home Assistant' \
 			&& pip --cache-dir "$data_path/.cache" install --upgrade $app==$VERSION \
 		"

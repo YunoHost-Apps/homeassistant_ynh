@@ -59,6 +59,13 @@ chown -R $app: "$data_path"
 ynh_script_progression --message="Installing dependencies..."
 myynh_install_dependencies --python="$PY_REQUIRED_VERSION"
 
+# create a MySQL database
+ynh_script_progression --message="Creating a MySQL database..."
+db_name=$(ynh_sanitize_dbid --db_name=$app)
+db_user=$db_name
+ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name
+
 # installation in a virtual environment
 ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
 ynh_exec_fully_quiet myynh_install_homeassistant

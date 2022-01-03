@@ -14,6 +14,8 @@ data_path=$(ynh_app_setting_get --app="$app" --key=data_path)
 log_file=$(ynh_app_setting_get --app="$app" --key=log_file)
 path_url=$(ynh_app_setting_get --app="$app" --key=path_url)
 python=$(ynh_app_setting_get --app="$app" --key=python)
+db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_user=$db_name
 
 # Remove a service from the admin panel, added by `yunohost service add`
 if ynh_exec_warn_less yunohost service status "$app" >/dev/null ; then
@@ -28,6 +30,10 @@ ynh_remove_systemd_config --service="$app"
 # remove the app-specific logrotate config
 ynh_script_progression --message="Removing logrotate configuration..."
 ynh_remove_logrotate
+
+# remove the MySQL database
+ynh_script_progression --message="Removing the MySQL database..."
+ynh_mysql_remove_db --db_user=$db_user --db_name=$db_name
 
 # remove metapackage and its dependencies
 ynh_script_progression --message="Removing dependencies..."
