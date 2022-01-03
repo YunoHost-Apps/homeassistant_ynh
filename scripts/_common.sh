@@ -3,7 +3,7 @@
 #
 
 # Release to install
-VERSION=2021.11.5
+VERSION=2021.12.7
 
 # Package dependencies
 PKG_DEPENDENCIES="python3 python3-dev python3-venv python3-pip libffi-dev libssl-dev libjpeg-dev zlib1g-dev autoconf build-essential libopenjp2-7 libtiff5"
@@ -12,6 +12,9 @@ PKG_DEPENDENCIES="python3 python3-dev python3-venv python3-pip libffi-dev libssl
 # PY_VERSION=$(curl -s "https://www.python.org/ftp/python/" | grep ">3.9" | tail -n1 | cut -d '/' -f 2 | cut -d '>' -f 2)
 # Pyhton 3.9.2 will be shiped with bullseye
 PY_REQUIRED_VERSION=3.9.2
+
+# System groups allowed to homeassistant user
+USER_GROUPS="dialout gpio i2c"
 
 # Check if directory/file already exists (path in argument)
 myynh_check_path () {
