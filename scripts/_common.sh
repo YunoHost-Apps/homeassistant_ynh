@@ -16,9 +16,9 @@ PY_REQUIRED_VERSION=3.9.2
 # Create homeassistant user
 mynh_user_create () {
     USER_GROUPS=""
-    [ $(ynh_system_group_exists --group=dialout) ] && USER_GROUPS="${USER_GROUPS} dialout"
-    [ $(ynh_system_group_exists --group=gpio) ] && USER_GROUPS="${USER_GROUPS} gpio"
-    [ $(ynh_system_group_exists --group=i2c) ] && USER_GROUPS="${USER_GROUPS} i2c"
+    [ $(getent group dialout) ] && USER_GROUPS="${USER_GROUPS} dialout"
+    [ $(getent group gpio) ] && USER_GROUPS="${USER_GROUPS} gpio"
+    [ $(getent group i2c) ] && USER_GROUPS="${USER_GROUPS} i2c"
     ynh_system_user_create --username="$app" --groups="$USER_GROUPS"
 }
 
