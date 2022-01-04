@@ -106,6 +106,7 @@ ynh_add_systemd_config
 
 # grant sudo permissions to the user to manage his own systemd service
 ynh_script_progression --message="Creating dedicated user, rights and folders..."
+mynh_user_create
 ynh_add_config --template="../conf/sudoers" --destination="/etc/sudoers.d/$app"
 
 # add service in admin panel

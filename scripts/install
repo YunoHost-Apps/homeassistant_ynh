@@ -41,7 +41,7 @@ ynh_app_setting_set --app="$app" --key=path_url --value="$path_url"
 
 # create a dedicated system user
 ynh_script_progression --message="Creating dedicated user, rights and folders..."
-ynh_system_user_create --username="$app" --groups="$USER_GROUPS"
+mynh_user_create
 
 # create a directory for the installation of Home Assistant
 myynh_create_dir "$final_path"

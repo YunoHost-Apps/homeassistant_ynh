@@ -13,8 +13,15 @@ PKG_DEPENDENCIES="python3 python3-dev python3-venv python3-pip libffi-dev libssl
 # Pyhton 3.9.2 will be shiped with bullseye
 PY_REQUIRED_VERSION=3.9.2
 
-# System groups allowed to homeassistant user
-USER_GROUPS="dialout gpio i2c"
+# Create homeassistant user
+mynh_user_create () {
+    USER_GROUPS=""
+    [ ynh_system_group_exists --group=dialout ] && USER_GROUPS="${USER_GROUPS} dialout"
+    [ ynh_system_group_exists --group=gpio ] && USER_GROUPS="${USER_GROUPS} gpio"
+    [ ynh_system_group_exists --group=i2c ] && USER_GROUPS="${USER_GROUPS} i2c"
+    ynh_system_user_create --username="$app" --groups="$USER_GROUPS"
+}
+
 
 # Check if directory/file already exists (path in argument)
 myynh_check_path () {
