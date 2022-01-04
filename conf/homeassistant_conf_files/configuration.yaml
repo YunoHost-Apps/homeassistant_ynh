@@ -12,7 +12,7 @@ http:
     - ::1
 
 recorder:
-  db_url: mysql+pymysql://__DB_USER__:__DB_PWD__@localhost:3306/__DB_NAME__?unix_socket=/var/run/mysqld/mysqld.sock&charset=utf8mb4
+  db_url: mysql://__DB_USER__:__DB_PWD__@127.0.0.1/__DB_NAME__?unix_socket=/var/run/mysqld/mysqld.sock&charset=utf8mb4
     
 # Apply default set of integrations
 default_config:

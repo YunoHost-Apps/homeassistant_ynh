@@ -86,9 +86,9 @@ if [ -z $(ynh_app_setting_get --app="$app" --key=db_name) ]; then
   db_pwd=$(ynh_app_setting_get --app="$app" --key=mysqlpwd)
   if [ -z $(sed -n "/recorder:/=" configuration.yaml) ]; then
     sed -i "$ a recorder:" "$data_path/configuration.yaml"
-    sed -i "$ a \  db_url: mysql+pymysql://$db_user:$db_pwd@localhost:3306/$db_name?unix_socket=/var/run/mysqld/mysqld.sock&charset=utf8mb4" "$data_path/configuration.yaml"
+    sed -i "$ a \  db_url: mysql://$db_user:$db_pwd@127.0.0.1/$db_name?unix_socket=/var/run/mysqld/mysqld.sock&charset=utf8mb4" "$data_path/configuration.yaml"
   else
-    sed -i "/recorder:/a \  db_url: mysql+pymysql://$db_user:$db_pwd@localhost:3306/$db_name?unix_socket=/var/run/mysqld/mysqld.sock&charset=utf8mb4" "$data_path/configuration.yaml"
+    sed -i "/recorder:/a \  db_url: mysql://$db_user:$db_pwd@127.0.0.1/$db_name?unix_socket=/var/run/mysqld/mysqld.sock&charset=utf8mb4" "$data_path/configuration.yaml"
   fi
 fi
 
