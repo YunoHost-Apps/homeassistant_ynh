@@ -3,18 +3,25 @@
 #
 
 # Release to install
-VERSION=2021.12.7
+VERSION=2021.12.8
 
 # Package dependencies
-PKG_DEPENDENCIES="python3 python3-dev python3-venv python3-pip libffi-dev libssl-dev libjpeg-dev zlib1g-dev autoconf build-essential libopenjp2-7 libtiff5"
+PKG_DEPENDENCIES="python3 python3-dev python3-venv python3-pip libffi-dev libssl-dev libjpeg-dev zlib1g-dev autoconf build-essential libopenjp2-7 libtiff5 libturbojpeg0 libmariadbclient-dev libmariadb-dev-compat"
 
 # Requirements (Major.Minor.Patch)
 # PY_VERSION=$(curl -s "https://www.python.org/ftp/python/" | grep ">3.9" | tail -n1 | cut -d '/' -f 2 | cut -d '>' -f 2)
 # Pyhton 3.9.2 will be shiped with bullseye
 PY_REQUIRED_VERSION=3.9.2
 
-# System groups allowed to homeassistant user
-USER_GROUPS="dialout gpio i2c"
+# Create homeassistant user
+mynh_user_create () {
+    USER_GROUPS=""
+    [ $(getent group dialout) ] && USER_GROUPS="${USER_GROUPS} dialout"
+    [ $(getent group gpio) ] && USER_GROUPS="${USER_GROUPS} gpio"
+    [ $(getent group i2c) ] && USER_GROUPS="${USER_GROUPS} i2c"
+    ynh_system_user_create --username="$app" --groups="$USER_GROUPS"
+}
+
 
 # Check if directory/file already exists (path in argument)
 myynh_check_path () {
@@ -135,6 +142,8 @@ myynh_install_homeassistant () {
 			&& source "$final_path/bin/activate" \
 		&& echo 'install last version of wheel' \
 			&& pip --cache-dir "$data_path/.cache" install --upgrade wheel \
+		&& echo 'install last version of mysqlclient' \
+			&& pip --cache-dir "$data_path/.cache" install --upgrade mysqlclient \
 		&& echo 'install Home Assistant' \
 			&& pip --cache-dir "$data_path/.cache" install --upgrade $app==$VERSION \
 		"

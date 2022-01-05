@@ -11,8 +11,16 @@ http:
     - 127.0.0.1
     - ::1
 
+recorder:
+  db_url: mysql://__DB_USER__:__DB_PWD__@127.0.0.1/__DB_NAME__?unix_socket=/var/run/mysqld/mysqld.sock&charset=utf8mb4
+    
 # Apply default set of integrations
 default_config:
+
+# Linked yaml files
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
 
 # Switches
 switch:

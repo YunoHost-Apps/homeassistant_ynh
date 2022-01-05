@@ -77,6 +77,20 @@ if [ ! -f "$log_file" ]; then
   myynh_create_dir "$(dirname "$log_file")"
   touch "$log_file"
 fi
+if [ -z $(ynh_app_setting_get --app="$app" --key=db_name) ]; then
+  # create a MySQL database
+  db_name=$(ynh_sanitize_dbid --db_name=$app)
+  db_user=$db_name
+  ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+  ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name
+  db_pwd=$(ynh_app_setting_get --app="$app" --key=mysqlpwd)
+  if [ -z $(sed -n "/recorder:/=" configuration.yaml) ]; then
+    sed -i "$ a recorder:" "$data_path/configuration.yaml"
+    sed -i "$ a \  db_url: mysql://$db_user:$db_pwd@127.0.0.1/$db_name?unix_socket=/var/run/mysqld/mysqld.sock&charset=utf8mb4" "$data_path/configuration.yaml"
+  else
+    sed -i "/recorder:/a \  db_url: mysql://$db_user:$db_pwd@127.0.0.1/$db_name?unix_socket=/var/run/mysqld/mysqld.sock&charset=utf8mb4" "$data_path/configuration.yaml"
+  fi
+fi
 
 # installation in a virtual environment
 ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
@@ -92,6 +106,7 @@ ynh_add_systemd_config
 
 # grant sudo permissions to the user to manage his own systemd service
 ynh_script_progression --message="Creating dedicated user, rights and folders..."
+mynh_user_create
 ynh_add_config --template="../conf/sudoers" --destination="/etc/sudoers.d/$app"
 
 # add service in admin panel
