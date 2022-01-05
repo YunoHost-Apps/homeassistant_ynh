@@ -81,10 +81,10 @@ sed --in-place "/ExecStart/s/$/ --verbose/" "/etc/systemd/system/$app.service"
 ynh_systemd_action --service_name="$app" --action=start --line_match="Home Assistant initialized" --log_path="$log_file" --timeout=900
 
 # remove --verbose from service and restart
-#ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app.service"
-#ynh_store_file_checksum --file="/etc/systemd/system/$app.service"
-#systemctl daemon-reload
-#ynh_systemd_action --service_name="$app" --action=restart
+ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app.service"
+ynh_store_file_checksum --file="/etc/systemd/system/$app.service"
+systemctl daemon-reload
+ynh_systemd_action --service_name="$app" --action=restart
 
 # restore logrotate
 ynh_script_progression --message="Restoring logrotate..."
@@ -95,3 +95,11 @@ ynh_script_progression --message="Reloading NGINX web server..."
 ynh_systemd_action --service_name=nginx --action=reload
 
 ynh_script_progression --message="Restoration completed for $app" --last
+
+#for debug purpose
+for ((i = 1 ; i <= 30 ; i++)); do
+    ynh_print_warn --message= "\r$i) $(date)"
+    curl --silent --show-error --insecure --location --header "Host: $domain" --resolve "$domain":443:127.0.0.1 "https://localhost/"
+    echo -e -n "\r"
+    sleep 10
+done
