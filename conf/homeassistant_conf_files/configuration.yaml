@@ -17,10 +17,6 @@ recorder:
 # Apply default set of integrations
 default_config:
 
-# Text to speech
-tts:
-  - platform: picotts
-
 # Linked yaml files
 automation: !include automations.yaml
 script: !include scripts.yaml
