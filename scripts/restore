@@ -52,7 +52,7 @@ ynh_script_progression --message="Restoring the data..."
 ynh_restore_file --origin_path="$data_path"
 
 # restore log
-ynh_script_progression --message="Restoring the app..."
+ynh_script_progression --message="Restoring the log file..."
 ynh_restore_file --origin_path="$(dirname "$log_file")"
 
 # add required packages
@@ -68,6 +68,7 @@ ynh_mysql_connect_as --user=$db_user --password=$db_pwd --database=$db_name < ./
 # restore the systemd service
 ynh_script_progression --message="Restoring the dedicated service..."
 ynh_restore_file --origin_path="/etc/systemd/system/$app.service"
+systemctl enable $app.service --quiet
 
 # add service in admin panel
 yunohost service add "$app" --log "$log_file" --description "Home Assistant server" --needs_exposed_ports $port
