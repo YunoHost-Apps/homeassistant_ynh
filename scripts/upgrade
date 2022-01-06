@@ -110,7 +110,7 @@ mynh_user_create
 ynh_add_config --template="../conf/sudoers" --destination="/etc/sudoers.d/$app"
 
 # add service in admin panel
-yunohost service add "$app" --log "$log_file" --description "Home Assistant server" --needs_exposed_ports $port
+yunohost service add "$app" --log="$log_file" --description="Home Assistant server" --needs_exposed_ports=$port
 
 # set permissions
 myynh_set_permissions
