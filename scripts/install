@@ -84,7 +84,7 @@ ynh_script_progression --message="Adding the dedicated service..."
 ynh_add_systemd_config
 
 # add service in admin panel
-yunohost service add "$app" --log "$log_file" --description "Home Assistant server" --needs_exposed_ports $port
+yunohost service add "$app" --log="$log_file" --description="Home Assistant server" --needs_exposed_ports=$port
 
 # set permissions
 myynh_set_permissions
