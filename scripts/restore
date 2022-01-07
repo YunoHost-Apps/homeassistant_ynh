@@ -30,15 +30,15 @@ ynh_script_progression --message="Loading installation settings..."
 
 app=$YNH_APP_INSTANCE_NAME
 
-domain=$(ynh_app_setting_get --app="$app" --key=domain)
-port=$(ynh_app_setting_get --app="$app" --key=port)
-final_path=$(ynh_app_setting_get --app="$app" --key=final_path)
-data_path=$(ynh_app_setting_get --app="$app" --key=data_path)
-log_file=$(ynh_app_setting_get --app="$app" --key=log_file)
-path_url=$(ynh_app_setting_get --app="$app" --key=path_url)
-python=$(ynh_app_setting_get --app="$app" --key=python)
-db_name=$(ynh_app_setting_get --app="$app" --key=db_name)
-db_user="$db_name"
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+port=$(ynh_app_setting_get --app=$app --key=port)
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+data_path=$(ynh_app_setting_get --app=$app --key=data_path)
+log_file=$(ynh_app_setting_get --app=$app --key=log_file)
+path_url=$(ynh_app_setting_get --app=$app --key=path_url)
+python=$(ynh_app_setting_get --app=$app --key=python)
+db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_user=$db_name
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
@@ -86,16 +86,17 @@ mkdir -p $data_path
 #=================================================
 ynh_script_progression --message="Reinstalling dependencies..."
 
-myynh_install_dependencies --python="$python"
+ynh_install_app_dependencies $pkg_dependencies
+myynh_install_python --python="$python"
 
 #=================================================
 # RESTORE THE MYSQL DATABASE
 #=================================================
 ynh_script_progression --message="Restoring the MySQL database..."
 
-db_pwd=$(ynh_app_setting_get --app="$app" --key=mysqlpwd)
-ynh_mysql_setup_db --db_user="$db_user" --db_name="$db_name" --db_pwd="$db_pwd"
-ynh_mysql_connect_as --user="$db_user" --password="$db_pwd" --database="$db_name" < ./db.sql
+db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
+ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd="$db_pwd"
+ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name < ./db.sql
 
 #=================================================
 # RESTORE VARIOUS FILES
@@ -112,7 +113,7 @@ ynh_restore_file --origin_path="$(dirname "$log_file")"
 ynh_script_progression --message="Restoring the systemd configuration..."
 
 ynh_restore_file --origin_path="/etc/systemd/system/$app.service"
-systemctl enable "$app".service --quiet
+systemctl enable $app.service --quiet
 
 #=================================================
 # RESTORE THE LOGROTATE CONFIGURATION
@@ -132,14 +133,14 @@ myynh_set_permissions
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..."
 
-yunohost service add "$app" --description="Home Assistant server" --log="$log_file" --needs_exposed_ports=$port
+yunohost service add $app --description="Home Assistant server" --log="$log_file" --needs_exposed_ports=$port
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
 ynh_script_progression --message="Starting a systemd service..."
 
-ynh_systemd_action --service_name="$app" --action=start
+ynh_systemd_action --service_name=$app --action=start
 
 #=================================================
 # GENERIC FINALIZATION
@@ -155,12 +156,3 @@ ynh_systemd_action --service_name=nginx --action=reload
 #=================================================
 
 ynh_script_progression --message="Restoration completed for $app" --last
-
-#for debug purpose
-for ((i = 1 ; i <= 10 ; i++)); do
-    ynh_print_warn --message= "\r$i) $(date)"
-    ynh_local_curl
-    #curl --silent --show-error --insecure --location --header "Host: $domain" --resolve "$domain":443:127.0.0.1 "https://localhost/"
-    echo -e -n "\r"
-    sleep 10
-done

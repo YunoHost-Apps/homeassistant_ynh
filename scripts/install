@@ -42,17 +42,17 @@ path_url="/"
 ynh_script_progression --message="Validating installation parameters..."
 
 [ ! -d "$final_path" ] || ynh_die --message="There is already a directory: $final_path "
-ynh_webpath_register --app="$app" --domain="$domain" --path_url="$path_url"
+ynh_webpath_register --app=$app --domain="$domain" --path_url="$path_url"
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
 ynh_script_progression --message="Storing installation settings..."
-ynh_app_setting_set --app="$app" --key=domain --value="$domain"
-ynh_app_setting_set --app="$app" --key=final_path --value="$final_path"
-ynh_app_setting_set --app="$app" --key=data_path --value="$data_path"
-ynh_app_setting_set --app="$app" --key=log_file --value="$log_file"
-ynh_app_setting_set --app="$app" --key=path_url --value="$path_url"
+ynh_app_setting_set --app=$app --key=domain --value="$domain"
+ynh_app_setting_set --app=$app --key=final_path --value="$final_path"
+ynh_app_setting_set --app=$app --key=data_path --value="$data_path"
+ynh_app_setting_set --app=$app --key=log_file --value="$log_file"
+ynh_app_setting_set --app=$app --key=path_url --value="$path_url"
 
 #=================================================
 # STANDARD MODIFICATIONS
@@ -62,14 +62,15 @@ ynh_app_setting_set --app="$app" --key=path_url --value="$path_url"
 ynh_script_progression --message="Finding an available port..."
 
 port=$(ynh_find_port 8123)
-ynh_app_setting_set --app="$app" --key=port --value="$port"
+ynh_app_setting_set --app=$app --key=port --value="$port"
 
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
 ynh_script_progression --message="Installing dependencies..."
 
-myynh_install_dependencies --python="$PY_REQUIRED_VERSION"
+ynh_install_app_dependencies $pkg_dependencies
+myynh_install_python --python="$py_required_version"
 
 #=================================================
 # CREATE DEDICATED USER
@@ -83,10 +84,10 @@ mynh_system_user_create
 #=================================================
 ynh_script_progression --message="Creating a MySQL database..."
 
-db_name=$(ynh_sanitize_dbid --db_name="$app")
-db_user="$db_name"
-ynh_app_setting_set --app="$app" --key=db_name --value="$db_name"
-ynh_mysql_setup_db --db_user="$db_user" --db_name="$db_name"
+db_name=$(ynh_sanitize_dbid --db_name=$app)
+db_user=$db_name
+ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -95,11 +96,11 @@ ynh_script_progression --message="Setting up source files..."
 
 # create a directory for the installation of Home Assistant
 myynh_create_dir "$final_path"
-chown -R "$app": "$final_path"
+chown -R $app: "$final_path"
 
 # create a directory for the datas of Home Assistant
 myynh_create_dir "$data_path/.cache"
-chown -R "$app": "$data_path"
+chown -R $app: "$data_path"
 
 # installation in a virtual environment
 ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
@@ -157,7 +158,7 @@ myynh_set_permissions
 ynh_script_progression --message="Integrating service in YunoHost..."
 
 # add service in admin panel
-yunohost service add "$app" --description="Home Assistant server" --log="$log_file" --needs_exposed_ports=$port
+yunohost service add $app --description="Home Assistant server" --log="$log_file" --needs_exposed_ports=$port
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -165,13 +166,13 @@ yunohost service add "$app" --description="Home Assistant server" --log="$log_fi
 ynh_script_progression --message="Starting a systemd service..."
 
 # start systemd service with --verbose 
-ynh_systemd_action --service_name="$app" --action=start --line_match="Home Assistant initialized" --log_path="$log_file" --timeout=3600
+ynh_systemd_action --service_name=$app --action=start --line_match="Home Assistant initialized" --log_path="$log_file" --timeout=3600
 
 # remove --verbose from systemd service
 ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app.service"
 ynh_store_file_checksum --file="/etc/systemd/system/$app.service"
 systemctl daemon-reload
-ynh_systemd_action --service_name="$app" --action=restart
+ynh_systemd_action --service_name=$app --action=restart
 
 #=================================================
 # SETUP SSOWAT

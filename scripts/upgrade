@@ -16,8 +16,8 @@ ynh_script_progression --message="Loading installation settings..."
 
 app=$YNH_APP_INSTANCE_NAME
 
-domain=$(ynh_app_setting_get --app="$app" --key=domain)
-port=$(ynh_app_setting_get --app="$app" --key=port)
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+port=$(ynh_app_setting_get --app=$app --key=port)
 
 #=================================================
 # CHECK VERSION
@@ -43,7 +43,7 @@ ynh_abort_if_errors
 #=================================================
 ynh_script_progression --message="Stopping a systemd service..."
 
-ynh_systemd_action --service_name="$app" --action=stop --log_path="/var/log/$app/$app.log"
+ynh_systemd_action --service_name=$app --action=stop --log_path="/var/log/$app/$app.log"
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
@@ -51,59 +51,67 @@ ynh_systemd_action --service_name="$app" --action=stop --log_path="/var/log/$app
 ynh_script_progression --message="Ensuring downward compatibility..."
 
 # changes introduce in 
-if [ -z $(ynh_app_setting_get --app="$app" --key=final_path) ]; then
+if [ -z $(ynh_app_setting_get --app=$app --key=final_path) ]
+then
 	final_path="/var/www/$app"
 	data_path="/home/yunohost.app/$app"
 	log_file="/var/log/$app/$app.log"
 	path_url="/"
-	ynh_app_setting_set --app="$app" --key=final_path --value="$final_path"
-	ynh_app_setting_set --app="$app" --key=data_path --value="$data_path"
-	ynh_app_setting_set --app="$app" --key=log_file --value="$log_file"
-	ynh_app_setting_set --app="$app" --key=path_url --value="$path_url"
+	ynh_app_setting_set --app=$app --key=final_path --value="$final_path"
+	ynh_app_setting_set --app=$app --key=data_path --value="$data_path"
+	ynh_app_setting_set --app=$app --key=log_file --value="$log_file"
+	ynh_app_setting_set --app=$app --key=path_url --value="$path_url"
 else
-	final_path=$(ynh_app_setting_get --app="$app" --key=final_path)
-	data_path=$(ynh_app_setting_get --app="$app" --key=data_path)
-	log_file=$(ynh_app_setting_get --app="$app" --key=log_file)
-	path_url=$(ynh_app_setting_get --app="$app" --key=path_url)
-	python=$(ynh_app_setting_get --app="$app" --key=python)
+	final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+	data_path=$(ynh_app_setting_get --app=$app --key=data_path)
+	log_file=$(ynh_app_setting_get --app=$app --key=log_file)
+	path_url=$(ynh_app_setting_get --app=$app --key=path_url)
+	python=$(ynh_app_setting_get --app=$app --key=python)
 fi
 
 # changes introduced in 2021.11.5~ynh1
-if [ -f "/etc/systemd/system/$app@$app.service" ]; then
+if [ -f "/etc/systemd/system/$app@$app.service" ]
+then
 	# remove old systemd service
-	if ynh_exec_warn_less yunohost service status "$app@$app" >/dev/null ; then
+	if ynh_exec_warn_less yunohost service status "$app@$app" >/dev/null
+	then
 		yunohost service remove "$app@$app"
 	fi
 	ynh_remove_systemd_config --service="$app@$app"
 fi
-if [ ! -d "$final_path" ]; then
+if [ ! -d "$final_path" ]
+then
 	# move $final_path to new directory
 	mv "/opt/yunohost/$app" "$final_path"
-	chown -R "$app": "$final_path"
+	chown -R $app: "$final_path"
 fi
-if [ ! -d "$data_path" ]; then
+if [ ! -d "$data_path" ]
+then
 	# move $data_path to new directory
 	mv "/""home""/$app" "$data_path"
 	find "$data_path/.$app" -maxdepth 1 -mindepth 1 -exec mv {} "$data_path" \;
 	rmdir "$data_path/.$app"
 	ynh_replace_string --match_string="/home/homeassistant/.homeassistant" --replace_string="$data_path" --target_file="$data_path/configuration.yaml"
-	chown -R "$app": "$data_path"
+	chown -R $app: "$data_path"
 fi
-if [ ! -f "$log_file" ]; then
+if [ ! -f "$log_file" ]
+then
 	# create a directory with its log file
 	myynh_create_dir "$(dirname "$log_file")"
 	touch "$log_file"
 fi
 
 # changes introduced in 2021.12.8~ynh1
-if [ -z $(ynh_app_setting_get --app="$app" --key=db_name) ]; then
+if [ -z $(ynh_app_setting_get --app=$app --key=db_name) ]
+then
 	# create a MySQL database
-	db_name=$(ynh_sanitize_dbid --db_name="$app")
-	db_user="$db_name"
-	ynh_app_setting_set --app=$app --key=db_name --value="$db_name"
-	ynh_mysql_setup_db --db_user="$db_user" --db_name="$db_name"
-	db_pwd=$(ynh_app_setting_get --app="$app" --key=mysqlpwd)
-	if [ -z $(sed -n "/recorder:/=" configuration.yaml) ]; then
+	db_name=$(ynh_sanitize_dbid --db_name=$app)
+	db_user=$db_name
+	ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+	ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name
+	db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
+	if [ -z $(sed -n "/recorder:/=" "$data_path/configuration.yaml") ]
+	then
 		sed -i "$ a recorder:" "$data_path/configuration.yaml"
 		sed -i "$ a \  db_url: mysql://$db_user:$db_pwd@127.0.0.1/$db_name?unix_socket=/var/run/mysqld/mysqld.sock&charset=utf8mb4" "$data_path/configuration.yaml"
 	else
@@ -124,8 +132,9 @@ mynh_system_user_create
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
-	ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
+	ynh_script_progression --message="Upgrading source files..."
 	
+	myynh_install_python --python="$py_required_version"
 	ynh_exec_fully_quiet myynh_install_homeassistant
 fi
 
@@ -141,7 +150,7 @@ ynh_add_nginx_config
 #=================================================
 ynh_script_progression --message="Upgrading dependencies..."
 
-myynh_install_dependencies --python="$PY_REQUIRED_VERSION"
+ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
 # UPDATE A CONFIG FILE
@@ -180,7 +189,7 @@ myynh_set_permissions
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..."
 
-yunohost service add "$app" --description="Home Assistant server" --log="$log_file" --needs_exposed_ports=$port
+yunohost service add $app --description="Home Assistant server" --log="$log_file" --needs_exposed_ports=$port
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -188,13 +197,13 @@ yunohost service add "$app" --description="Home Assistant server" --log="$log_fi
 ynh_script_progression --message="Starting a systemd service..."
 
 # start systemd service with --verbose 
-ynh_systemd_action --service_name="$app" --action=start --line_match="Home Assistant initialized" --log_path="$log_file" --timeout=3600
+ynh_systemd_action --service_name=$app --action=start --line_match="Home Assistant initialized" --log_path="$log_file" --timeout=3600
 
 # remove --verbose from service
 ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app.service"
 ynh_store_file_checksum --file="/etc/systemd/system/$app.service"
 systemctl daemon-reload
-ynh_systemd_action --service_name="$app" --action=restart
+ynh_systemd_action --service_name=$app --action=restart
 
 #=================================================
 # RELOAD NGINX
