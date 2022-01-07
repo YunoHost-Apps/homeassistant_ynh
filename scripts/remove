@@ -14,7 +14,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_script_progression --message="Loading installation settings..." --time --weight=1
+ynh_script_progression --message="Loading installation settings..."
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -42,28 +42,28 @@ fi
 #=================================================
 # STOP AND REMOVE SERVICE
 #=================================================
-ynh_script_progression --message="Stopping and removing the systemd service..." --time --weight=1
+ynh_script_progression --message="Stopping and removing the systemd service..."
 
 ynh_remove_systemd_config --service="$app"
 
 #=================================================
 # REMOVE LOGROTATE CONFIGURATION
 #=================================================
-ynh_script_progression --message="Removing logrotate configuration..." --time --weight=1
+ynh_script_progression --message="Removing logrotate configuration..."
 
 ynh_remove_logrotate
 
 #=================================================
 # REMOVE THE MYSQL DATABASE
 #=================================================
-ynh_script_progression --message="Removing the MySQL database..." --time --weight=1
+ynh_script_progression --message="Removing the MySQL database..."
 
 ynh_mysql_remove_db --db_user=$db_user --db_name=$db_name
 
 #=================================================
 # REMOVE APP MAIN DIR
 #=================================================
-ynh_script_progression --message="Removing app main directory..." --time --weight=1
+ynh_script_progression --message="Removing app main directory..."
 
 ynh_secure_remove --file="$final_path"
 
@@ -73,21 +73,21 @@ ynh_secure_remove --file="$final_path"
 
 if [ "${YNH_APP_PURGE:-0}" -eq 1 ]
 then
-	ynh_script_progression --message="Removing app data directory..." --time --weight=1
+	ynh_script_progression --message="Removing app data directory..."
 	ynh_secure_remove --file="$datadir"
 fi
 
 #=================================================
 # REMOVE NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Removing NGINX web server configuration..." --time --weight=1
+ynh_script_progression --message="Removing NGINX web server configuration..."
 
 ynh_remove_nginx_config
 
 #=================================================
 # REMOVE DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Removing dependencies..." --time --weight=1
+ynh_script_progression --message="Removing dependencies..."
 
 ynh_remove_app_dependencies
 
@@ -97,7 +97,7 @@ ynh_remove_app_dependencies
 
 if yunohost firewall list | grep -q "\- $port$"
 then
-	ynh_script_progression --message="Closing port $port..." --time --weight=1
+	ynh_script_progression --message="Closing port $port..."
 	ynh_exec_warn_less yunohost firewall disallow TCP $port
 fi
 
@@ -106,7 +106,7 @@ fi
 #=================================================
 # REMOVE VARIOUS FILES
 #=================================================
-ynh_script_progression --message="Removing various files..." --time --weight=1
+ynh_script_progression --message="Removing various files..."
 
 # remove sudoers file
 ynh_secure_remove --file="/etc/sudoers.d/$app"
@@ -119,7 +119,7 @@ ynh_secure_remove --file="$(dirname "$log_file")"
 #=================================================
 # REMOVE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Removing the dedicated system user..." --time --weight=1
+ynh_script_progression --message="Removing the dedicated system user..."
 
 ynh_system_user_delete --username=$app
 
@@ -127,4 +127,4 @@ ynh_system_user_delete --username=$app
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Removal of $app completed" --time --last
+ynh_script_progression --message="Removal of $app completed" --last

@@ -39,7 +39,7 @@ path_url="/"
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
-ynh_script_progression --message="Validating installation parameters..." --time --weight=1
+ynh_script_progression --message="Validating installation parameters..."
 
 [ ! -d "$final_path" ] || ynh_die --message="There is already a directory: $final_path "
 ynh_webpath_register --app="$app" --domain="$domain" --path_url="$path_url"
@@ -47,7 +47,7 @@ ynh_webpath_register --app="$app" --domain="$domain" --path_url="$path_url"
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
-ynh_script_progression --message="Storing installation settings..." --time --weight=1
+ynh_script_progression --message="Storing installation settings..."
 ynh_app_setting_set --app="$app" --key=domain --value="$domain"
 ynh_app_setting_set --app="$app" --key=final_path --value="$final_path"
 ynh_app_setting_set --app="$app" --key=data_path --value="$data_path"
@@ -59,7 +59,7 @@ ynh_app_setting_set --app="$app" --key=path_url --value="$path_url"
 #=================================================
 # FIND AND OPEN A PORT
 #=================================================
-ynh_script_progression --message="Finding an available port..." --time --weight=1
+ynh_script_progression --message="Finding an available port..."
 
 port=$(ynh_find_port 8123)
 ynh_app_setting_set --app="$app" --key=port --value="$port"
@@ -68,21 +68,21 @@ ynh_exec_warn_less yunohost firewall allow --no-upnp TCP $port
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Installing dependencies..." --time --weight=1
+ynh_script_progression --message="Installing dependencies..."
 
 myynh_install_dependencies --python="$PY_REQUIRED_VERSION"
 
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Configuring system user..." --time --weight=1
+ynh_script_progression --message="Configuring system user..."
 
 mynh_system_user_create
 
 #=================================================
 # CREATE A MYSQL DATABASE
 #=================================================
-ynh_script_progression --message="Creating a MySQL database..." --time --weight=1
+ynh_script_progression --message="Creating a MySQL database..."
 
 db_name=$(ynh_sanitize_dbid --db_name=$app)
 db_user=$db_name
@@ -92,7 +92,7 @@ ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_script_progression --message="Setting up source files..." --time --weight=1
+ynh_script_progression --message="Setting up source files..."
 
 # create a directory for the installation of Home Assistant
 myynh_create_dir "$final_path"
@@ -109,7 +109,7 @@ ynh_exec_fully_quiet myynh_install_homeassistant
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring NGINX web server..." --time --weight=1
+ynh_script_progression --message="Configuring NGINX web server..."
 
 ynh_add_nginx_config
 
@@ -129,15 +129,9 @@ cp -r "../conf/homeassistant_conf_files/." "$data_path/"
 ynh_add_config --template="../conf/homeassistant_conf_files/configuration.yaml" --destination="$data_path/configuration.yaml"
 
 #=================================================
-# SET FILE OWNERSHIP / PERMISSIONS
-#=================================================
-
-myynh_set_permissions
-
-#=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_script_progression --message="Configuring a systemd service..." --time --weight=1
+ynh_script_progression --message="Configuring a systemd service..."
 
 # setup up systemd service
 ynh_script_progression --message="Adding the dedicated service..."
@@ -148,14 +142,20 @@ ynh_add_systemd_config
 #=================================================
 # SETUP LOGROTATE
 #=================================================
-ynh_script_progression --message="Configuring log rotation..." --time --weight=1
+ynh_script_progression --message="Configuring log rotation..."
 
 ynh_use_logrotate --logfile="$log_file"
 
 #=================================================
+# SET FILE OWNERSHIP / PERMISSIONS
+#=================================================
+
+myynh_set_permissions
+
+#=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
-ynh_script_progression --message="Integrating service in YunoHost..." --time --weight=1
+ynh_script_progression --message="Integrating service in YunoHost..."
 
 # add service in admin panel
 yunohost service add "$app" --description="Home Assistant server" --log="$log_file" --needs_exposed_ports=$port
@@ -163,7 +163,7 @@ yunohost service add "$app" --description="Home Assistant server" --log="$log_fi
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --time --weight=1
+ynh_script_progression --message="Starting a systemd service..."
 
 # start systemd service with --verbose 
 ynh_systemd_action --service_name="$app" --action="start" --line_match="Home Assistant initialized" --log_path="$log_file" --timeout=3600
@@ -177,14 +177,14 @@ ynh_systemd_action --service_name="$app" --action="restart"
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_script_progression --message="Configuring permissions..." --time --weight=1
+ynh_script_progression --message="Configuring permissions..."
 
 [ $is_public -eq 1 ] && ynh_permission_update --permission="main" --add="visitors"
 
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading NGINX web server..." --time --weight=1
+ynh_script_progression --message="Reloading NGINX web server..."
 
 ynh_systemd_action --service_name=nginx --action=reload
 
@@ -192,4 +192,4 @@ ynh_systemd_action --service_name=nginx --action=reload
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Installation of $app completed" --time --last
+ynh_script_progression --message="Installation of $app completed" --last
