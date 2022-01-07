@@ -75,9 +75,9 @@ ynh_restore_file --origin_path="$final_path"
 #=================================================
 ynh_script_progression --message="Restoring the data directory..."
 
-ynh_restore_file --origin_path="$datadir" --not_mandatory
+ynh_restore_file --origin_path="$data_path" --not_mandatory
 
-mkdir -p $datadir
+mkdir -p $data_path
 
 #=================================================
 # SPECIFIC RESTORATION
