@@ -43,7 +43,7 @@ ynh_abort_if_errors
 #=================================================
 ynh_script_progression --message="Stopping a systemd service..."
 
-ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app/$app.log"
+ynh_systemd_action --service_name="$app" --action=stop --log_path="/var/log/$app/$app.log"
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
@@ -79,7 +79,7 @@ fi
 if [ ! -d "$final_path" ]; then
 	# move $final_path to new directory
 	mv "/opt/yunohost/$app" "$final_path"
-	chown -R $app: "$final_path"
+	chown -R "$app": "$final_path"
 fi
 if [ ! -d "$data_path" ]; then
 	# move $data_path to new directory
@@ -87,7 +87,7 @@ if [ ! -d "$data_path" ]; then
 	find "$data_path/.$app" -maxdepth 1 -mindepth 1 -exec mv {} "$data_path" \;
 	rmdir "$data_path/.$app"
 	ynh_replace_string --match_string="/home/homeassistant/.homeassistant" --replace_string="$data_path" --target_file="$data_path/configuration.yaml"
-	chown -R $app: "$data_path"
+	chown -R "$app": "$data_path"
 fi
 if [ ! -f "$log_file" ]; then
 	# create a directory with its log file
@@ -98,10 +98,10 @@ fi
 # changes introduced in 2021.12.8~ynh1
 if [ -z $(ynh_app_setting_get --app="$app" --key=db_name) ]; then
 	# create a MySQL database
-	db_name=$(ynh_sanitize_dbid --db_name=$app)
-	db_user=$db_name
-	ynh_app_setting_set --app=$app --key=db_name --value=$db_name
-	ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name
+	db_name=$(ynh_sanitize_dbid --db_name="$app")
+	db_user="$db_name"
+	ynh_app_setting_set --app=$app --key=db_name --value="$db_name"
+	ynh_mysql_setup_db --db_user="$db_user" --db_name="$db_name"
 	db_pwd=$(ynh_app_setting_get --app="$app" --key=mysqlpwd)
 	if [ -z $(sed -n "/recorder:/=" configuration.yaml) ]; then
 		sed -i "$ a recorder:" "$data_path/configuration.yaml"
@@ -188,13 +188,13 @@ yunohost service add "$app" --description="Home Assistant server" --log="$log_fi
 ynh_script_progression --message="Starting a systemd service..."
 
 # start systemd service with --verbose 
-ynh_systemd_action --service_name="$app" --action="start" --line_match="Home Assistant initialized" --log_path="$log_file" --timeout=3600
+ynh_systemd_action --service_name="$app" --action=start --line_match="Home Assistant initialized" --log_path="$log_file" --timeout=3600
 
 # remove --verbose from service
 ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app.service"
 ynh_store_file_checksum --file="/etc/systemd/system/$app.service"
 systemctl daemon-reload
-ynh_systemd_action --service_name="$app" --action="restart"
+ynh_systemd_action --service_name="$app" --action=restart
 
 #=================================================
 # RELOAD NGINX

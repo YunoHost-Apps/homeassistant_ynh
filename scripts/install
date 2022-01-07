@@ -83,10 +83,10 @@ mynh_system_user_create
 #=================================================
 ynh_script_progression --message="Creating a MySQL database..."
 
-db_name=$(ynh_sanitize_dbid --db_name=$app)
-db_user=$db_name
-ynh_app_setting_set --app=$app --key=db_name --value=$db_name
-ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name
+db_name=$(ynh_sanitize_dbid --db_name="$app")
+db_user="$db_name"
+ynh_app_setting_set --app="$app" --key=db_name --value="$db_name"
+ynh_mysql_setup_db --db_user="$db_user" --db_name="$db_name"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -95,11 +95,11 @@ ynh_script_progression --message="Setting up source files..."
 
 # create a directory for the installation of Home Assistant
 myynh_create_dir "$final_path"
-chown -R $app: "$final_path"
+chown -R "$app": "$final_path"
 
 # create a directory for the datas of Home Assistant
 myynh_create_dir "$data_path/.cache"
-chown -R $app: "$data_path"
+chown -R "$app": "$data_path"
 
 # installation in a virtual environment
 ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
@@ -165,13 +165,13 @@ yunohost service add "$app" --description="Home Assistant server" --log="$log_fi
 ynh_script_progression --message="Starting a systemd service..."
 
 # start systemd service with --verbose 
-ynh_systemd_action --service_name="$app" --action="start" --line_match="Home Assistant initialized" --log_path="$log_file" --timeout=3600
+ynh_systemd_action --service_name="$app" --action=start --line_match="Home Assistant initialized" --log_path="$log_file" --timeout=3600
 
 # remove --verbose from systemd service
 ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app.service"
 ynh_store_file_checksum --file="/etc/systemd/system/$app.service"
 systemctl daemon-reload
-ynh_systemd_action --service_name="$app" --action="restart"
+ynh_systemd_action --service_name="$app" --action=restart
 
 #=================================================
 # SETUP SSOWAT
