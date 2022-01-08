@@ -39,6 +39,7 @@ Home automation platform
 
 * Official app website: https://www.home-assistant.io
 * Official admin documentation: https://www.home-assistant.io/docs/
+* Upstream app code repository: https://github.com/home-assistant/core
 * YunoHost documentation for this app: https://yunohost.org/app_homeassistant
 * Report a bug: https://github.com/YunoHost-Apps/homeassistant_ynh/issues
 
