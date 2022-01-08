@@ -35,6 +35,7 @@ Plateforme domotique
 
 * Site officiel de l'app : https://www.home-assistant.io
 * Documentation officielle de l'admin : https://www.home-assistant.io/docs/
+* Dépôt de code officiel de l'app : https://github.com/home-assistant/core
 * Documentation YunoHost pour cette app : https://yunohost.org/app_homeassistant
 * Signaler un bug : https://github.com/YunoHost-Apps/homeassistant_ynh/issues
 
