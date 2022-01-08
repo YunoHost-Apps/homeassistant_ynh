@@ -1,0 +1,130 @@
+#!/bin/bash
+# to test the functionnality :
+# yunohost app remove homeassistant --purge
+
+#=================================================
+# GENERIC START
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# LOAD SETTINGS
+#=================================================
+ynh_script_progression --message="Loading installation settings..."
+
+app=$YNH_APP_INSTANCE_NAME
+
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+port=$(ynh_app_setting_get --app=$app --key=port)
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+data_path=$(ynh_app_setting_get --app=$app --key=data_path)
+log_file=$(ynh_app_setting_get --app=$app --key=log_file)
+path_url=$(ynh_app_setting_get --app=$app --key=path_url)
+python=$(ynh_app_setting_get --app=$app --key=python)
+db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_user=$db_name
+
+#=================================================
+# STANDARD REMOVE
+#=================================================
+# REMOVE SERVICE INTEGRATION IN YUNOHOST
+#=================================================
+
+if ynh_exec_warn_less yunohost service status $app >/dev/null ; then
+	ynh_script_progression --message="Removing $app service integration..."
+	yunohost service remove $app
+fi
+
+#=================================================
+# STOP AND REMOVE SERVICE
+#=================================================
+ynh_script_progression --message="Stopping and removing the systemd service..."
+
+ynh_remove_systemd_config --service=$app
+
+#=================================================
+# REMOVE LOGROTATE CONFIGURATION
+#=================================================
+ynh_script_progression --message="Removing logrotate configuration..."
+
+ynh_remove_logrotate
+
+#=================================================
+# REMOVE THE MYSQL DATABASE
+#=================================================
+ynh_script_progression --message="Removing the MySQL database..."
+
+ynh_mysql_remove_db --db_user=$db_user --db_name=$db_name
+
+#=================================================
+# REMOVE APP MAIN DIR
+#=================================================
+ynh_script_progression --message="Removing app main directory..."
+
+ynh_secure_remove --file="$final_path"
+
+#=================================================
+# REMOVE DATA DIR
+#=================================================
+
+if [ "${YNH_APP_PURGE:-0}" -eq 1 ]
+then
+	ynh_script_progression --message="Removing app data directory..."
+	ynh_secure_remove --file="$data_path"
+fi
+
+#=================================================
+# REMOVE NGINX CONFIGURATION
+#=================================================
+ynh_script_progression --message="Removing NGINX web server configuration..."
+
+ynh_remove_nginx_config
+
+#=================================================
+# REMOVE DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Removing dependencies..."
+
+ynh_remove_app_dependencies
+
+#=================================================
+# CLOSE A PORT
+#=================================================
+
+if yunohost firewall list | grep -q "\- $port$"
+then
+	ynh_script_progression --message="Closing port $port..."
+	ynh_exec_warn_less yunohost firewall disallow TCP $port
+fi
+
+#=================================================
+# SPECIFIC REMOVE
+#=================================================
+# REMOVE VARIOUS FILES
+#=================================================
+ynh_script_progression --message="Removing various files..."
+
+# remove sudoers file
+ynh_secure_remove --file="/etc/sudoers.d/$app"
+
+# Remove the log files
+ynh_secure_remove --file="$(dirname "$log_file")"
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# REMOVE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Removing the dedicated system user..."
+
+ynh_system_user_delete --username=$app
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Removal of $app completed" --last

@@ -1,0 +1,47 @@
+{
+  "name": "Home Assistant",
+  "id": "homeassistant",
+  "packaging_format": 1,
+   "description": {
+    "en": "Home automation platform",
+    "fr": "Plateforme domotique"
+  },
+  "version": "2021.12.8~ynh1",
+  "url": "https://github.com/home-assistant/home-assistant",
+  "upstream": {
+    "license": "Apache-2.0",
+    "website": "https://www.home-assistant.io",
+    "demo": "https://demo.home-assistant.io",
+    "admindoc": "https://www.home-assistant.io/docs/",
+    "code": "https://github.com/home-assistant/core"
+  },
+  "license": "Apache-2.0",
+  "maintainer": {
+    "name": "ewilly",
+    "email": "ewilly@ewilly.fr"
+  },
+  "requirements": {
+        "yunohost": ">= 4.3.0"
+  },
+  "multi_instance": false,
+  "services": [
+      "nginx"
+  ],
+  "arguments": {
+    "install": [
+      {
+        "name": "domain",
+        "type": "domain"
+      },
+      {
+        "name": "is_public",
+        "type": "boolean",
+        "help": {
+          "en": "If not public, Smartphone app will not work",
+          "fr": "Dans le cas contraire, l'application sur Smartphone ne fonctionnera pas"
+        },
+        "default": true
+      }
+    ]
+  }
+}
