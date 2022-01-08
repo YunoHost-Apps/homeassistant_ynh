@@ -12,7 +12,8 @@
     "license": "Apache-2.0",
     "website": "https://www.home-assistant.io",
     "demo": "https://demo.home-assistant.io",
-    "admindoc": "https://www.home-assistant.io/docs/"
+    "admindoc": "https://www.home-assistant.io/docs/",
+    "code": "https://github.com/home-assistant/core"
   },
   "license": "Apache-2.0",
   "maintainer": {
