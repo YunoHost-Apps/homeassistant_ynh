@@ -8,7 +8,7 @@
 app_version=2021.12.8
 
 # Package dependencies
-pkg_dependencies="python3 python3-dev python3-venv python3-pip libffi-dev libssl-dev libjpeg-dev zlib1g-dev autoconf build-essential libopenjp2-7 libtiff5 libturbojpeg0 libmariadbclient-dev libmariadb-dev-compat"
+pkg_dependencies="python3 python3-dev python3-venv python3-pip libffi-dev libssl-dev libjpeg-dev zlib1g-dev autoconf build-essential libopenjp2-7 libtiff5 libturbojpeg0 libmariadb-dev libmariadb-dev-compat"
 
 # Requirements (Major.Minor.Patch)
 # PY_VERSION=$(curl -s "https://www.python.org/ftp/python/" | grep ">3.9" | tail -n1 | cut -d '/' -f 2 | cut -d '>' -f 2)
