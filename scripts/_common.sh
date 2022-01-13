@@ -41,42 +41,6 @@ myynh_create_dir () {
 	[ -d "$1" ] || mkdir -p "$1"
 }
 
-# Compare version in arguments
-myynh_version_compare () {
-	# myynh_version_compare A B
-	# 0 -> A = B
-	# 1 -> A > B
-	# 2 -> A < B
-	if [[ $1 == $2 ]]
-	then
-		echo 0; return
-	fi
-	local IFS=.
-	local i ver1=($1) ver2=($2)
-	# fill empty fields in ver1 with zeros
-	for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
-	do
-		ver1[i]=0
-	done
-	for ((i=0; i<${#ver1[@]}; i++))
-	do
-		if [[ -z ${ver2[i]} ]]
-		then
-			# fill empty fields in ver2 with zeros
-			ver2[i]=0
-		fi
-		if ((10#${ver1[i]} > 10#${ver2[i]}))
-		then
-			echo 1; return
-		fi
-		if ((10#${ver1[i]} < 10#${ver2[i]}))
-		then
-			echo 2; return
-		fi
-	done
-	echo 1; return
-}
-
 # Install specific python version
 # usage: myynh_install_python --python="3.8.6"
 # | arg: -p, --python=    - the python version to install
@@ -101,7 +65,7 @@ myynh_install_python () {
 	fi
 	
 	# Compare version
-	if [ $(myynh_version_compare $py_apt_version $python) -le 1 ]
+	if [ $(dpkg --compare-versions $py_apt_version ge $python) ]
 	then
 		# APT >= Required
 		ynh_print_info --message="Using provided python3..."
@@ -110,7 +74,7 @@ myynh_install_python () {
 		
 	else
 		# Either python already built or to build 
-		if [ $(myynh_version_compare $py_built_version $python) -le 1 ]
+		if [ $(dpkg --compare-versions $py_built_version ge $python) ]
 		then
 			# Built >= Required
 			ynh_print_info --message="Using already used python3 built version..."
