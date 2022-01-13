@@ -128,7 +128,7 @@ myynh_install_python () {
 myynh_install_homeassistant () {
 	ynh_exec_as $app -H -s /bin/bash -c " \
 		echo 'create the virtual environment' \
-			&& $py_app_version -m venv "$final_path" \
+			&& $py_app_version -m venv --upgrade "$final_path" \
 		&& echo 'activate the virtual environment' \
 			&& source "$final_path/bin/activate" \
 		&& echo 'install last version of wheel' \
