@@ -128,7 +128,7 @@ myynh_install_python () {
 myynh_install_homeassistant () {
 	ynh_exec_as $app -H -s /bin/bash -c " \
 		echo 'create the virtual environment' \
-			&& $py_app_version -m venv --upgrade "$final_path" \
+			&& $py_app_version -m venv "$final_path" \
 		&& echo 'activate the virtual environment' \
 			&& source "$final_path/bin/activate" \
 		&& echo 'install last version of wheel' \
@@ -137,6 +137,14 @@ myynh_install_homeassistant () {
 			&& pip --cache-dir "$data_path/.cache" install --upgrade mysqlclient \
 		&& echo 'install Home Assistant' \
 			&& pip --cache-dir "$data_path/.cache" install --upgrade $app==$app_version \
+		"
+}
+
+# Upgrade the virtual environment directory
+myynh_upgrade_venv_directory () {
+	ynh_exec_as $app -H -s /bin/bash -c " \
+		echo 'Upgrade the virtual environment directory' \
+			&& $py_app_version -m venv --upgrade "$final_path" \
 		"
 }
 
