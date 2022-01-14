@@ -140,6 +140,14 @@ myynh_install_homeassistant () {
 		"
 }
 
+# Upgrade the virtual environment directory
+myynh_upgrade_venv_directory () {
+	ynh_exec_as $app -H -s /bin/bash -c " \
+		echo 'Upgrade the virtual environment directory' \
+			&& $py_app_version -m venv --upgrade "$final_path" \
+		"
+}
+
 # Set permissions
 myynh_set_permissions () {
 	chown -R $app: "$final_path"
