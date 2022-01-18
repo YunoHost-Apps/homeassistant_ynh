@@ -5,7 +5,7 @@
 #=================================================
 
 # Release to install
-app_version=2021.12.8
+app_version=2021.12.10
 
 # Package dependencies
 pkg_dependencies="python3 python3-dev python3-venv python3-pip libffi-dev libssl-dev libjpeg-dev zlib1g-dev autoconf build-essential libopenjp2-7 libtiff5 libturbojpeg0 libmariadb-dev libmariadb-dev-compat"
@@ -70,7 +70,7 @@ myynh_install_python () {
 		# APT >= Required
 		ynh_print_info --message="Using provided python3..."
 		
-		py_app_version="python3"
+		py_app_version=2021.12.10
 		
 	else
 		# Either python already built or to build 
@@ -79,7 +79,7 @@ myynh_install_python () {
 			# Built >= Required
 			ynh_print_info --message="Using already used python3 built version..."
 			
-			py_app_version="/usr/local/bin/python${py_built_version:0:3}"
+			py_app_version=2021.12.10
 			
 		else
 			ynh_print_info --message="Installing additional dependencies to build python..."
@@ -117,7 +117,7 @@ myynh_install_python () {
 			ynh_secure_remove "$tmpdir"
 			
 			# Set version
-			py_app_version="/usr/local/bin/python${python:0:3}"
+			py_app_version=2021.12.10
 		fi
 	fi
 	# Save python version in settings 
