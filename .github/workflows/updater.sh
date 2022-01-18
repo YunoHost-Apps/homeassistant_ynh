@@ -43,7 +43,7 @@ fi
 #=================================================
 
 # Replace new version in _common.sh
-sed -i "s/app_version=.*/app_version=$upstream_version/" scripts/_common.sh
+sed -i "s/^app_version=.*/app_version=$upstream_version/" scripts/_common.sh
 
 #=================================================
 # GENERIC FINALIZATION
