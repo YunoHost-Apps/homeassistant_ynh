@@ -42,16 +42,19 @@ fi
 # Check User and permissions
 [ ! -z "$DEBUG" ] && log "User '$(whoami)' is running that script and '$(has_sudo)'."
 
-# create the virtual environment
+# upgrade the virtual environment
 MY_PYTHON=$(readlink -e "$final_path/bin/python")
 [ ! -z "$DEBUG" ] && log "Using pyhton '$MY_PYTHON'."
-$MY_PYTHON -m venv "$final_path"
+$MY_PYTHON -m venv --upgrade "$final_path"
 
 # activate the virtual environment
 source "$final_path/bin/activate"
 
 # install last version of wheel
 pip --cache-dir "$data_path/.cache" install --upgrade wheel
+
+# install last version of mysqlclient
+pip --cache-dir "$data_path/.cache" install --upgrade mysqlclient
 
 # upgrade homeassistant python package
 pip --cache-dir "$data_path/.cache" install --upgrade $app
