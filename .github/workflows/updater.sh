@@ -19,7 +19,7 @@
 # Fetching information
 app=$(cat manifest.json | jq -j '.id')
 current_version=$(cat manifest.json | jq -j '.version|split("~")[0]')
-upstream_version=$(curl -Ls https://pypi.org/pypi/$pythonPackage/json | jq -r .info.version)
+upstream_version=$(curl -Ls https://pypi.org/pypi/$app/json | jq -r .info.version)
 
 # Setting up the environment variables
 echo "Current version: $current_version"
@@ -43,7 +43,7 @@ fi
 #=================================================
 
 # Replace new version in _common.sh
-sed -i "s/app_version=.*/app_version=$upstream_version/" scripts/_common.sh
+sed -i "s/^app_version=.*/app_version=$upstream_version/" scripts/_common.sh
 
 #=================================================
 # GENERIC FINALIZATION
