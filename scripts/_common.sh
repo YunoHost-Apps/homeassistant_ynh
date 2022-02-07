@@ -65,7 +65,7 @@ myynh_install_python () {
 	fi
 	
 	# Compare version
-	if [ $(dpkg --compare-versions $py_apt_version ge $python) ]
+	if $(dpkg --compare-versions $py_apt_version ge $python)
 	then
 		# APT >= Required
 		ynh_print_info --message="Using provided python3..."
@@ -74,7 +74,7 @@ myynh_install_python () {
 		
 	else
 		# Either python already built or to build 
-		if [ $(dpkg --compare-versions $py_built_version ge $python) ]
+		if $(dpkg --compare-versions $py_built_version ge $python)
 		then
 			# Built >= Required
 			ynh_print_info --message="Using already used python3 built version..."
