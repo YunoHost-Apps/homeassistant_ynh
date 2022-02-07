@@ -113,6 +113,8 @@ ynh_restore_file --origin_path="$(dirname "$log_file")"
 ynh_script_progression --message="Restoring the systemd configuration..."
 
 ynh_restore_file --origin_path="/etc/systemd/system/$app.service"
+# add --verbose to track restart
+sed -i 's/ExecStart=.*/& --verbose/g' "/etc/systemd/system/$app.service"
 systemctl enable $app.service --quiet
 
 #=================================================
@@ -140,7 +142,14 @@ yunohost service add $app --description="Home Assistant server" --log="$log_file
 #=================================================
 ynh_script_progression --message="Starting a systemd service..."
 
-ynh_systemd_action --service_name=$app --action=start
+# start systemd service with --verbose
+ynh_systemd_action --service_name=$app --action=start --line_match="Home Assistant initialized" --log_path="$log_file" --timeout=3600
+
+# remove --verbose from service
+ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app.service"
+ynh_store_file_checksum --file="/etc/systemd/system/$app.service"
+systemctl daemon-reload
+ynh_systemd_action --service_name=$app --action=restart
 
 #=================================================
 # GENERIC FINALIZATION
