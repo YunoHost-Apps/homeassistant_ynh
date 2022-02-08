@@ -5,7 +5,7 @@
 #=================================================
 
 # Release to install
-app_version=2021.12.10
+app_version=2022.2.3
 
 # Package dependencies
 pkg_dependencies="python3 python3-dev python3-venv python3-pip libffi-dev libssl-dev libjpeg-dev zlib1g-dev autoconf build-essential libopenjp2-7 libtiff5 libturbojpeg0 libmariadb-dev libmariadb-dev-compat"
@@ -65,7 +65,7 @@ myynh_install_python () {
 	fi
 	
 	# Compare version
-	if [ $(dpkg --compare-versions $py_apt_version ge $python) ]
+	if $(dpkg --compare-versions $py_apt_version ge $python)
 	then
 		# APT >= Required
 		ynh_print_info --message="Using provided python3..."
@@ -74,7 +74,7 @@ myynh_install_python () {
 		
 	else
 		# Either python already built or to build 
-		if [ $(dpkg --compare-versions $py_built_version ge $python) ]
+		if $(dpkg --compare-versions $py_built_version ge $python)
 		then
 			# Built >= Required
 			ynh_print_info --message="Using already used python3 built version..."
