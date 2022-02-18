@@ -7,6 +7,9 @@ Type=simple
 User=__APP__
 WorkingDirectory=__DATA_PATH__
 ExecStart=__FINALPATH__/bin/hass --config "__DATA_PATH__" --log-file "__LOG_FILE__" --verbose
+RestartForceExitStatus=100
+Restart=on-failure
+RestartSec=5s
 StandardOutput=append:__LOG_FILE__
 StandardError=inherit
 
