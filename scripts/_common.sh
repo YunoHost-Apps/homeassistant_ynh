@@ -41,6 +41,26 @@ myynh_create_dir () {
 	[ -d "$1" ] || mkdir -p "$1"
 }
 
+myynh_compile_libffi () {
+	ynh_print_info --message="Building libffi..."
+	
+	# Create a temp direcotry
+	tmpdir="$(mktemp --directory)"
+	cd "$tmpdir"
+	
+	# Download
+	wget "https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.3.tar.gz"
+	
+	# Extract
+	tar zxf libffi-3.3.tar.gz
+	
+	# Install
+	cd libffi-3.3
+	./configure
+	make install
+	ldconfig
+}
+
 # Install specific python version
 # usage: myynh_install_python --python="3.8.6"
 # | arg: -p, --python=    - the python version to install
@@ -123,7 +143,7 @@ myynh_install_python () {
 	# Save python version in settings 
 	ynh_app_setting_set --app=$app --key=python --value="$python"
 }
-
+	
 # Install/Upgrade Homeassistant in virtual environement
 myynh_install_homeassistant () {
 	ynh_exec_as $app -H -s /bin/bash -c " \
