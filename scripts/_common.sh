@@ -44,12 +44,8 @@ myynh_create_dir () {
 myynh_compile_libffi () {
 	ynh_print_info --message="Building libffi..."
 	
-	# Create a temp direcotry
-	tmpdir="$(mktemp --directory)"
-	cd "$tmpdir"
-	
 	# Download
-	wget "https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.3.tar.gz"
+	wget "https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.3.tar.gz" 2>&1
 	
 	# Extract
 	tar zxf libffi-3.3.tar.gz
