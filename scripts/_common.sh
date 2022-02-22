@@ -53,8 +53,11 @@ myynh_compile_libffi () {
 	# Install
 	cd libffi-3.3
 	./configure
-	make install
+	ynh_exec_warn_less make install
 	ldconfig
+	
+	#Exit
+	cd ..
 }
 
 # Install specific python version
