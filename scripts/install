@@ -70,6 +70,10 @@ ynh_app_setting_set --app=$app --key=port --value="$port"
 ynh_script_progression --message="Installing dependencies..."
 
 ynh_install_app_dependencies $pkg_dependencies
+
+# Install libffi-3.3 if libffi.so.7 is missing (buster)
+[[ $(ldconfig -p | grep libffi.so.7) ]] || myynh_compile_libffi
+
 myynh_install_python --python="$py_required_version"
 
 #=================================================
