@@ -52,7 +52,7 @@ myynh_compile_libffi () {
 	
 	# Install
 	cd libffi-3.3
-	./configure
+	ynh_exec_warn_less ./configure
 	ynh_exec_warn_less make install
 	ldconfig
 	
