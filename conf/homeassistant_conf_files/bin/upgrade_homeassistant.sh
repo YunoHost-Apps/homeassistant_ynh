@@ -61,5 +61,6 @@ pip --cache-dir "$data_path/.cache" install --upgrade $app
 
 # restart homeassistant systemd service
 sudo systemctl restart $app.service
+[ ! -z "$DEBUG" ] && log "Last $app service start : $(sudo systemctl status $app.service | grep Started | tail -1)"
 
 exit 0
