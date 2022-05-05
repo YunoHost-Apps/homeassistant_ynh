@@ -13,7 +13,7 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 
 Plateforme domotique
 
-**Version incluse :** 2022.4.7~ynh1
+**Version incluse :** 2022.5.0~ynh1
 
 **Démo :** https://demo.home-assistant.io
 
