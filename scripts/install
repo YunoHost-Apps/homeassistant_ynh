@@ -162,7 +162,7 @@ myynh_set_permissions
 ynh_script_progression --message="Integrating service in YunoHost..."
 
 # add service in admin panel
-yunohost service add $app --description="Home Assistant server" --log="$log_file" --needs_exposed_ports=$port
+yunohost service add $app --description="Home Assistant server" --log="$log_file"
 
 #=================================================
 # START SYSTEMD SERVICE
