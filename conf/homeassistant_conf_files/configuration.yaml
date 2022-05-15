@@ -1,4 +1,5 @@
 homeassistant:
+  external_url: "https://__DOMAIN__"
   auth_providers:
    - type: command_line
      command: __DATA_PATH__/bin/ynh_ldap-auth.sh
