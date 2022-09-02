@@ -19,6 +19,7 @@ Home automation platform
 
 **Shipped version:** 2022.7.7~ynh1
 
+
 **Demo:** https://demo.home-assistant.io
 
 ## Screenshots
