@@ -1,6 +1,8 @@
 name: YunoHost apps package linter
 
 on:
+  # Allow to manually trigger the workflow
+  workflow_dispatch:
   push:
     branches:
       - main
