@@ -1,4 +1,5 @@
 homeassistant:
+  country: FR
   external_url: "https://__DOMAIN__"
   auth_providers:
    - type: command_line
