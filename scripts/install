@@ -53,8 +53,6 @@ ynh_app_setting_set --app=$app --key=final_path --value="$final_path"
 ynh_app_setting_set --app=$app --key=data_path --value="$data_path"
 ynh_app_setting_set --app=$app --key=log_file --value="$log_file"
 ynh_app_setting_set --app=$app --key=path_url --value="$path_url"
-# Allow the web UI to use its own API without SSOWat interfering with it.
-ynh_app_setting_set --app=$app --key=skipped_uris --value="/api/"
 
 #=================================================
 # STANDARD MODIFICATIONS
@@ -186,7 +184,8 @@ ynh_systemd_action --service_name=$app --action=restart
 ynh_script_progression --message="Configuring permissions..."
 
 [ $is_public -eq 1 ] && ynh_permission_update --permission="main" --add="visitors"
-ynh_app_setting_set --app=$app --key=skipped_uris --value="/api/"
+# Allow the web UI to use its own API without Yunohost/SSOWat interfering with it. Home Assistant authentication should still be in effect.
+ynh_permission_create --permission="api" --label="api" --url="/api" --allowed="visitors" "all_users" --auth_header="false" --show_tile="false" --protected="true"
 
 #=================================================
 # RELOAD NGINX
