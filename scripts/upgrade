@@ -32,6 +32,16 @@ db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 upgrade_type=$(ynh_check_app_version_changed)
 
 #=================================================
+# ENSURE DOWNWARD COMPATIBILITY
+#=================================================
+ynh_script_progression --message="Ensuring downward compatibility..."
+
+# Create a permission if needed
+if ! ynh_permission_exists --permission="api"; then
+    ynh_permission_create --permission="api" --label="api" --url="/api" --allowed="visitors" "all_users" --auth_header="false" --show_tile="false" --protected="true"
+fi
+
+#=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
 ynh_script_progression --message="Backing up the app before upgrading (may take a while)..."
