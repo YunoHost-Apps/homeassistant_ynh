@@ -184,6 +184,8 @@ ynh_systemd_action --service_name=$app --action=restart
 ynh_script_progression --message="Configuring permissions..."
 
 [ $is_public -eq 1 ] && ynh_permission_update --permission="main" --add="visitors"
+# Allow the web UI to use its own API without Yunohost/SSOWat interfering with it. Home Assistant authentication should still be in effect.
+ynh_permission_create --permission="api" --label="api" --url="/api" --allowed="visitors" "all_users" --auth_header="false" --show_tile="false" --protected="true"
 
 #=================================================
 # RELOAD NGINX
