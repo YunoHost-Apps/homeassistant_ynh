@@ -26,6 +26,14 @@ app=$YNH_APP_INSTANCE_NAME
 
 domain=$YNH_APP_ARG_DOMAIN
 is_public=$YNH_APP_ARG_IS_PUBLIC
+home=$YNH_APP_ARG_HOME
+latitude=$YNH_APP_ARG_LATITUDE
+longitude=$YNH_APP_ARG_LONGITUDE
+elevation=$YNH_APP_ARG_ELEVATION
+unit_system=$YNH_APP_ARG_UNIT_SYSTEM
+currency=$YNH_APP_ARG_CURRENCY
+country=$YNH_APP_ARG_COUNTRY
+time_zone=$YNH_APP_ARG_TIME_ZONE
 
 #=================================================
 # DEFINE USEFULL VARS
