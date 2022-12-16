@@ -23,7 +23,7 @@ Plateforme domotique
 
 ## Captures d'écran
 
-![Capture d'écran de Home Assistant](./doc/screenshots/screenshot1)
+![Capture d'écran de Home Assistant](./doc/screenshots/screenshot1.png)
 
 ## Avertissements / informations importantes
 

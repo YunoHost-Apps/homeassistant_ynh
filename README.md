@@ -23,7 +23,7 @@ Home automation platform
 
 ## Screenshots
 
-![Screenshot of Home Assistant](./doc/screenshots/screenshot1)
+![Screenshot of Home Assistant](./doc/screenshots/screenshot1.png)
 
 ## Disclaimers / important information
 
