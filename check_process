@@ -2,6 +2,14 @@
 	; Manifest
 		domain="domain.tld"
 		is_public=1
+		home="Home"
+		latitude="32.87336"
+		longitude="117.22743"
+		elevation="430"
+		unit_system="metric"
+		currency="USD"
+		country="US"
+		time_zone="America/Los_Angeles"
 	; Checks
         pkg_linter=1
 		setup_sub_dir=0

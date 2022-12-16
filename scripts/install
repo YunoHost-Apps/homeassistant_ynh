@@ -26,6 +26,14 @@ app=$YNH_APP_INSTANCE_NAME
 
 domain=$YNH_APP_ARG_DOMAIN
 is_public=$YNH_APP_ARG_IS_PUBLIC
+home=$YNH_APP_ARG_HOME
+latitude=$YNH_APP_ARG_LATITUDE
+longitude=$YNH_APP_ARG_LONGITUDE
+elevation=$YNH_APP_ARG_ELEVATION
+unit_system=$YNH_APP_ARG_UNIT_SYSTEM
+currency=$YNH_APP_ARG_CURRENCY
+country=$YNH_APP_ARG_COUNTRY
+time_zone=$YNH_APP_ARG_TIME_ZONE
 
 #=================================================
 # DEFINE USEFULL VARS
@@ -184,6 +192,8 @@ ynh_systemd_action --service_name=$app --action=restart
 ynh_script_progression --message="Configuring permissions..."
 
 [ $is_public -eq 1 ] && ynh_permission_update --permission="main" --add="visitors"
+# Allow the web UI to use its own API without Yunohost/SSOWat interfering with it. Home Assistant authentication should still be in effect.
+ynh_permission_create --permission="api" --label="api" --url="/api" --allowed="visitors" "all_users" --auth_header="false" --show_tile="false" --protected="true"
 
 #=================================================
 # RELOAD NGINX

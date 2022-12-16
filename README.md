@@ -17,13 +17,13 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 Home automation platform
 
-**Shipped version:** 2022.12.0~ynh1
+**Shipped version:** 2022.12.6~ynh1
 
 **Demo:** https://demo.home-assistant.io
 
 ## Screenshots
 
-![Screenshot of Home Assistant](./doc/screenshots/screenshot1)
+![Screenshot of Home Assistant](./doc/screenshots/screenshot1.png)
 
 ## Disclaimers / important information
 

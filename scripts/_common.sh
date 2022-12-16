@@ -5,7 +5,7 @@
 #=================================================
 
 # Release to install
-app_version=2022.12.0
+app_version=2022.12.6
 
 # Package dependencies
 pkg_dependencies="python3 python3-dev python3-venv python3-pip libffi-dev libssl-dev libjpeg-dev zlib1g-dev autoconf build-essential libopenjp2-7 libtiff5 libturbojpeg0 libmariadb-dev libmariadb-dev-compat rustc"
@@ -13,7 +13,7 @@ pkg_dependencies="python3 python3-dev python3-venv python3-pip libffi-dev libssl
 # Requirements (Major.Minor.Patch)
 # PY_VERSION=$(curl -s "https://www.python.org/ftp/python/" | grep ">3.9" | tail -n1 | cut -d '/' -f 2 | cut -d '>' -f 2)
 # Pyhton 3.9.2 will be shiped with bullseye
-py_required_version=3.9.2
+py_required_version=3.10.9
 
 #=================================================
 # PERSONAL HELPERS
@@ -74,10 +74,13 @@ myynh_install_python () {
 	# Check python version from APT
 	local py_apt_version=$(python3 --version | cut -d ' ' -f 2)
 	
+	# Usefull variables
+	local python_major=${python%.*}
+	
 	# Check existing built version of python in /usr/local/bin
-	if [ -e "/usr/local/bin/python${python:0:3}" ]
+	if [ -e "/usr/local/bin/python$python_major" ]
 	then
-		local py_built_version=$(/usr/local/bin/python${python:0:3} --version \
+		local py_built_version=$(/usr/local/bin/python$python_major --version \
 			| cut -d ' ' -f 2)
 	else
 		local py_built_version=0
@@ -98,12 +101,12 @@ myynh_install_python () {
 			# Built >= Required
 			ynh_print_info --message="Using already used python3 built version..."
 			
-			py_app_version="/usr/local/bin/python${py_built_version:0:3}"
+			py_app_version="/usr/local/bin/python${py_built_version%.*}"
 			
 		else
 			ynh_print_info --message="Installing additional dependencies to build python..."
 			
-			pkg_dependencies="${pkg_dependencies} tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libbz2-dev libexpat1-dev liblzma-dev wget tar"
+			pkg_dependencies="${pkg_dependencies} tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libbz2-dev libexpat1-dev liblzma-dev wget tar  libnss3-dev libreadline-dev"
 			ynh_install_app_dependencies "${pkg_dependencies}"
 			
 			# APT < Minimal & Actual < Minimal => Build & install Python into /usr/local/bin
@@ -136,7 +139,7 @@ myynh_install_python () {
 			ynh_secure_remove "$tmpdir"
 			
 			# Set version
-			py_app_version="/usr/local/bin/python${python:0:3}"
+			py_app_version="/usr/local/bin/python$python_major"
 		fi
 	fi
 	# Save python version in settings 
@@ -145,26 +148,33 @@ myynh_install_python () {
 	
 # Install/Upgrade Homeassistant in virtual environement
 myynh_install_homeassistant () {
-	ynh_exec_as $app -H -s /bin/bash -c " \
-		echo 'create the virtual environment' \
-			&& $py_app_version -m venv "$final_path" \
-		&& echo 'activate the virtual environment' \
-			&& source "$final_path/bin/activate" \
-		&& echo 'install last version of wheel' \
-			&& pip --cache-dir "$data_path/.cache" install --upgrade wheel \
-		&& echo 'install last version of mysqlclient' \
-			&& pip --cache-dir "$data_path/.cache" install --upgrade mysqlclient \
-		&& echo 'install Home Assistant' \
-			&& pip --cache-dir "$data_path/.cache" install --upgrade $app==$app_version \
-		"
+	# Create the virtual environment
+	ynh_exec_as $app $py_app_version -m venv --without-pip "$final_path"
+	
+	# Run source in a 'sub shell'
+	(
+		# activate the virtual environment
+		set +o nounset
+		source "$final_path/bin/activate"
+		set -o nounset
+		
+		# add pip
+		ynh_exec_as $app "$final_path/bin/python3" -m ensurepip
+		
+		# install last version of wheel
+		ynh_exec_as $app "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade wheel
+		
+		# install last version of mysqlclient
+		ynh_exec_as $app "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade mysqlclient
+		
+		# install Home Assistant
+		ynh_exec_as $app "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade $app==$app_version
+	)
 }
 
 # Upgrade the virtual environment directory
 myynh_upgrade_venv_directory () {
-	ynh_exec_as $app -H -s /bin/bash -c " \
-		echo 'Upgrade the virtual environment directory' \
-			&& $py_app_version -m venv --upgrade "$final_path" \
-		"
+	ynh_exec_as $app $py_app_version -m venv --upgrade "$final_path"
 }
 
 # Set permissions
