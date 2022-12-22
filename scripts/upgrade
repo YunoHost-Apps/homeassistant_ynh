@@ -77,8 +77,8 @@ then
 	ynh_script_progression --message="Upgrading source files..."
 	
 	myynh_install_python --python="$py_required_version"
-	ynh_exec_fully_quiet myynh_upgrade_venv_directory
-	ynh_exec_fully_quiet myynh_install_homeassistant
+	myynh_upgrade_venv_directory
+	myynh_install_homeassistant
 fi
 
 #=================================================
