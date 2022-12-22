@@ -6,7 +6,7 @@
         "en": "Home automation platform",
         "fr": "Plateforme domotique"
     },
-    "version": "2022.12.6~ynh1",
+    "version": "2022.12.8~ynh1",
     "url": "https://github.com/home-assistant/home-assistant",
     "upstream": {
         "license": "Apache-2.0",
@@ -80,7 +80,10 @@
                 "ask": {
                     "en": "metric for Metric, us_customary for US Customary. This also sets temperature_unit, Celsius for Metric and Fahrenheit for US Customary."
                 },
-                "choices": ["metric", "us_customary"],
+                "choices": [
+                    "metric",
+                    "us_customary"
+                ],
                 "default": "metric"
             },
             {
