@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
   # Run it every day at 6:00 UTC
   schedule:
-    - cron:  '0 6 * * *'
+    - cron:  '0 6 */7 * *'
 jobs:
   updater:
     runs-on: ubuntu-latest
