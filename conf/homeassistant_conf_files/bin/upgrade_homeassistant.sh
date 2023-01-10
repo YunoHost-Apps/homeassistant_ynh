@@ -4,7 +4,7 @@
 #
 
 # Uncomment to enable debugging to stderr (prints full client output and more)
-DEBUG=0
+#DEBUG=1
 
 # define usefull variables
 app="homeassistant"
@@ -18,19 +18,7 @@ data_path="/home/yunohost.app/$app"
 
 # Log messages to log file.
 log() {
-        echo "$(date)\t$1" >> $LOG_FILE
-}
-
-has_sudo() {
-        local prompt
-        prompt=$(sudo -nv 2>&1)
-        if [ $? -eq 0 ]; then
-                echo "has sudo pass set"
-        elif echo $prompt | grep -q '^sudo:'; then
-                echo "has sudo needs pass"
-        else
-                echo "can't sudo"
-        fi
+        echo "$(date)    $1" >> $LOG_FILE
 }
 
 # Reset log file.
@@ -39,28 +27,41 @@ if [ ! -z "$DEBUG" ]; then
         [ -f "$LOG_FILE" ] && :> "$LOG_FILE"
 fi
 
-# Check User and permissions
-[ ! -z "$DEBUG" ] && log "User '$(whoami)' is running that script and '$(has_sudo)'."
-
 # upgrade the virtual environment
 MY_PYTHON=$(readlink -e "$final_path/bin/python")
 [ ! -z "$DEBUG" ] && log "Using pyhton '$MY_PYTHON'."
 $MY_PYTHON -m venv --upgrade "$final_path"
 
-# activate the virtual environment
-source "$final_path/bin/activate"
+# Run source in a 'sub shell'
+(
+    # activate the virtual environment
+    set +o nounset
+    [ ! -z "$DEBUG" ] && log "Activate the virtual environment"
+    source "$final_path/bin/activate"
+    set -o nounset
 
-# install last version of wheel
-pip --cache-dir "$data_path/.cache" install --upgrade wheel
+    # add pip
+    [ ! -z "$DEBUG" ] && log "Upgrade pip"
+    "$final_path/bin/python3" -m ensurepip --upgrade
 
-# install last version of mysqlclient
-pip --cache-dir "$data_path/.cache" install --upgrade mysqlclient
+    local VERBOSE
+    [ ! -z "$DEBUG" ] && VERBOSE="--log $LOG_FILE"
 
-# upgrade homeassistant python package
-pip --cache-dir "$data_path/.cache" install --upgrade $app
+    # install last version of wheel
+    [ ! -z "$DEBUG" ] && log "Install latest pip version of wheel"
+    "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade wheel $VERBOSE
+
+    # install last version of mysqlclient
+    [ ! -z "$DEBUG" ] && log "Install latest pip version of mysqlclient"
+    "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade mysqlclient $VERBOSE
+
+    # upgrade homeassistant python package
+    [ ! -z "$DEBUG" ] && log "Install latest pip version of $app"
+    "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade $app $VERBOSE
+)
 
 # restart homeassistant systemd service
+[ ! -z "$DEBUG" ] && log "Restart $app systemd service"
 sudo systemctl restart $app.service
-[ ! -z "$DEBUG" ] && log "Last $app service start : $(sudo systemctl status $app.service | grep Started | tail -1)"
 
 exit 0
