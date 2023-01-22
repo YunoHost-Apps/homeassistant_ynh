@@ -5,25 +5,25 @@ It shall NOT be edited by hand.
 
 # Home Assistant pour YunoHost
 
-[![Niveau d'intégration](https://dash.yunohost.org/integration/homeassistant.svg)](https://dash.yunohost.org/appci/app/homeassistant) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/homeassistant.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/homeassistant.maintain.svg)  
+[![Niveau d’intégration](https://dash.yunohost.org/integration/homeassistant.svg)](https://dash.yunohost.org/appci/app/homeassistant) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/homeassistant.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/homeassistant.maintain.svg)
 [![Installer Home Assistant avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=homeassistant)
 
 *[Read this readme in english.](./README.md)*
 
-> *Ce package vous permet d'installer Home Assistant rapidement et simplement sur un serveur YunoHost.
-Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l'installer et en profiter.*
+> *Ce package vous permet d’installer Home Assistant rapidement et simplement sur un serveur YunoHost.
+Si vous n’avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l’installer et en profiter.*
 
-## Vue d'ensemble
+## Vue d’ensemble
 
 Plateforme domotique
 
-**Version incluse :** 2023.1.3~ynh1
+**Version incluse :** 2023.1.6~ynh1
 
 **Démo :** https://demo.home-assistant.io
 
-## Captures d'écran
+## Captures d’écran
 
-![Capture d'écran de Home Assistant](./doc/screenshots/screenshot1.png)
+![Capture d’écran de Home Assistant](./doc/screenshots/screenshot1.png)
 
 ## Avertissements / informations importantes
 
@@ -37,9 +37,9 @@ Plateforme domotique
 
 ## Documentations et ressources
 
-* Site officiel de l'app : <https://www.home-assistant.io>
-* Documentation officielle de l'admin : <https://www.home-assistant.io/docs/>
-* Dépôt de code officiel de l'app : <https://github.com/home-assistant/core>
+* Site officiel de l’app : <https://www.home-assistant.io>
+* Documentation officielle de l’admin : <https://www.home-assistant.io/docs/>
+* Dépôt de code officiel de l’app : <https://github.com/home-assistant/core>
 * Documentation YunoHost pour cette app : <https://yunohost.org/app_homeassistant>
 * Signaler un bug : <https://github.com/YunoHost-Apps/homeassistant_ynh/issues>
 
@@ -55,4 +55,4 @@ ou
 sudo yunohost app upgrade homeassistant -u https://github.com/YunoHost-Apps/homeassistant_ynh/tree/testing --debug
 ```
 
-**Plus d'infos sur le packaging d'applications :** <https://yunohost.org/packaging_apps>
+**Plus d’infos sur le packaging d’applications :** <https://yunohost.org/packaging_apps>
