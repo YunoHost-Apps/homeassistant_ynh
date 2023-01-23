@@ -5,7 +5,7 @@ It shall NOT be edited by hand.
 
 # Home Assistant for YunoHost
 
-[![Integration level](https://dash.yunohost.org/integration/homeassistant.svg)](https://dash.yunohost.org/appci/app/homeassistant) ![Working status](https://ci-apps.yunohost.org/ci/badges/homeassistant.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/homeassistant.maintain.svg)  
+[![Integration level](https://dash.yunohost.org/integration/homeassistant.svg)](https://dash.yunohost.org/appci/app/homeassistant) ![Working status](https://ci-apps.yunohost.org/ci/badges/homeassistant.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/homeassistant.maintain.svg)
 [![Install Home Assistant with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=homeassistant)
 
 *[Lire ce readme en français.](./README_fr.md)*
@@ -17,7 +17,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 Home automation platform
 
-**Shipped version:** 2023.1.3~ynh1
+**Shipped version:** 2023.1.6~ynh1
 
 **Demo:** https://demo.home-assistant.io
 
