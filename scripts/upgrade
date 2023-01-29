@@ -95,9 +95,6 @@ ynh_script_progression --message="Upgrading dependencies..."
 
 ynh_install_app_dependencies $pkg_dependencies
 
-# Install libffi-3.3 if libffi.so.7 is missing (buster)
-[[ $(ldconfig -p | grep libffi.so.7) ]] || myynh_compile_libffi
-
 #=================================================
 # UPDATE A CONFIG FILE
 #=================================================

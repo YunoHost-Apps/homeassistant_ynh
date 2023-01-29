@@ -41,25 +41,6 @@ myynh_create_dir () {
 	[ -d "$1" ] || mkdir -p "$1"
 }
 
-myynh_compile_libffi () {
-	ynh_print_info --message="Building libffi..."
-	
-	# Download
-	wget "https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.3.tar.gz" 2>&1
-	
-	# Extract
-	tar zxf libffi-3.3.tar.gz
-	
-	# Install
-	cd libffi-3.3
-	ynh_exec_warn_less ./configure
-	ynh_exec_warn_less make install
-	ldconfig
-	
-	#Exit
-	cd ..
-}
-
 # Install specific python version
 # usage: myynh_install_python --python="3.8.6"
 # | arg: -p, --python=    - the python version to install
