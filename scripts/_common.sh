@@ -5,7 +5,7 @@
 #=================================================
 
 # Release to install
-app_version=2023.1.6
+app_version=2023.1.7
 
 # Package dependencies
 pkg_dependencies="python3 python3-dev python3-venv python3-pip libffi-dev libssl-dev libjpeg-dev zlib1g-dev autoconf build-essential libopenjp2-7 libtiff5 libturbojpeg0 libmariadb-dev libmariadb-dev-compat rustc"
@@ -39,25 +39,6 @@ myynh_check_path () {
 myynh_create_dir () {
 	[ -z "$1" ] && ynh_die "No argument supplied"
 	[ -d "$1" ] || mkdir -p "$1"
-}
-
-myynh_compile_libffi () {
-	ynh_print_info --message="Building libffi..."
-	
-	# Download
-	wget "https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.3.tar.gz" 2>&1
-	
-	# Extract
-	tar zxf libffi-3.3.tar.gz
-	
-	# Install
-	cd libffi-3.3
-	ynh_exec_warn_less ./configure
-	ynh_exec_warn_less make install
-	ldconfig
-	
-	#Exit
-	cd ..
 }
 
 # Install specific python version
