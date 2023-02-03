@@ -92,6 +92,14 @@ ynh_script_progression --message="Removing dependencies..."
 ynh_remove_app_dependencies
 
 #=================================================
+# REMOVE FAIL2BAN CONFIGURATION
+#=================================================
+ynh_script_progression --message="Removing Fail2Ban configuration..." --weight=1
+
+# Remove the dedicated Fail2Ban config
+ynh_remove_fail2ban_config
+
+#=================================================
 # SPECIFIC REMOVE
 #=================================================
 # REMOVE VARIOUS FILES

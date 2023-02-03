@@ -113,6 +113,14 @@ ynh_script_progression --message="Upgrading systemd configuration..."
 ynh_add_systemd_config
 
 #=================================================
+# SETUP FAIL2BAN
+#=================================================
+ynh_script_progression --message="Reconfiguring Fail2Ban..." --weight=1
+
+# Create a dedicated Fail2Ban config
+ynh_add_fail2ban_config --logpath="$log_file" --failregex="Login attempt or request with invalid authentication from <HOST>"
+
+#=================================================
 # GENERIC FINALIZATION
 #=================================================
 # SETUP LOGROTATE

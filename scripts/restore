@@ -80,6 +80,15 @@ ynh_restore_file --origin_path="$data_path" --not_mandatory
 mkdir -p $data_path
 
 #=================================================
+# RESTORE FAIL2BAN CONFIGURATION
+#=================================================
+ynh_script_progression --message="Restoring the Fail2Ban configuration..." --weight=1
+
+ynh_restore_file --origin_path="/etc/fail2ban/jail.d/$app.conf"
+ynh_restore_file --origin_path="/etc/fail2ban/filter.d/$app.conf"
+ynh_systemd_action --action=restart --service_name=fail2ban
+
+#=================================================
 # SPECIFIC RESTORATION
 #=================================================
 # REINSTALL DEPENDENCIES
