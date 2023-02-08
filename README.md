@@ -17,7 +17,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 Home automation platform
 
-**Shipped version:** 2023.1.7~ynh2
+**Shipped version:** 2023.2.3~ynh1
 
 **Demo:** https://demo.home-assistant.io
 
