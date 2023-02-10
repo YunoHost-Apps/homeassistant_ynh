@@ -142,11 +142,8 @@ myynh_install_homeassistant () {
 		# add pip
 		ynh_exec_as $app "$final_path/bin/python3" -m ensurepip
 		
-		# install last version of wheel
-		ynh_exec_as $app "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade wheel
-		
-		# install last version of mysqlclient
-		ynh_exec_as $app "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade mysqlclient
+		# install last version of wheel, pip & mysqlclient
+		ynh_exec_as $app "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade wheel pip mysqlclient
 		
 		# install Home Assistant
 		ynh_exec_as $app "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade $app==$app_version
