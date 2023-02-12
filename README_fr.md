@@ -16,7 +16,18 @@ Si vous n’avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) po
 
 ## Vue d’ensemble
 
-Plateforme domotique
+Awaken your home
+Open source home automation that puts local control and privacy first. Powered by a worldwide community of tinkerers and DIY enthusiasts. Perfect to run on a Raspberry Pi or a local server. 
+
+### Features
+
+- Works with over 1000 brands ;
+- Powerful automations ;
+- Extend your system with add-ons ;
+- All your smart home data stays local ;
+- Companion Mobile Apps ;
+- Home Energy Management." 
+
 
 **Version incluse :** 2023.2.3~ynh1
 
