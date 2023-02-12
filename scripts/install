@@ -10,106 +10,39 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# MANAGE SCRIPT FAILURE
-#=================================================
-
-ynh_clean_setup () {
-	true
-}
-ynh_abort_if_errors
-
-#=================================================
-# RETRIEVE ARGUMENTS FROM THE MANIFEST
-#=================================================
-
-app=$YNH_APP_INSTANCE_NAME
-
-domain=$YNH_APP_ARG_DOMAIN
-is_public=$YNH_APP_ARG_IS_PUBLIC
-home=$YNH_APP_ARG_HOME
-latitude=$YNH_APP_ARG_LATITUDE
-longitude=$YNH_APP_ARG_LONGITUDE
-elevation=$YNH_APP_ARG_ELEVATION
-unit_system=$YNH_APP_ARG_UNIT_SYSTEM
-currency=$YNH_APP_ARG_CURRENCY
-country=$YNH_APP_ARG_COUNTRY
-time_zone=$YNH_APP_ARG_TIME_ZONE
-
-#=================================================
 # DEFINE USEFULL VARS
 #=================================================
 
-final_path="/var/www/$app"
-data_path="/home/yunohost.app/$app"
 log_file="/var/log/$app/$app.log"
-path_url="/"
-
-#=================================================
-# CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
-#=================================================
-ynh_script_progression --message="Validating installation parameters..."
-
-[ ! -d "$final_path" ] || ynh_die --message="There is already a directory: $final_path "
-ynh_webpath_register --app=$app --domain="$domain" --path_url="$path_url"
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
-ynh_script_progression --message="Storing installation settings..."
-ynh_app_setting_set --app=$app --key=domain --value="$domain"
-ynh_app_setting_set --app=$app --key=final_path --value="$final_path"
-ynh_app_setting_set --app=$app --key=data_path --value="$data_path"
+
 ynh_app_setting_set --app=$app --key=log_file --value="$log_file"
-ynh_app_setting_set --app=$app --key=path_url --value="$path_url"
 
 #=================================================
-# STANDARD MODIFICATIONS
+# APP "BUILD" (DEPLOYING SOURCES, VENV, COMPILING ETC)
 #=================================================
-# FIND AND OPEN A PORT
+# CHECK PYTHON VERSION AND COMPILE IF NEEDED
 #=================================================
-ynh_script_progression --message="Finding an available port..."
 
-port=$(ynh_find_port 8123)
-ynh_app_setting_set --app=$app --key=port --value="$port"
-
-#=================================================
-# INSTALL DEPENDENCIES
-#=================================================
-ynh_script_progression --message="Installing dependencies..."
-
-ynh_install_app_dependencies $pkg_dependencies
-
+ynh_script_progression --message="Check Python version & compile the required one if needed..." --weight=1
 myynh_install_python --python="$py_required_version"
-
-#=================================================
-# CREATE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Configuring system user..."
-
-mynh_system_user_create
-
-#=================================================
-# CREATE A MYSQL DATABASE
-#=================================================
-ynh_script_progression --message="Creating a MySQL database..."
-
-db_name=$(ynh_sanitize_dbid --db_name=$app)
-db_user=$db_name
-ynh_app_setting_set --app=$app --key=db_name --value=$db_name
-ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+
 ynh_script_progression --message="Setting up source files..."
 
 # create a directory for the installation of Home Assistant
-myynh_create_dir "$final_path"
-chown -R $app: "$final_path"
+myynh_create_dir "$install_dir"
+chown -R $app: "$install_dir"
 
 # create a directory for the datas of Home Assistant
-myynh_create_dir "$data_path/.cache"
-chown -R $app: "$data_path"
+myynh_create_dir "$data_dir/.cache"
+chown -R $app: "$data_dir"
 
 # installation in a virtual environment
 ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
@@ -118,8 +51,8 @@ myynh_install_homeassistant
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring NGINX web server..."
 
+ynh_script_progression --message="Configuring NGINX web server..."
 ynh_add_nginx_config
 
 #=================================================
@@ -131,18 +64,18 @@ myynh_create_dir "/etc/sudoers.d"
 ynh_add_config --template="../conf/sudoers" --destination="/etc/sudoers.d/$app"
 
 #=================================================
+# APP INITIAL CONFIGURATION
+#=================================================
 # ADD A CONFIGURATION
 #=================================================
 
-cp -r "../conf/homeassistant_conf_files/." "$data_path/"
-ynh_add_config --template="../conf/homeassistant_conf_files/configuration.yaml" --destination="$data_path/configuration.yaml"
+cp -r "../conf/homeassistant_conf_files/." "$data_dir/"
+ynh_add_config --template="../conf/homeassistant_conf_files/configuration.yaml" --destination="$data_dir/configuration.yaml"
 
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_script_progression --message="Configuring a systemd service..."
 
-# setup up systemd service
 ynh_script_progression --message="Adding the dedicated service..."
 ynh_add_systemd_config
 
@@ -151,27 +84,28 @@ ynh_add_systemd_config
 #=================================================
 # SETUP LOGROTATE
 #=================================================
-ynh_script_progression --message="Configuring log rotation..."
 
+ynh_script_progression --message="Configuring log rotation..."
 ynh_use_logrotate --logfile="$log_file"
 
 #=================================================
 # SET FILE OWNERSHIP / PERMISSIONS
 #=================================================
 
+ynh_script_progression --message="Configuring files permissions..."
 myynh_set_permissions
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
-ynh_script_progression --message="Integrating service in YunoHost..."
 
-# add service in admin panel
+ynh_script_progression --message="Integrating service in YunoHost..."
 yunohost service add $app --description="Home Assistant server" --log="$log_file"
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
+
 ynh_script_progression --message="Starting a systemd service..."
 
 # start systemd service with --verbose 
@@ -186,26 +120,9 @@ ynh_systemd_action --service_name=$app --action=restart
 #=================================================
 # SETUP FAIL2BAN
 #=================================================
+
 ynh_script_progression --message="Configuring Fail2Ban..." --weight=1
-
-# Create a dedicated Fail2Ban config
 ynh_add_fail2ban_config --logpath="$log_file" --failregex="Login attempt or request with invalid authentication from <HOST>"
-
-#=================================================
-# SETUP SSOWAT
-#=================================================
-ynh_script_progression --message="Configuring permissions..."
-
-[ $is_public -eq 1 ] && ynh_permission_update --permission="main" --add="visitors"
-# Allow the web UI to use its own API without Yunohost/SSOWat interfering with it. Home Assistant authentication should still be in effect.
-ynh_permission_create --permission="api" --label="api" --url="/api" --allowed="visitors" "all_users" --auth_header="false" --show_tile="false" --protected="true"
-
-#=================================================
-# RELOAD NGINX
-#=================================================
-ynh_script_progression --message="Reloading NGINX web server..."
-
-ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT
