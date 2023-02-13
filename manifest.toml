@@ -85,3 +85,4 @@ ram.runtime = "2G"
     [resources.data_dir]
     
     [resources.permissions]
+    main.url = "/"
