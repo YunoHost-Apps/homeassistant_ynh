@@ -6,6 +6,7 @@ It shall NOT be edited by hand.
 # Home Assistant pour YunoHost
 
 [![Niveau d’intégration](https://dash.yunohost.org/integration/homeassistant.svg)](https://dash.yunohost.org/appci/app/homeassistant) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/homeassistant.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/homeassistant.maintain.svg)
+
 [![Installer Home Assistant avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=homeassistant)
 
 *[Read this readme in english.](./README.md)*
