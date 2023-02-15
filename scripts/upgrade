@@ -9,10 +9,6 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
-#=================================================
-# CHECK VERSION
-#=================================================
-
 upgrade_type=$(ynh_check_app_version_changed)
 
 #=================================================
@@ -24,6 +20,8 @@ upgrade_type=$(ynh_check_app_version_changed)
 ynh_script_progression --message="Stopping a systemd service..."
 ynh_systemd_action --service_name=$app --action=stop --log_path="/var/log/$app/$app.log"
 
+#=================================================
+# "REBUILD" THE APP (DEPLOY NEW SOURCES, RERUN NPM BUILD, ETC...)
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
@@ -38,12 +36,23 @@ then
 fi
 
 #=================================================
-# NGINX CONFIGURATION
+# REAPPLY SYSTEM CONFIGURATIONS
 #=================================================
 
-ynh_script_progression --message="Upgrading NGINX web server configuration..."
+ynh_script_progression --message="Upgrading system configurations related to $app..." --weight=1
+
 ynh_add_nginx_config
 
+ynh_add_systemd_config
+
+yunohost service add $app --description="Home Assistant server" --log="$log_file"
+
+ynh_use_logrotate --logfile="$log_file" --non-append
+
+ynh_add_fail2ban_config --logpath="$log_file" --failregex="Login attempt or request with invalid authentication from <HOST>"
+
+#=================================================
+# RECONFIGURE THE APP (UPDATE CONF, APPLY MIGRATIONS, ...)
 #=================================================
 # UPDATE A CONFIG FILE
 #=================================================
@@ -51,45 +60,6 @@ ynh_add_nginx_config
 ynh_script_progression --message="Updating a configuration file..."
 cp -r "../conf/homeassistant_conf_files/bin/." "$data_dir/bin/"
 ynh_add_config --template="../conf/sudoers" --destination="/etc/sudoers.d/$app"
-
-#=================================================
-# SETUP SYSTEMD
-#=================================================
-
-ynh_script_progression --message="Upgrading systemd configuration..."
-# Create a dedicated systemd config
-ynh_add_systemd_config
-
-#=================================================
-# SETUP FAIL2BAN
-#=================================================
-
-ynh_script_progression --message="Reconfiguring Fail2Ban..." --weight=1
-# Create a dedicated Fail2Ban config
-ynh_add_fail2ban_config --logpath="$log_file" --failregex="Login attempt or request with invalid authentication from <HOST>"
-
-#=================================================
-# GENERIC FINALIZATION
-#=================================================
-# SETUP LOGROTATE
-#=================================================
-
-ynh_script_progression --message="Upgrading logrotate configuration..."
-ynh_use_logrotate --logfile="$log_file" --non-append
-
-#=================================================
-# SET FILE OWNERSHIP / PERMISSIONS
-#=================================================
-
-ynh_script_progression --message="Configuring files permissions..."
-myynh_set_permissions
-
-#=================================================
-# INTEGRATE SERVICE IN YUNOHOST
-#=================================================
-
-ynh_script_progression --message="Integrating service in YunoHost..."
-yunohost service add $app --description="Home Assistant server" --log="$log_file"
 
 #=================================================
 # START SYSTEMD SERVICE

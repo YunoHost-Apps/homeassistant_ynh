@@ -10,15 +10,10 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# DEFINE USEFULL VARS
+# DEFINE USEFULL VARS / SETTINGS
 #=================================================
 
 log_file="/var/log/$app/$app.log"
-
-#=================================================
-# STORE SETTINGS FROM MANIFEST
-#=================================================
-
 ynh_app_setting_set --app=$app --key=log_file --value="$log_file"
 
 #=================================================
@@ -38,28 +33,40 @@ ynh_script_progression --message="Setting up source files..."
 
 # create a directory for the installation of Home Assistant
 myynh_create_dir "$install_dir"
-chown -R $app: "$install_dir"
 
 # create a directory for the datas of Home Assistant
 myynh_create_dir "$data_dir/.cache"
-chown -R $app: "$data_dir"
+
+# create a directory for the logs of Home Assistant
+mkdir -p "$(dirname "$log_file")"
+touch "$log_file"
 
 # installation in a virtual environment
 ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
 myynh_install_homeassistant
 
 #=================================================
-# NGINX CONFIGURATION
+# SYSTEM CONFIGURATION
 #=================================================
 
-ynh_script_progression --message="Configuring NGINX web server..."
+ynh_script_progression --message="Adding system configurations related to $app ..." --weight=1
+
+# Create a dedicated NGINX config using the conf/nginx.conf template
 ynh_add_nginx_config
 
-#=================================================
-# SPECIFIC SETUP
-#=================================================
+# Create a dedicated systemd config
+ynh_add_systemd_config
 
-# grant sudo permissions to the user to manage his own systemd service
+# Create a dedicated service in YunoHost
+yunohost service add $app --description="Home Assistant server" --log="$log_file"
+
+# Use logrotate to manage application logfile(s)
+ynh_use_logrotate --logfile="$log_file"
+
+# Create a dedicated Fail2Ban config
+ynh_add_fail2ban_config --logpath="$log_file" --failregex="Login attempt or request with invalid authentication from <HOST>"
+
+# Grant sudo permissions to the user to manage his own systemd service
 myynh_create_dir "/etc/sudoers.d"
 ynh_add_config --template="../conf/sudoers" --destination="/etc/sudoers.d/$app"
 
@@ -69,38 +76,10 @@ ynh_add_config --template="../conf/sudoers" --destination="/etc/sudoers.d/$app"
 # ADD A CONFIGURATION
 #=================================================
 
+ynh_script_progression --message="Adding a configuration file..." --weight=1
+
 cp -r "../conf/homeassistant_conf_files/." "$data_dir/"
 ynh_add_config --template="../conf/homeassistant_conf_files/configuration.yaml" --destination="$data_dir/configuration.yaml"
-
-#=================================================
-# SETUP SYSTEMD
-#=================================================
-
-ynh_script_progression --message="Adding the dedicated service..."
-ynh_add_systemd_config
-
-#=================================================
-# GENERIC FINALIZATION
-#=================================================
-# SETUP LOGROTATE
-#=================================================
-
-ynh_script_progression --message="Configuring log rotation..."
-ynh_use_logrotate --logfile="$log_file"
-
-#=================================================
-# SET FILE OWNERSHIP / PERMISSIONS
-#=================================================
-
-ynh_script_progression --message="Configuring files permissions..."
-myynh_set_permissions
-
-#=================================================
-# INTEGRATE SERVICE IN YUNOHOST
-#=================================================
-
-ynh_script_progression --message="Integrating service in YunoHost..."
-yunohost service add $app --description="Home Assistant server" --log="$log_file"
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -116,13 +95,6 @@ ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file
 ynh_store_file_checksum --file="/etc/systemd/system/$app.service"
 systemctl daemon-reload
 ynh_systemd_action --service_name=$app --action=restart
-
-#=================================================
-# SETUP FAIL2BAN
-#=================================================
-
-ynh_script_progression --message="Configuring Fail2Ban..." --weight=1
-ynh_add_fail2ban_config --logpath="$log_file" --failregex="Login attempt or request with invalid authentication from <HOST>"
 
 #=================================================
 # END OF SCRIPT

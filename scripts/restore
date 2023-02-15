@@ -15,13 +15,6 @@ source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# RESTORE THE NGINX CONFIGURATION
-#=================================================
-
-ynh_script_progression --message="Restoring the NGINX configuration..."
-ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
-
-#=================================================
 # RESTORE THE APP MAIN DIR
 #=================================================
 
@@ -37,13 +30,34 @@ ynh_restore_file --origin_path="$data_dir" --not_mandatory
 mkdir -p $data_dir
 
 #=================================================
-# RESTORE FAIL2BAN CONFIGURATION
+# RESTORE THE MYSQL DATABASE
 #=================================================
+
+ynh_script_progression --message="Restoring the MySQL database..." --weight=1
+ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name < ./db.sql
+
+#=================================================
+# RESTORE SYSTEM CONFIGURATIONS
+#=================================================
+
+ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
+
+ynh_restore_file --origin_path="/etc/systemd/system/$app.service"
+# add --verbose to track restart
+sed -i 's/ExecStart=.*/& --verbose/g' "/etc/systemd/system/$app.service"
+systemctl enable $app.service --quiet
+
+yunohost service add $app --description="Home Assistant server" --log="$log_file"
+
+ynh_restore_file --origin_path="/etc/logrotate.d/$app"
 
 ynh_script_progression --message="Restoring the Fail2Ban configuration..." --weight=1
 ynh_restore_file --origin_path="/etc/fail2ban/jail.d/$app.conf"
 ynh_restore_file --origin_path="/etc/fail2ban/filter.d/$app.conf"
 ynh_systemd_action --action=restart --service_name=fail2ban
+
+ynh_restore_file --origin_path="/etc/sudoers.d/$app"
+ynh_restore_file --origin_path="$(dirname "$log_file")"
 
 #=================================================
 # SPECIFIC RESTORATION
@@ -55,38 +69,6 @@ ynh_script_progression --message="Restoring Python..." --weight=1
 myynh_install_python --python="$python"
 
 #=================================================
-# RESTORE THE MYSQL DATABASE
-#=================================================
-
-ynh_script_progression --message="Restoring the MySQL database..." --weight=1
-ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name < ./db.sql
-
-#=================================================
-# RESTORE VARIOUS FILES
-#=================================================
-
-ynh_script_progression --message="Restoring various files..."
-ynh_restore_file --origin_path="/etc/sudoers.d/$app"
-ynh_restore_file --origin_path="$(dirname "$log_file")"
-
-#=================================================
-# RESTORE SYSTEMD
-#=================================================
-
-ynh_script_progression --message="Restoring the systemd configuration..."
-ynh_restore_file --origin_path="/etc/systemd/system/$app.service"
-# add --verbose to track restart
-sed -i 's/ExecStart=.*/& --verbose/g' "/etc/systemd/system/$app.service"
-systemctl enable $app.service --quiet
-
-#=================================================
-# RESTORE THE LOGROTATE CONFIGURATION
-#=================================================
-
-ynh_script_progression --message="Restoring the logrotate configuration..."
-ynh_restore_file --origin_path="/etc/logrotate.d/$app"
-
-#=================================================
 # IF NEEDED UPDATE THE PYHTON LINK IN THE VIRUTAL ENV.
 #=================================================
 
@@ -96,20 +78,6 @@ if [ ! -e "$hass_python_link" ] ; then
     hass_python_new_dest=$(which `basename "$hass_python_link"`)
     ln -sfn "$hass_python_new_dest" "$hass_python_link"
 fi
-
-#=================================================
-# SET FILE OWNERSHIP / PERMISSIONS
-#=================================================
-
-ynh_script_progression --message="Configuring files permissions..."
-myynh_set_permissions
-
-#=================================================
-# INTEGRATE SERVICE IN YUNOHOST
-#=================================================
-
-ynh_script_progression --message="Integrating service in YunoHost..."
-yunohost service add $app --description="Home Assistant server" --log="$log_file"
 
 #=================================================
 # START SYSTEMD SERVICE

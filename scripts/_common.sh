@@ -124,8 +124,17 @@ myynh_install_homeassistant () {
 		# add pip
 		ynh_exec_as $app "$install_dir/bin/python3" -m ensurepip
 		
-		# install last version of wheel, pip & mysqlclient
-		ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade wheel pip mysqlclient
+		# install last version of pip
+		ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade pip
+
+		# install last version of wheel
+		ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade wheel
+
+		# install last version of setuptools
+		ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade setuptools
+
+		# install last version of mysqlclient
+		ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade mysqlclient
 		
 		# install Home Assistant
 		ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade $app==$app_version
@@ -146,9 +155,9 @@ myynh_set_permissions () {
 	chown -R $app: "$data_dir"
 	chmod 750 "$data_dir"
 	chmod -R o-rwx "$data_dir"
-	chmod -R +x "$data_dir/bin/"
+	[ ! -e "$data_dir/bin/" ] || chmod -R +x "$data_dir/bin/"
 
-	chown -R $app: "$(dirname "$log_file")"
+	[ ! -e "$(dirname "$log_file")" ] || chown -R $app: "$(dirname "$log_file")"
 
-	chown -R root: "/etc/sudoers.d/$app"
+	[ ! -e "/etc/sudoers.d/$app" ] || chown -R root: "/etc/sudoers.d/$app"
 }
