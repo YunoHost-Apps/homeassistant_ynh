@@ -5,7 +5,7 @@
 #=================================================
 
 # Release to install
-app_version=2023.1.7
+app_version=2023.2.3
 
 # Package dependencies
 pkg_dependencies="python3 python3-dev python3-venv python3-pip libffi-dev libssl-dev libjpeg-dev zlib1g-dev autoconf build-essential libopenjp2-7 libtiff5 libturbojpeg0 libmariadb-dev libmariadb-dev-compat rustc"
@@ -142,9 +142,15 @@ myynh_install_homeassistant () {
 		# add pip
 		ynh_exec_as $app "$final_path/bin/python3" -m ensurepip
 		
+		# install last version of pip
+		ynh_exec_as $app "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade pip
+
 		# install last version of wheel
 		ynh_exec_as $app "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade wheel
-		
+
+		# install last version of setuptools
+		ynh_exec_as $app "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade setuptools
+
 		# install last version of mysqlclient
 		ynh_exec_as $app "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade mysqlclient
 		
