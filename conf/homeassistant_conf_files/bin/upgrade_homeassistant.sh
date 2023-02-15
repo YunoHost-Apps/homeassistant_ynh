@@ -8,8 +8,8 @@
 
 # define usefull variables
 app="homeassistant"
-final_path="/var/www/$app"
-data_path="/home/yunohost.app/$app"
+install_dir="/var/www/$app"
+data_dir="/home/yunohost.app/$app"
 
 ########## END OF CONFIGURATION ##########
 
@@ -28,36 +28,32 @@ if [ ! -z "$DEBUG" ]; then
 fi
 
 # upgrade the virtual environment
-MY_PYTHON=$(readlink -e "$final_path/bin/python")
+MY_PYTHON=$(readlink -e "$install_dir/bin/python")
 [ ! -z "$DEBUG" ] && log "Using pyhton '$MY_PYTHON'."
-$MY_PYTHON -m venv --upgrade "$final_path"
+$MY_PYTHON -m venv --upgrade "$install_dir"
 
 # Run source in a 'sub shell'
 (
     # activate the virtual environment
     set +o nounset
     [ ! -z "$DEBUG" ] && log "Activate the virtual environment"
-    source "$final_path/bin/activate"
+    source "$install_dir/bin/activate"
     set -o nounset
 
     # add pip
     [ ! -z "$DEBUG" ] && log "Upgrade pip"
-    "$final_path/bin/python3" -m ensurepip --upgrade
+    "$install_dir/bin/python3" -m ensurepip --upgrade
 
     local VERBOSE
     [ ! -z "$DEBUG" ] && VERBOSE="--log $LOG_FILE"
 
-    # install last version of wheel
-    [ ! -z "$DEBUG" ] && log "Install latest pip version of wheel"
-    "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade wheel $VERBOSE
-
-    # install last version of mysqlclient
-    [ ! -z "$DEBUG" ] && log "Install latest pip version of mysqlclient"
-    "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade mysqlclient $VERBOSE
+    # install last version of wheel, pip & mysqlclient
+    [ ! -z "$DEBUG" ] && log "Install latest pip version of wheel, pip & mysqlclient"
+    "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade wheel pip mysqlclient $VERBOSE
 
     # upgrade homeassistant python package
     [ ! -z "$DEBUG" ] && log "Install latest pip version of $app"
-    "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade $app $VERBOSE
+    "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade $app $VERBOSE
 )
 
 # restart homeassistant systemd service

@@ -5,8 +5,8 @@ After=network.target mysql.service
 [Service]
 Type=simple
 User=__APP__
-WorkingDirectory=__DATA_PATH__
-ExecStart=__FINALPATH__/bin/hass --config "__DATA_PATH__" --log-file "__LOG_FILE__" --verbose
+WorkingDirectory=__DATA_DIR__
+ExecStart=__INSTALL_DIR__/bin/hass --config "__DATA_DIR__" --log-file "__LOG_FILE__" --verbose
 RestartForceExitStatus=100
 Restart=on-failure
 RestartSec=5s
