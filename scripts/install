@@ -36,6 +36,7 @@ myynh_create_dir "$install_dir"
 
 # create a directory for the datas of Home Assistant
 myynh_create_dir "$data_dir/.cache"
+chown -R $app: "$data_dir"
 
 # create a directory for the logs of Home Assistant
 mkdir -p "$(dirname "$log_file")"
