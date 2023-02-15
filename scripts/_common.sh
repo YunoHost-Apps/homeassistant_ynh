@@ -5,7 +5,7 @@
 #=================================================
 
 # Release to install
-app_version=2023.2.3
+app_version=2023.2.5
 
 # Requirements (Major.Minor.Patch)
 # PY_VERSION=$(curl -s "https://www.python.org/ftp/python/" | grep ">3.9" | tail -n1 | cut -d '/' -f 2 | cut -d '>' -f 2)
