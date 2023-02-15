@@ -37,16 +37,6 @@ Open source home automation that puts local control and privacy first. Powered b
 
 ![Screenshot of Home Assistant](./doc/screenshots/screenshot1.png)
 
-## Disclaimers / important information
-
-* Known limitations:
-    * Are LDAP and HTTP auth supported? LDAP=Yes | HTTP auth=No
-    * Can the app be used by multiple users? Yes
-
-
-* Additional informations:
-    * As the pyhton version shipped in Debian stable is not always supported, a recent version could be built during the installation process. It may take a while to achive that (15 to 60 minutes)
-
 ## Documentation and resources
 
 * Official app website: <https://www.home-assistant.io>
