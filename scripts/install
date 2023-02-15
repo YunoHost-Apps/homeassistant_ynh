@@ -82,6 +82,12 @@ cp -r "../conf/homeassistant_conf_files/." "$data_dir/"
 ynh_add_config --template="../conf/homeassistant_conf_files/configuration.yaml" --destination="$data_dir/configuration.yaml"
 
 #=================================================
+# SET FILE OWNERSHIP / PERMISSIONS
+#=================================================
+
+myynh_set_permissions
+
+#=================================================
 # START SYSTEMD SERVICE
 #=================================================
 

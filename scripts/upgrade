@@ -62,6 +62,12 @@ cp -r "../conf/homeassistant_conf_files/bin/." "$data_dir/bin/"
 ynh_add_config --template="../conf/sudoers" --destination="/etc/sudoers.d/$app"
 
 #=================================================
+# SET FILE OWNERSHIP / PERMISSIONS
+#=================================================
+
+myynh_set_permissions
+
+#=================================================
 # START SYSTEMD SERVICE
 #=================================================
 
