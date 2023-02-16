@@ -5,10 +5,7 @@
 #=================================================
 
 # Release to install
-app_version=2023.2.3
-
-# Package dependencies
-pkg_dependencies="python3 python3-dev python3-venv python3-pip libffi-dev libssl-dev libjpeg-dev zlib1g-dev autoconf build-essential libopenjp2-7 libtiff5 libturbojpeg0 libmariadb-dev libmariadb-dev-compat rustc"
+app_version=2023.2.5
 
 # Requirements (Major.Minor.Patch)
 # PY_VERSION=$(curl -s "https://www.python.org/ftp/python/" | grep ">3.9" | tail -n1 | cut -d '/' -f 2 | cut -d '>' -f 2)
@@ -18,16 +15,6 @@ py_required_version=3.10.9
 #=================================================
 # PERSONAL HELPERS
 #=================================================
-
-# Create homeassistant user
-mynh_system_user_create () {
-    user_groups=""
-    [ $(getent group dialout) ] && user_groups="${user_groups} dialout"
-    [ $(getent group gpio) ] && user_groups="${user_groups} gpio"
-    [ $(getent group i2c) ] && user_groups="${user_groups} i2c"
-    ynh_system_user_create --username=$app --groups="$user_groups" --home_dir="$data_path"
-}
-
 
 # Check if directory/file already exists (path in argument)
 myynh_check_path () {
@@ -85,11 +72,6 @@ myynh_install_python () {
 			py_app_version="/usr/local/bin/python${py_built_version%.*}"
 			
 		else
-			ynh_print_info --message="Installing additional dependencies to build python..."
-			
-			pkg_dependencies="${pkg_dependencies} tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libbz2-dev libexpat1-dev liblzma-dev wget tar  libnss3-dev libreadline-dev"
-			ynh_install_app_dependencies "${pkg_dependencies}"
-			
 			# APT < Minimal & Actual < Minimal => Build & install Python into /usr/local/bin
 			ynh_print_info --message="Building python (may take a while)..."
 			
@@ -130,52 +112,52 @@ myynh_install_python () {
 # Install/Upgrade Homeassistant in virtual environement
 myynh_install_homeassistant () {
 	# Create the virtual environment
-	ynh_exec_as $app $py_app_version -m venv --without-pip "$final_path"
+	ynh_exec_as $app $py_app_version -m venv --without-pip "$install_dir"
 	
 	# Run source in a 'sub shell'
 	(
 		# activate the virtual environment
 		set +o nounset
-		source "$final_path/bin/activate"
+		source "$install_dir/bin/activate"
 		set -o nounset
 		
 		# add pip
-		ynh_exec_as $app "$final_path/bin/python3" -m ensurepip
+		ynh_exec_as $app "$install_dir/bin/python3" -m ensurepip
 		
 		# install last version of pip
-		ynh_exec_as $app "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade pip
+		ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade pip
 
 		# install last version of wheel
-		ynh_exec_as $app "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade wheel
+		ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade wheel
 
 		# install last version of setuptools
-		ynh_exec_as $app "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade setuptools
+		ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade setuptools
 
 		# install last version of mysqlclient
-		ynh_exec_as $app "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade mysqlclient
+		ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade mysqlclient
 		
 		# install Home Assistant
-		ynh_exec_as $app "$final_path/bin/pip3" --cache-dir "$data_path/.cache" install --upgrade $app==$app_version
+		ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade $app==$app_version
 	)
 }
 
 # Upgrade the virtual environment directory
 myynh_upgrade_venv_directory () {
-	ynh_exec_as $app $py_app_version -m venv --upgrade "$final_path"
+	ynh_exec_as $app $py_app_version -m venv --upgrade "$install_dir"
 }
 
 # Set permissions
 myynh_set_permissions () {
-	chown -R $app: "$final_path"
-	chmod 750 "$final_path"
-	chmod -R o-rwx "$final_path"
+	chown -R $app: "$install_dir"
+	chmod 750 "$install_dir"
+	chmod -R o-rwx "$install_dir"
 
-	chown -R $app: "$data_path"
-	chmod 750 "$data_path"
-	chmod -R o-rwx "$data_path"
-	chmod -R +x "$data_path/bin/"
+	chown -R $app: "$data_dir"
+	chmod 750 "$data_dir"
+	chmod -R o-rwx "$data_dir"
+	[ ! -e "$data_dir/bin/" ] || chmod -R +x "$data_dir/bin/"
 
-	chown -R $app: "$(dirname "$log_file")"
+	[ ! -e "$(dirname "$log_file")" ] || chown -R $app: "$(dirname "$log_file")"
 
-	chown -R root: "/etc/sudoers.d/$app"
+	[ ! -e "/etc/sudoers.d/$app" ] || chown -R root: "/etc/sudoers.d/$app"
 }

@@ -15,129 +15,64 @@ source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# MANAGE SCRIPT FAILURE
-#=================================================
-
-ynh_clean_setup () {
-	true
-}
-ynh_abort_if_errors
-
-#=================================================
-# LOAD SETTINGS
-#=================================================
-ynh_script_progression --message="Loading installation settings..."
-
-app=$YNH_APP_INSTANCE_NAME
-
-domain=$(ynh_app_setting_get --app=$app --key=domain)
-port=$(ynh_app_setting_get --app=$app --key=port)
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-data_path=$(ynh_app_setting_get --app=$app --key=data_path)
-log_file=$(ynh_app_setting_get --app=$app --key=log_file)
-path_url=$(ynh_app_setting_get --app=$app --key=path_url)
-python=$(ynh_app_setting_get --app=$app --key=python)
-db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-db_user=$db_name
-
-#=================================================
-# CHECK IF THE APP CAN BE RESTORED
-#=================================================
-ynh_script_progression --message="Validating restoration parameters..."
-
-[ ! -d "$final_path" ] || ynh_die --message="There is already a directory: $final_path "
-
-#=================================================
-# STANDARD RESTORATION STEPS
-#=================================================
-# RESTORE THE NGINX CONFIGURATION
-#=================================================
-ynh_script_progression --message="Restoring the NGINX configuration..."
-
-ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
-
-#=================================================
-# RECREATE THE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Recreating the dedicated system user..."
-
-mynh_system_user_create
-
-#=================================================
 # RESTORE THE APP MAIN DIR
 #=================================================
-ynh_script_progression --message="Restoring the app main directory..."
 
-ynh_restore_file --origin_path="$final_path"
+ynh_script_progression --message="Restoring the app main directory..."
+ynh_restore_file --origin_path="$install_dir"
 
 #=================================================
 # RESTORE THE DATA DIRECTORY
 #=================================================
+
 ynh_script_progression --message="Restoring the data directory..."
-
-ynh_restore_file --origin_path="$data_path" --not_mandatory
-
-mkdir -p $data_path
-
-#=================================================
-# RESTORE FAIL2BAN CONFIGURATION
-#=================================================
-ynh_script_progression --message="Restoring the Fail2Ban configuration..." --weight=1
-
-ynh_restore_file --origin_path="/etc/fail2ban/jail.d/$app.conf"
-ynh_restore_file --origin_path="/etc/fail2ban/filter.d/$app.conf"
-ynh_systemd_action --action=restart --service_name=fail2ban
-
-#=================================================
-# SPECIFIC RESTORATION
-#=================================================
-# REINSTALL DEPENDENCIES
-#=================================================
-ynh_script_progression --message="Reinstalling dependencies..."
-
-ynh_install_app_dependencies $pkg_dependencies
-myynh_install_python --python="$python"
+ynh_restore_file --origin_path="$data_dir" --not_mandatory
+mkdir -p $data_dir
 
 #=================================================
 # RESTORE THE MYSQL DATABASE
 #=================================================
-ynh_script_progression --message="Restoring the MySQL database..."
 
-db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
-ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd="$db_pwd"
+ynh_script_progression --message="Restoring the MySQL database..." --weight=1
 ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name < ./db.sql
 
 #=================================================
-# RESTORE VARIOUS FILES
+# RESTORE SYSTEM CONFIGURATIONS
 #=================================================
-ynh_script_progression --message="Restoring various files..."
 
-ynh_restore_file --origin_path="/etc/sudoers.d/$app"
-
-ynh_restore_file --origin_path="$(dirname "$log_file")"
-
-#=================================================
-# RESTORE SYSTEMD
-#=================================================
-ynh_script_progression --message="Restoring the systemd configuration..."
+ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 
 ynh_restore_file --origin_path="/etc/systemd/system/$app.service"
 # add --verbose to track restart
 sed -i 's/ExecStart=.*/& --verbose/g' "/etc/systemd/system/$app.service"
 systemctl enable $app.service --quiet
 
-#=================================================
-# RESTORE THE LOGROTATE CONFIGURATION
-#=================================================
-ynh_script_progression --message="Restoring the logrotate configuration..."
+yunohost service add $app --description="Home Assistant server" --log="$log_file"
 
 ynh_restore_file --origin_path="/etc/logrotate.d/$app"
+
+ynh_script_progression --message="Restoring the Fail2Ban configuration..." --weight=1
+ynh_restore_file --origin_path="/etc/fail2ban/jail.d/$app.conf"
+ynh_restore_file --origin_path="/etc/fail2ban/filter.d/$app.conf"
+ynh_systemd_action --action=restart --service_name=fail2ban
+
+ynh_restore_file --origin_path="/etc/sudoers.d/$app"
+ynh_restore_file --origin_path="$(dirname "$log_file")"
+
+#=================================================
+# SPECIFIC RESTORATION
+#=================================================
+# CHECK PYTHON VERSION AND COMPILE IF NEEDED
+#=================================================
+
+ynh_script_progression --message="Restoring Python..." --weight=1
+myynh_install_python --python="$python"
 
 #=================================================
 # IF NEEDED UPDATE THE PYHTON LINK IN THE VIRUTAL ENV.
 #=================================================
-ynh_script_progression --message="Updating the pyhton link in the pyhton virtual environment..."
 
+ynh_script_progression --message="Updating the pyhton link in the pyhton virtual environment..."
 hass_python_link=$(head -1 /var/www/homeassistant/bin/hass | sed 's/#!//')
 if [ ! -e "$hass_python_link" ] ; then
     hass_python_new_dest=$(which `basename "$hass_python_link"`)
@@ -151,20 +86,12 @@ fi
 myynh_set_permissions
 
 #=================================================
-# INTEGRATE SERVICE IN YUNOHOST
-#=================================================
-ynh_script_progression --message="Integrating service in YunoHost..."
-
-yunohost service add $app --description="Home Assistant server" --log="$log_file"
-
-#=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..."
 
+ynh_script_progression --message="Starting a systemd service..."
 # start systemd service with --verbose
 ynh_systemd_action --service_name=$app --action=start --line_match="Home Assistant initialized" --log_path="$log_file" --timeout=3600
-
 # remove --verbose from service
 ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app.service"
 ynh_store_file_checksum --file="/etc/systemd/system/$app.service"
@@ -176,8 +103,8 @@ ynh_systemd_action --service_name=$app --action=restart
 #=================================================
 # RELOAD NGINX AND PHP-FPM
 #=================================================
-ynh_script_progression --message="Reloading NGINX web server and PHP-FPM..."
 
+ynh_script_progression --message="Reloading NGINX web server and PHP-FPM..."
 ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================

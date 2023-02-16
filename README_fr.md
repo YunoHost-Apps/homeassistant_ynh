@@ -16,25 +16,26 @@ Si vous n’avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) po
 
 ## Vue d’ensemble
 
-Plateforme domotique
+Awaken your home
+Open source home automation that puts local control and privacy first. Powered by a worldwide community of tinkerers and DIY enthusiasts. Perfect to run on a Raspberry Pi or a local server. 
 
-**Version incluse :** 2023.2.3~ynh1
+### Features
+
+- Works with over 1000 brands ;
+- Powerful automations ;
+- Extend your system with add-ons ;
+- All your smart home data stays local ;
+- Companion Mobile Apps ;
+- Home Energy Management." 
+
+
+**Version incluse :** 2023.2.5~ynh1
 
 **Démo :** https://demo.home-assistant.io
 
 ## Captures d’écran
 
 ![Capture d’écran de Home Assistant](./doc/screenshots/screenshot1.png)
-
-## Avertissements / informations importantes
-
-* Known limitations:
-    * Are LDAP and HTTP auth supported? LDAP=Yes | HTTP auth=No
-    * Can the app be used by multiple users? Yes
-
-
-* Additional informations:
-    * As the pyhton version shipped in Debian stable is not always supported, a recent version could be built during the installation process. It may take a while to achive that (15 to 60 minutes)
 
 ## Documentations et ressources
 

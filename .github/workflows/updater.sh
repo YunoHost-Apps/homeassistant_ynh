@@ -17,8 +17,10 @@
 #=================================================
 
 # Fetching information
-app=$(cat manifest.json | jq -j '.id')
-current_version=$(cat manifest.json | jq -j '.version|split("~")[0]')
+#app=$(cat manifest.json | jq -j '.id')
+#current_version=$(cat manifest.json | jq -j '.version|split("~")[0]')
+app=$(cat manifest.toml | awk -v key="id" '$1 == key { gsub("\"","",$3);print $3 }')
+current_version=$(cat manifest.toml | awk -v key="version" '$1 == key { gsub("\"","",$3);print $3 }' | awk -F'~' '{print $1}')
 upstream_version=$(curl -Ls https://pypi.org/pypi/$app/json | jq -r .info.version)
 
 # Setting up the environment variables
@@ -50,7 +52,8 @@ sed -i "s/^app_version=.*/app_version=$upstream_version/" scripts/_common.sh
 #=================================================
 
 # Replace new version in manifest
-echo "$(jq -s --indent 4 ".[] | .version = \"$upstream_version~ynh1\"" manifest.json)" > manifest.json
+#echo "$(jq -s --indent 4 ".[] | .version = \"$upstream_version~ynh1\"" manifest.json)" > manifest.json
+sed -i "s/^version = .*/version = \"$upstream_version~ynh1\"/" manifest.toml
 
 # No need to update the README, yunohost-bot takes care of it
 

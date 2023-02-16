@@ -1,0 +1,103 @@
+packaging_format = 2
+
+id = "homeassistant"
+name = "Home Assistant"
+description.en = "Home automation platform"
+description.fr = "Plateforme domotique"
+
+version = "2023.2.5~ynh1"
+
+maintainers = ["ewilly"]
+
+[upstream]
+license = "Apache-2.0"
+website = "https://www.home-assistant.io"
+demo = "https://demo.home-assistant.io"
+admindoc = "https://www.home-assistant.io/docs/"
+code = "https://github.com/home-assistant/core"
+cpe = "cpe:2.3:a:home-assistant:home-assistant"
+
+[integration]
+yunohost = ">= 11.1.0"
+architectures = ["amd64", "arm64"]
+multi_instance = false
+ldap = true
+sso = false
+disk = "2G"
+ram.build = "2G"
+ram.runtime = "2G"
+
+[install]
+    [install.domain]
+    type = "domain"
+    full_domain = true
+
+    [install.init_main_permission]
+    type = "group"
+    default = "visitors"
+
+    [install.home]
+    ask.en = "Name of the location where Home Assistant is running."
+    type = "string"
+    default = "Home"
+
+    [install.latitude]
+    ask.en = "Latitude of your location required to calculate the time the sun rises and sets--> https://www.openstreetmap.org"
+    type = "string"
+    default = 32.87336
+
+    [install.longitude]
+    ask.en = "Longitude of your location required to calculate the time the sun rises and sets --> https://www.openstreetmap.org"
+    type = "string"
+    default = 117.22743
+
+    [install.elevation]
+    ask.en = "Altitude above sea level in meters. Impacts sunrise data."
+    type = "number"
+    default = 430
+
+    [install.unit_system]
+    ask.en = "metric for Metric, us_customary for US Customary. This also sets temperature_unit, Celsius for Metric and Fahrenheit for US Customary."
+    type = "string"
+    choices = ["metric", "us_customary"]
+    default = "metric"
+
+    [install.currency]
+    ask.en = "Pick your currency code from the column Code of Wikipedia’s list of ISO 4217 active codes --> https://en.wikipedia.org/wiki/ISO_4217#Active_codes"
+    type = "string"
+    default = "USD"
+
+    [install.country]
+    ask.en = "Country in which Home Assistant is running. This may, for example, influence radio settings to comply with local regulations. The country should be specified as an ISO 3166.1 alpha-2 code. Pick your country from the column Code of Wikipedia’s list of ISO 31661 alpha-2 officially assigned code --> https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements"
+    type = "string"
+    default = "US"
+
+    [install.time_zone]
+    ask.en = "Pick your time zone from the column TZ of Wikipedia’s list of tz database time zones --> https://en.wikipedia.org/wiki/List_of_tz_database_time_zones"
+    type = "string"
+    default = "America/Los_Angeles"
+
+[resources]
+    [resources.system_user]
+
+    [resources.install_dir]
+    dir = "/var/www/__APP__"
+    owner = "__APP__:rwx"
+    group = "__APP__:rx"
+    
+    [resources.data_dir]
+    dir = "/home/yunohost.app/__APP__"
+    owner = "__APP__:rwx"
+    group = "__APP__:rx"
+    
+    [resources.database]
+    type = "mysql"
+    
+    [resources.permissions]
+    main.url = "/"
+    
+    [resources.apt]
+    packages = "python3, python3-dev, python3-venv, python3-pip, libffi-dev, libssl-dev, libjpeg-dev, zlib1g-dev, autoconf, build-essential, libopenjp2-7, libtiff5, libturbojpeg0, libmariadb-dev, libmariadb-dev-compat, rustc, tk-dev, libncurses5-dev, libncursesw5-dev, libreadline6-dev, libdb5.3-dev, libgdbm-dev, libsqlite3-dev, libbz2-dev, libexpat1-dev, liblzma-dev, wget, tar, libnss3-dev, libreadline-dev"
+    
+    [resources.ports]
+    main.default = 8123
