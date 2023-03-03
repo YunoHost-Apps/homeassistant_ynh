@@ -18,7 +18,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install tomlq
-        run: sudo apt-get install -y yq
+        run: sudo snap install yq
       - name: Run the updater script
         id: run_updater
         run: |
