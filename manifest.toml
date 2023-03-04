@@ -5,7 +5,7 @@ name = "Home Assistant"
 description.en = "Home automation platform"
 description.fr = "Plateforme domotique"
 
-version = "2023.2.5~ynh1"
+version = "2023.3.1~ynh1"
 
 maintainers = ["ewilly"]
 
@@ -90,14 +90,14 @@ ram.runtime = "2G"
     owner = "__APP__:rwx"
     group = "__APP__:rx"
     
-    [resources.database]
-    type = "mysql"
-    
     [resources.permissions]
     main.url = "/"
     
-    [resources.apt]
-    packages = "python3, python3-dev, python3-venv, python3-pip, libffi-dev, libssl-dev, libjpeg-dev, zlib1g-dev, autoconf, build-essential, libopenjp2-7, libtiff5, libturbojpeg0, libmariadb-dev, libmariadb-dev-compat, rustc, tk-dev, libncurses5-dev, libncursesw5-dev, libreadline6-dev, libdb5.3-dev, libgdbm-dev, libsqlite3-dev, libbz2-dev, libexpat1-dev, liblzma-dev, wget, tar, libnss3-dev, libreadline-dev"
-    
     [resources.ports]
     main.default = 8123
+    
+    [resources.apt]
+    packages = "mariadb-server python3, python3-dev, python3-venv, python3-pip, libffi-dev, libssl-dev, libjpeg-dev, zlib1g-dev, autoconf, build-essential, libopenjp2-7, libtiff5, libturbojpeg0, libmariadb-dev, libmariadb-dev-compat, rustc, tk-dev, libncurses5-dev, libncursesw5-dev, libreadline6-dev, libdb5.3-dev, libgdbm-dev, libsqlite3-dev, libbz2-dev, libexpat1-dev, liblzma-dev, wget, tar, libnss3-dev, libreadline-dev"
+    
+    [resources.database]
+    type = "mysql"
