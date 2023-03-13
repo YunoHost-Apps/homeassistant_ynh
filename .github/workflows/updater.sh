@@ -17,11 +17,8 @@
 #=================================================
 
 # Fetching information
-#TODO : find a way to install tomlq executable 
-#app=$(cat manifest.toml | tomlq -j '.id')
-#current_version=$(cat manifest.toml | tomlq -j '.version|split("~")[0]')
-app=$(cat manifest.toml | awk -v key="id" '$1 == key { gsub("\"","",$3);print $3 }')
-current_version=$(cat manifest.toml | awk -v key="version" '$1 == key { gsub("\"","",$3);print $3 }' | awk -F'~' '{print $1}')
+app=$(cat manifest.toml | tomlq -j '.id')
+current_version=$(cat manifest.toml | tomlq -j '.version|split("~")[0]')
 upstream_version=$(curl -Ls https://pypi.org/pypi/$app/json | jq -r .info.version)
 
 # Setting up the environment variables
@@ -32,13 +29,15 @@ echo "VERSION=$upstream_version" >> $GITHUB_ENV
 echo "PROCEED=false" >> $GITHUB_ENV
 
 # Proceed only if the retrieved version is greater than the current one
-if ! dpkg --compare-versions "$current_version" "lt" "$upstream_version" ; then
-    echo "::warning ::No new version available"
-    exit 0
+if ! dpkg --compare-versions "$current_version" "lt" "$upstream_version"
+then
+	echo "::warning ::No new version available"
+	exit 0
 # Proceed only if a PR for this new version does not already exist
-elif git ls-remote -q --exit-code --heads https://github.com/$GITHUB_REPOSITORY.git ci-auto-update-v$upstream_version ; then
-    echo "::warning ::A branch already exists for this update"
-    exit 0
+elif git ls-remote -q --exit-code --heads https://github.com/$GITHUB_REPOSITORY.git ci-auto-update-v$upstream_version
+then
+	echo "::warning ::A branch already exists for this update"
+	exit 0
 fi
 
 #=================================================
@@ -53,9 +52,9 @@ sed -i "s/^app_version=.*/app_version=$upstream_version/" scripts/_common.sh
 #=================================================
 
 # Replace new version in manifest
-#TODO : find a way to install tomlq executable 
-#echo "$(tomlq -s --indent 4 ".[] | .version = \"$upstream_version~ynh1\"" manifest.toml)" > manifest.toml
 sed -i "s/^version = .*/version = \"$upstream_version~ynh1\"/" manifest.toml
+#DOES NOT WORK BECAUSE IT REORDER ALL THE MANIFEST IN A STRANGE WAY
+#echo "$(tomlq --toml-output --slurp --indent 4 ".[] | .version = \"$version~ynh1\"" manifest.toml)" > manifest.toml 
 
 # No need to update the README, yunohost-bot takes care of it
 

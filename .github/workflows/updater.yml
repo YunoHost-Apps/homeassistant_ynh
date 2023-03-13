@@ -17,6 +17,11 @@ jobs:
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install python
+        uses: actions/setup-python@v4
+      - name: Install yq/tomlq
+        id: install_yq
+        run: pip install yq
       - name: Run the updater script
         id: run_updater
         run: |
