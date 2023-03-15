@@ -5,11 +5,11 @@
 #=================================================
 
 # Release to install
-app_version=2023.3.1
+app_version=2023.3.4
 
 # Requirements
-py_required_version=3.10.9
-pip_required=""
+py_required_version=3.10.10
+pip_required=pip (<23.1,>=21.0)
 
 #=================================================
 # PERSONAL HELPERS
