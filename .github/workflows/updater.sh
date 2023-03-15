@@ -54,7 +54,7 @@ sed -i "s/^py_required_version=.*/py_required_version=$py_required_minor/" scrip
 
 # Replace pip required version
 pip_required=$(curl -Ls https://pypi.org/pypi/$app/json | jq -r .info.requires_dist[] | grep "pip") #"pip (<23.1,>=21.0)"
-sed -i "s/^pip_required=.*/pip_required=$pip_required/" scripts/_common.sh
+sed -i "s/^pip_required=.*/pip_required=\"$pip_required\"/" scripts/_common.sh
 
 #=================================================
 # GENERIC FINALIZATION
