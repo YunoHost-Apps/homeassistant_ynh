@@ -5,12 +5,11 @@
 #=================================================
 
 # Release to install
-app_version=2023.3.1
+app_version=2023.3.4
 
-# Requirements (Major.Minor.Patch)
-# PY_VERSION=$(curl -s "https://www.python.org/ftp/python/" | grep ">3.9" | tail -n1 | cut -d '/' -f 2 | cut -d '>' -f 2)
-# Pyhton 3.9.2 will be shiped with bullseye
-py_required_version=3.10.9
+# Requirements
+py_required_version=3.10.10
+pip_required="pip (<23.1,>=21.0)"
 
 #=================================================
 # PERSONAL HELPERS
@@ -125,7 +124,7 @@ myynh_install_homeassistant () {
 		ynh_exec_as $app "$install_dir/bin/python3" -m ensurepip
 		
 		# install last version of pip
-		ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade pip
+		ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade "$pip_required"
 
 		# install last version of wheel
 		ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade wheel
@@ -137,7 +136,7 @@ myynh_install_homeassistant () {
 		ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade mysqlclient
 		
 		# install Home Assistant
-		ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade $app==$app_version
+		ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade "$app==$app_version"
 	)
 }
 
