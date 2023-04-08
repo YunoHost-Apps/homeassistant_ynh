@@ -49,7 +49,7 @@ yunohost service add $app --description="Home Assistant server" --log="$log_file
 
 ynh_use_logrotate --logfile="$log_file" --non-append
 
-ynh_add_fail2ban_config --logpath="$log_file" --failregex="Login attempt or request with invalid authentication from <HOST>"
+ynh_add_fail2ban_config --logpath="$log_file" --failregex="$failregex"
 
 #=================================================
 # RECONFIGURE THE APP (UPDATE CONF, APPLY MIGRATIONS, ...)

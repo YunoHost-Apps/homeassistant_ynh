@@ -65,7 +65,7 @@ yunohost service add $app --description="Home Assistant server" --log="$log_file
 ynh_use_logrotate --logfile="$log_file"
 
 # Create a dedicated Fail2Ban config
-ynh_add_fail2ban_config --logpath="$log_file" --failregex="Login attempt or request with invalid authentication from <HOST>"
+ynh_add_fail2ban_config --logpath="$log_file" --failregex="$failregex"
 
 # Grant sudo permissions to the user to manage his own systemd service
 myynh_create_dir "/etc/sudoers.d"
