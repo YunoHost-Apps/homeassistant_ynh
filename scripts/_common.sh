@@ -11,6 +11,9 @@ app_version=2023.4.1
 py_required_version=3.10.11
 pip_required="pip (<23.1,>=21.0)"
 
+# Fail2ban
+failregex="^%(__prefix_line)s.*\[homeassistant.components.http.ban\] Login attempt or request with invalid authentication from.* \(<HOST>\).* Requested URL: ./auth/.*"
+
 #=================================================
 # PERSONAL HELPERS
 #=================================================
