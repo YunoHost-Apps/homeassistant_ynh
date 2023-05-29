@@ -18,5 +18,4 @@ test_format = 1.0
     # Commits to test upgrade from
     # -------------------------------
     
-    test_upgrade_from.c1690e4.name = "Upgrade from 2023.1.7~ynh2"
-    
+   
