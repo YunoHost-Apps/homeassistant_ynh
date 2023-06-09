@@ -5,10 +5,10 @@
 #=================================================
 
 # Release to install
-app_version=2023.6.0
+app_version=2023.6.1
 
 # Requirements
-py_required_version=3.11.4
+py_required_version=3.10.12
 pip_required="pip (<23.2,>=21.0)"
 
 # Fail2ban
