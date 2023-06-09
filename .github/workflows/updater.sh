@@ -31,7 +31,7 @@ echo "PROCEED=false" >> $GITHUB_ENV
 # Proceed only if the retrieved version is greater than the current one
 if ! dpkg --compare-versions "$current_version" "lt" "$upstream_version"
 then
-	echo "::warning ::No new version available"
+	echo "::warning :: No new version available"
 	exit 0
 # Proceed only if a PR for this new version does not already exist
 elif git ls-remote -q --exit-code --heads https://github.com/$GITHUB_REPOSITORY.git ci-auto-update-v$upstream_version
@@ -50,8 +50,14 @@ sed -i "s/^app_version=.*/app_version=$upstream_version/" scripts/_common.sh
 # Replace python required version
 py_required_major=$(curl -Ls https://pypi.org/pypi/$app/json | jq -r .info.requires_python | cut -d '=' -f 2 | rev | cut -d"." -f2-  | rev)
 py_required_minor=$(curl -s "https://www.python.org/ftp/python/" | grep ">$py_required_major"  | cut -d '/' -f 2 | cut -d '>' -f 2 | sort -rV | head -n 1)
-sed -i "s/^py_required_version=.*/py_required_version=$py_required_minor/" scripts/_common.sh
-
+current_py_required_minor=$(cat scripts/_common.sh | grep "py_required_version=" | cut -d '=' -f 2)
+if ! dpkg --compare-versions "$current_py_required_minor" "lt" "$py_required_minor"
+then
+	echo "::warning :: No need to update required python version"
+else
+	echo "::warning :: Updating required python version to new upstream python version"
+	sed -i "s/^py_required_version=.*/py_required_version=$py_required_minor/" scripts/_common.sh
+fi
 # Replace pip required version
 pip_required=$(curl -Ls https://pypi.org/pypi/$app/json | jq -r .info.requires_dist[] | grep "pip") #"pip (<23.1,>=21.0)"
 sed -i "s/^pip_required=.*/pip_required=\"$pip_required\"/" scripts/_common.sh
