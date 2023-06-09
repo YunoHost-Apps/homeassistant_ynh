@@ -31,3 +31,9 @@ automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
 
+# Sensors
+sensor:
+  - platform: fail2ban
+    jails:
+      - __APP__
+    file_path: /var/log/__APP__/__APP__.log
