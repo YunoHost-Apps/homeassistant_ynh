@@ -31,10 +31,3 @@ automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
 
-# Switches
-switch:
-  - platform: command_line
-    switches:   
-      upgrade_homeassistant:
-        command_on: "nohup bash -c __DATA_DIR__/bin/upgrade_homeassistant.sh $1 > /dev/null  2>&1 &"
-        friendly_name: Upgrade Home Assistant
