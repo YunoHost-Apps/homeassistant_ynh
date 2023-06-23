@@ -145,7 +145,14 @@ myynh_install_homeassistant () {
 
 # Upgrade the virtual environment directory
 myynh_upgrade_venv_directory () {
-	find "$install_dir/bin/" -type l -name 'python*' -exec bash -c 'ynh_secure_remove "$1"' _ {} \;
+	
+	# Remove old python links before recreating them
+	for i in `find "$install_dir/bin/" -type l -name 'python*'`
+	do
+		ynh_secure_remove --file="$i"
+	done
+	
+	# Upgrade the virtual environment directory
 	ynh_exec_as $app $py_app_version -m venv --upgrade "$install_dir"
 }
 
