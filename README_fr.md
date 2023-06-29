@@ -29,7 +29,7 @@ Open source home automation that puts local control and privacy first. Powered b
 - Home Energy Management." 
 
 
-**Version incluse :** 2023.6.2~ynh2
+**Version incluse :** 2023.6.3~ynh1
 
 **Démo :** https://demo.home-assistant.io
 
