@@ -58,7 +58,7 @@ ram.runtime = "2G"
 
     [install.unit_system]
     ask.en = "metric for Metric, us_customary for US Customary. This also sets temperature_unit, Celsius for Metric and Fahrenheit for US Customary."
-    type = "string"
+    type = "select"
     choices = ["metric", "us_customary"]
     default = "metric"
 
