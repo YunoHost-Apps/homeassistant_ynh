@@ -5,7 +5,7 @@ name = "Home Assistant"
 description.en = "Home automation platform"
 description.fr = "Plateforme domotique"
 
-version = "2023.8.3~ynh1"
+version = "2023.8.4~ynh1"
 
 maintainers = ["ewilly"]
 
@@ -18,7 +18,7 @@ code = "https://github.com/home-assistant/core"
 cpe = "cpe:2.3:a:home-assistant:home-assistant"
 
 [integration]
-yunohost = ">= 11.1.0"
+yunohost = ">= 11.2"
 architectures = ["amd64", "arm64"]
 multi_instance = false
 ldap = true
@@ -30,7 +30,6 @@ ram.runtime = "2G"
 [install]
     [install.domain]
     type = "domain"
-    full_domain = true
 
     [install.init_main_permission]
     type = "group"
