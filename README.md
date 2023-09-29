@@ -29,7 +29,7 @@ Open source home automation that puts local control and privacy first. Powered b
 - Home Energy Management." 
 
 
-**Shipped version:** 2023.9.2~ynh1
+**Shipped version:** 2023.9.3~ynh1
 
 **Demo:** https://demo.home-assistant.io
 
@@ -42,7 +42,6 @@ Open source home automation that puts local control and privacy first. Powered b
 * Official app website: <https://www.home-assistant.io>
 * Official admin documentation: <https://www.home-assistant.io/docs/>
 * Upstream app code repository: <https://github.com/home-assistant/core>
-* YunoHost documentation for this app: <https://yunohost.org/app_homeassistant>
 * Report a bug: <https://github.com/YunoHost-Apps/homeassistant_ynh/issues>
 
 ## Developer info
