@@ -19,7 +19,7 @@ cpe = "cpe:2.3:a:home-assistant:home-assistant"
 
 [integration]
 yunohost = ">= 11.2"
-architectures = ["amd64", "arm64"]
+architectures = ["amd64", "arm64", "armhf"]
 multi_instance = false
 ldap = true
 sso = false
