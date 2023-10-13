@@ -202,7 +202,7 @@ myynh_upgrade_venv_directory () {
 	# Remove old python links before recreating them
 	find "$install_dir/bin/" -type l -name 'python*' \
 		-exec bash -c 'rm --force "$1"' _ {} \;
-
+	
 	# Remove old python directories before recreating them
 	find "$install_dir/lib/" -mindepth 1 -maxdepth 1 -type d -name "python*" \
 		-not -path "*/python${py_required_version%.*}" \
