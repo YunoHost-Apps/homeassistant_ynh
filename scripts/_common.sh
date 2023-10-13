@@ -138,7 +138,7 @@ myynh_install_homeassistant () {
 			ynh_exec_warn_less ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade PyTurboJPEG
 			# need to recompile ffmpeg https://community.home-assistant.io/t/unable-to-install-package-ha-av/466286/31
 	 
-			ynh_exec_warn_less ynh_exec_as $app "git" clone --branch release/6.0 --depth 1 https://github.com/FFmpeg/FFmpeg.git "$data_dir/.cache/FFmpeg"
+			ynh_exec_warn_less git clone --branch release/6.0 --depth 1 https://github.com/FFmpeg/FFmpeg.git "$data_dir/.cache/FFmpeg"
 	
 			cd "$data_dir/.cache/FFmpeg"
 			./configure \
@@ -174,10 +174,10 @@ myynh_install_homeassistant () {
 			    --disable-static \
 			    --enable-shared
 	
-			ynh_exec_warn_less ynh_exec_as $app make -j$(nproc)
-			ynh_exec_warn_less ynh_exec_as $app sudo make install
-			ynh_exec_warn_less ynh_exec_as $app sudo ldconfig
-	  		ynh_exec_warn_less ynh_exec_as $app sudo cp "$data_dir/.cache/FFmpeg"/ffmpeg /usr/bin/
+			ynh_exec_warn_less make -j$(nproc)
+			ynh_exec_warn_less make install
+			ynh_exec_warn_less ldconfig
+	  		ynh_exec_warn_less cp "$data_dir/.cache/FFmpeg"/ffmpeg /usr/bin/
 	    
 			ynh_exec_warn_less ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade ha-av
 		fi
