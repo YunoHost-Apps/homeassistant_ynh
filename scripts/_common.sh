@@ -164,7 +164,6 @@ myynh_install_homeassistant () {
 			    --enable-libx264 \
 			    --enable-libx265 \
 			    --enable-libxml2 \
-			    --enable-mmal \
 			    --enable-nonfree \
 			    --enable-version3 \
 			    --target-os=linux \
