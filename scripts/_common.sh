@@ -5,7 +5,7 @@
 #=================================================
 
 # Release to install
-app_version=2023.10.1
+app_version=2023.10.2
 
 # Requirements
 py_required_version=3.11.6
@@ -128,16 +128,62 @@ myynh_install_homeassistant () {
 		
 		# install last version of pip
 		ynh_exec_warn_less ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade "$pip_required"
-
-		# install last version of PyNacl
-		ynh_exec_warn_less ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade PyNacl
-		# install last version of numpy (https://github.com/numpy/numpy/issues/24703)
-		ynh_exec_warn_less ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade numpy --config-settings=setup-args="-Dallow-noblas=true" 
-		# install last version of PyNacl (need cmake installed)
-		ynh_exec_warn_less ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade PyTurbpJPEG
-		# need to recompile ffmpeg https://community.home-assistant.io/t/unable-to-install-package-ha-av/466286/31
+		if [ $YNH_ARCH == "armhf" ] 
+		then
+			# install last version of PyNacl
+			ynh_exec_warn_less ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade PyNacl
+			# install last version of numpy (https://github.com/numpy/numpy/issues/24703)
+			ynh_exec_warn_less ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade numpy --config-settings=setup-args="-Dallow-noblas=true" 
+			# install last version of PyNacl (need cmake installed)
+			ynh_exec_warn_less ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade PyTurbpJPEG
+			# need to recompile ffmpeg https://community.home-assistant.io/t/unable-to-install-package-ha-av/466286/31
+	 
+			ynh_exec_warn_less ynh_exec_as $app "git" clone --branch release/6.0 --depth 1 https://github.com/FFmpeg/FFmpeg.git "$data_dir/.cache/FFmpeg"
+	
+			cd "$data_dir/.cache/FFmpeg"
+			./configure \
+			    --extra-cflags="-I/usr/local/include" \
+			    --extra-ldflags="-L/usr/local/lib" \
+			    --extra-libs="-lpthread -lm -latomic" \
+			    --arch=armel \
+			    --enable-gmp \
+			    --enable-gpl \
+			    --enable-libass \
+			    --enable-libdrm \
+			    --enable-libfreetype \
+			    --enable-libmp3lame \
+			    --enable-libopencore-amrnb \
+			    --enable-libopencore-amrwb \
+			    --enable-libopus \
+			    --enable-librtmp \
+			    --enable-libsnappy \
+			    --enable-libsoxr \
+			    --enable-libssh \
+			    --enable-libvorbis \
+			    --enable-libwebp \
+			    --enable-libx264 \
+			    --enable-libx265 \
+			    --enable-libxml2 \
+			    --enable-mmal \
+			    --enable-nonfree \
+			    --enable-version3 \
+			    --target-os=linux \
+			    --enable-pthreads \
+			    --enable-openssl \
+			    --enable-hardcoded-tables \
+			    --enable-pic \
+			    --disable-static \
+			    --enable-shared
+	
+			ynh_exec_warn_less ynh_exec_as $app make -j$(nproc)
+			ynh_exec_warn_less ynh_exec_as $app sudo make install
+			ynh_exec_warn_less ynh_exec_as $app sudo ldconfig
+	  		ynh_exec_warn_less ynh_exec_as $app sudo cp "$data_dir/.cache/FFmpeg"/ffmpeg /usr/bin/
+	    
+			ynh_exec_warn_less ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade ha-av
+		fi
   
-		# install last version of wheel
+  		# install last version of wheel
 		ynh_exec_warn_less ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade wheel
 
 		# install last version of setuptools
