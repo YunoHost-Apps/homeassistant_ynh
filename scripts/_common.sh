@@ -5,7 +5,7 @@
 #=================================================
 
 # Release to install
-app_version=2023.10.2
+app_version=2023.10.3
 
 # Requirements
 py_required_version=3.11.6
