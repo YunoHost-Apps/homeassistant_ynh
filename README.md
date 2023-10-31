@@ -42,6 +42,7 @@ Open source home automation that puts local control and privacy first. Powered b
 * Official app website: <https://www.home-assistant.io>
 * Official admin documentation: <https://www.home-assistant.io/docs/>
 * Upstream app code repository: <https://github.com/home-assistant/core>
+* YunoHost Store: <https://apps.yunohost.org/app/homeassistant>
 * Report a bug: <https://github.com/YunoHost-Apps/homeassistant_ynh/issues>
 
 ## Developer info
