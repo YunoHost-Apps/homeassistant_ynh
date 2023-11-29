@@ -16,8 +16,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 ## Overview
 
-Awaken your home
-Open source home automation that puts local control and privacy first. Powered by a worldwide community of tinkerers and DIY enthusiasts. Perfect to run on a Raspberry Pi or a local server. 
+Home Assistant is an open source home automation that puts local control and privacy first. Powered by a worldwide community of tinkerers and DIY enthusiasts. Perfect to run on a Raspberry Pi or a local server. 
 
 ### Features
 
@@ -29,7 +28,7 @@ Open source home automation that puts local control and privacy first. Powered b
 - Home Energy Management." 
 
 
-**Shipped version:** 2023.11.2~ynh1
+**Shipped version:** 2023.11.3~ynh1
 
 **Demo:** https://demo.home-assistant.io
 

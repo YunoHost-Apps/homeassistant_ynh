@@ -16,20 +16,18 @@ Si vous n’avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) po
 
 ## Vue d’ensemble
 
-Awaken your home
-Open source home automation that puts local control and privacy first. Powered by a worldwide community of tinkerers and DIY enthusiasts. Perfect to run on a Raspberry Pi or a local server. 
+Home Assistant zst une application domotique open source qui donne la priorité au contrôle local et à la confidentialité. Propulsé par une communauté mondiale de bricoleurs et de passionnés de bricolage. Parfait pour fonctionner sur un Raspberry Pi ou un serveur local.
 
-### Features
+### Caractéristiques
 
-- Works with over 1000 brands ;
-- Powerful automations ;
-- Extend your system with add-ons ;
-- All your smart home data stays local ;
-- Companion Mobile Apps ;
-- Home Energy Management." 
+- Fonctionne avec plus de 1000 marques ;
+- Des automatismes puissants ;
+- Étendez votre système avec des modules complémentaires ;
+- Toutes les données de votre maison intelligente restent locales ;
+- Applications mobiles compagnons ;
+- Gestion de l'énergie domestique.
 
-
-**Version incluse :** 2023.11.2~ynh1
+**Version incluse :** 2023.11.3~ynh1
 
 **Démo :** https://demo.home-assistant.io
 
