@@ -21,8 +21,11 @@ cpe = "cpe:2.3:a:home-assistant:home-assistant"
 yunohost = ">= 11.2"
 architectures = ["amd64", "arm64"]
 multi_instance = false
+
 ldap = true
+
 sso = false
+
 disk = "2G"
 ram.build = "2G"
 ram.runtime = "2G"
@@ -91,6 +94,10 @@ ram.runtime = "2G"
     
     [resources.permissions]
     main.url = "/"
+    api.url = "/api"
+    api.show_tile = false
+    api.allowed = "visitors"
+    api.auth_header = false
     
     [resources.ports]
     main.default = 8123
