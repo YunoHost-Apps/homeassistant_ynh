@@ -5,7 +5,7 @@ name = "Home Assistant"
 description.en = "Home automation platform"
 description.fr = "Plateforme domotique"
 
-version = "2024.2.2~ynh1"
+version = "2024.2.5~ynh1"
 
 maintainers = ["ewilly"]
 
