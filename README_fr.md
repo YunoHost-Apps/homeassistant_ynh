@@ -26,10 +26,9 @@ Home Assistant zst une application domotique open source qui donne la priorité 
 - Toutes les données de votre maison intelligente restent locales ;
 - Applications mobiles compagnons ;
 - Gestion de l'énergie domestique.
+**Version incluse :** 2024.2.5~ynh2
 
-**Version incluse :** 2024.2.5~ynh1
-
-**Démo :** https://demo.home-assistant.io
+**Démo :** <https://demo.home-assistant.io>
 
 ## Captures d’écran
 
@@ -37,11 +36,11 @@ Home Assistant zst une application domotique open source qui donne la priorité 
 
 ## Documentations et ressources
 
-* Site officiel de l’app : <https://www.home-assistant.io>
-* Documentation officielle de l’admin : <https://www.home-assistant.io/docs/>
-* Dépôt de code officiel de l’app : <https://github.com/home-assistant/core>
-* YunoHost Store: <https://apps.yunohost.org/app/homeassistant>
-* Signaler un bug : <https://github.com/YunoHost-Apps/homeassistant_ynh/issues>
+- Site officiel de l’app : <https://www.home-assistant.io>
+- Documentation officielle de l’admin : <https://www.home-assistant.io/docs/>
+- Dépôt de code officiel de l’app : <https://github.com/home-assistant/core>
+- YunoHost Store : <https://apps.yunohost.org/app/homeassistant>
+- Signaler un bug : <https://github.com/YunoHost-Apps/homeassistant_ynh/issues>
 
 ## Informations pour les développeurs
 

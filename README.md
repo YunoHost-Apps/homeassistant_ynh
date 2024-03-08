@@ -27,10 +27,9 @@ Home Assistant is an open source home automation that puts local control and pri
 - Companion Mobile Apps ;
 - Home Energy Management." 
 
+**Shipped version:** 2024.2.5~ynh2
 
-**Shipped version:** 2024.2.5~ynh1
-
-**Demo:** https://demo.home-assistant.io
+**Demo:** <https://demo.home-assistant.io>
 
 ## Screenshots
 
@@ -38,11 +37,11 @@ Home Assistant is an open source home automation that puts local control and pri
 
 ## Documentation and resources
 
-* Official app website: <https://www.home-assistant.io>
-* Official admin documentation: <https://www.home-assistant.io/docs/>
-* Upstream app code repository: <https://github.com/home-assistant/core>
-* YunoHost Store: <https://apps.yunohost.org/app/homeassistant>
-* Report a bug: <https://github.com/YunoHost-Apps/homeassistant_ynh/issues>
+- Official app website: <https://www.home-assistant.io>
+- Official admin documentation: <https://www.home-assistant.io/docs/>
+- Upstream app code repository: <https://github.com/home-assistant/core>
+- YunoHost Store: <https://apps.yunohost.org/app/homeassistant>
+- Report a bug: <https://github.com/YunoHost-Apps/homeassistant_ynh/issues>
 
 ## Developer info
 
