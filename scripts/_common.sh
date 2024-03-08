@@ -1,36 +1,28 @@
 #!/bin/bash
 
 #=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
-source /usr/share/yunohost/helpers
-
-#=================================================
 # COMMON VARIABLES
 #=================================================
 
 # App version
 ## yq is not a dependencie of yunohost package so tomlq command is not available
 ## (see https://github.com/YunoHost/yunohost/blob/dev/debian/control)
-app_version=$(ynh_exec_quiet cat ../manifest.toml \
+app_version=$(cat ../manifest.toml 2>/dev/null \
 				| grep 'version = ' | cut -d '=' -f 2 \
 				| cut -d '~' -f 1 | tr -d ' "') #2024.2.5
 
 # Python required version
 ## jq is a dependencie of yunohost package
 ## (see https://github.com/YunoHost/yunohost/blob/dev/debian/control)
-py_required_major=$(ynh_exec_quiet curl -Ls https://pypi.org/pypi/$app/$app_version/json \
+py_required_major=$(curl -Ls https://pypi.org/pypi/$app/$app_version/json \
 						| jq -r '.info.requires_python' | cut -d '=' -f 2 \
 						| rev | cut -d '.' -f2-  | rev) #3.11
-py_required_version=$(ynh_exec_quiet curl -Ls https://www.python.org/ftp/python/ \
+py_required_version=$(curl -Ls https://www.python.org/ftp/python/ \
 						| grep '>'$py_required_major  | cut -d '/' -f 2 \
 						| cut -d '>' -f 2 | sort -rV | head -n 1) #3.11.8
 
 # Fail2ban
-failregex="^%(__prefix_line)s.*\[homeassistant.components.http.ban\] \
-			Login attempt or request with invalid authentication \
-			from.* \(<HOST>\).* Requested URL: ./auth/.*"
+failregex="^%(__prefix_line)s.*\[homeassistant.components.http.ban\] Login attempt or request with invalid authentication from.* \(<HOST>\).* Requested URL: ./auth/.*"
 
 #=================================================
 # PERSONAL HELPERS
