@@ -4,12 +4,14 @@
 # COMMON VARIABLES
 #=================================================
 
-# Release to install
-app_version=2024.2.5
+# App version
+## yq is not a dependencie of yunohost package so tomlq command is not available (see https://github.com/YunoHost/yunohost/blob/dev/debian/control)
+app_version=$(cat ../manifest.toml | grep 'version = '| cut -d '=' -f 2 | cut -d '~' -f 1 | tr -d ' "') #2024.2.5
 
-# Requirements
-py_required_version=3.11.8
-pip_required="pip (>=21.3.1)"
+# Python required version
+## jq is a dependencie of yunohost package (see https://github.com/YunoHost/yunohost/blob/dev/debian/control)
+py_required_major=$(curl -Ls https://pypi.org/pypi/$app/$app_version/json | jq -r '.info.requires_python' | cut -d '=' -f 2 | rev | cut -d '.' -f2-  | rev) #3.11
+py_required_version=$(curl -Ls https://www.python.org/ftp/python/ | grep '>'$py_required_major  | cut -d '/' -f 2 | cut -d '>' -f 2 | sort -rV | head -n 1) #3.11.8
 
 # Fail2ban
 failregex="^%(__prefix_line)s.*\[homeassistant.components.http.ban\] Login attempt or request with invalid authentication from.* \(<HOST>\).* Requested URL: ./auth/.*"
@@ -113,6 +115,9 @@ myynh_install_python () {
 	
 # Install/Upgrade Homeassistant in virtual environement
 myynh_install_homeassistant () {
+	# Requirements
+	pip_required=$(curl -Ls https://pypi.org/pypi/$app/$app_version/json | jq -r '.info.requires_dist[]' | grep 'pip') #pip (<23.1,>=21.0)
+
 	# Create the virtual environment
 	ynh_exec_as $app $py_app_version -m venv --without-pip "$install_dir"
 	
