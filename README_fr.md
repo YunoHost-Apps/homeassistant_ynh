@@ -26,7 +26,7 @@ Home Assistant zst une application domotique open source qui donne la priorité 
 - Toutes les données de votre maison intelligente restent locales ;
 - Applications mobiles compagnons ;
 - Gestion de l'énergie domestique.
-**Version incluse :** 2024.3.0~ynh1
+**Version incluse :** 2024.3.1~ynh1
 
 **Démo :** <https://demo.home-assistant.io>
 
@@ -48,7 +48,7 @@ Merci de faire vos pull request sur la [branche testing](https://github.com/Yuno
 
 Pour essayer la branche testing, procédez comme suit.
 
-``` bash
+```bash
 sudo yunohost app install https://github.com/YunoHost-Apps/homeassistant_ynh/tree/testing --debug
 ou
 sudo yunohost app upgrade homeassistant -u https://github.com/YunoHost-Apps/homeassistant_ynh/tree/testing --debug
