@@ -27,7 +27,7 @@ Home Assistant is an open source home automation that puts local control and pri
 - Companion Mobile Apps ;
 - Home Energy Management." 
 
-**Shipped version:** 2024.3.0~ynh1
+**Shipped version:** 2024.3.1~ynh1
 
 **Demo:** <https://demo.home-assistant.io>
 
@@ -49,7 +49,7 @@ Please send your pull request to the [testing branch](https://github.com/YunoHos
 
 To try the testing branch, please proceed like that.
 
-``` bash
+```bash
 sudo yunohost app install https://github.com/YunoHost-Apps/homeassistant_ynh/tree/testing --debug
 or
 sudo yunohost app upgrade homeassistant -u https://github.com/YunoHost-Apps/homeassistant_ynh/tree/testing --debug
