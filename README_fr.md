@@ -1,11 +1,11 @@
 <!--
-Nota bene: ce README est automatiquement généré par https://github.com/YunoHost/apps/tree/master/tools/readme_generator
+Nota bene : ce README est automatiquement généré par https://github.com/YunoHost/apps/tree/master/tools/readme_generator
 Il ne doit pas être modifié à la main.
 -->
 
 # Home Assistant pour YunoHost
 
-[![Niveau d'intégration ](https://dash.yunohost.org/integration/homeassistant.svg)](https://dash.yunohost.org/appci/app/homeassistant) ![Status du fonctionnement](https://ci-apps.yunohost.org/ci/badges/homeassistant.status.svg) ![Statut demaintenance](https://ci-apps.yunohost.org/ci/badges/homeassistant.maintain.svg)
+[![Niveau d'intégration](https://dash.yunohost.org/integration/homeassistant.svg)](https://dash.yunohost.org/appci/app/homeassistant) ![Status du fonctionnement](https://ci-apps.yunohost.org/ci/badges/homeassistant.status.svg) ![Statut demaintenance](https://ci-apps.yunohost.org/ci/badges/homeassistant.maintain.svg)
 
 [![Installer Home Assistant avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=homeassistant)
 
@@ -36,8 +36,8 @@ Home Assistant zst une application domotique open source qui donne la priorité 
 
 ## Documentations et ressources
 
-- Site officiel de l’app : <https://www.home-assistant.io>
-- Documentation officielle de l'admin <https://www.home-assistant.io/docs/>
+- Site officiel de l’app : <https://www.home-assistant.io>
+- Documentation officielle de l'admin : <https://www.home-assistant.io/docs/>
 - Dépôt de code officiel de l’app : <https://github.com/home-assistant/core>
 - YunoHost Store : <https://apps.yunohost.org/app/homeassistant>
 - Signaler un bug : <https://github.com/YunoHost-Apps/homeassistant_ynh/issues>
@@ -55,4 +55,4 @@ or
 sudo yunohost app upgrade homeassistant -u https://github.com/YunoHost-Apps/homeassistant_ynh/tree/testing --debug
 ```
 
-**Plus d'infos sur le packaging d'applications :** <https://yunohost.org/packaging_apps>
+**Plus d'infos sur le packaging d'applications :** <https://yunohost.org/packaging_apps>
