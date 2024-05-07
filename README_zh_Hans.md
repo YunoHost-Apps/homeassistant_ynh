@@ -3,7 +3,7 @@
 请勿手动编辑。
 -->
 
-# YunoHost 的 Home Assistant
+# YunoHost 上的 Home Assistant
 
 [![集成程度](https://dash.yunohost.org/integration/homeassistant.svg)](https://dash.yunohost.org/appci/app/homeassistant) ![工作状态](https://ci-apps.yunohost.org/ci/badges/homeassistant.status.svg) ![维护状态](https://ci-apps.yunohost.org/ci/badges/homeassistant.maintain.svg)
 
@@ -28,7 +28,7 @@ Home Assistant is an open source home automation that puts local control and pri
 - Home Energy Management." 
 
 
-**分发版本：** 2024.5.1~ynh1
+**分发版本：** 2024.5.2~ynh1
 
 **演示：** <https://demo.home-assistant.io>
 
