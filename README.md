@@ -28,7 +28,7 @@ Home Assistant is an open source home automation that puts local control and pri
 - Home Energy Management." 
 
 
-**Shipped version:** 2024.5.2~ynh1
+**Shipped version:** 2024.5.3~ynh1
 
 **Demo:** <https://demo.home-assistant.io>
 
