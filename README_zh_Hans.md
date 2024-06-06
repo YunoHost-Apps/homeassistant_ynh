@@ -28,7 +28,7 @@ Home Assistant is an open source home automation that puts local control and pri
 - Home Energy Management." 
 
 
-**分发版本：** 2024.5.5~ynh1
+**分发版本：** 2024.6.0~ynh1
 
 **演示：** <https://demo.home-assistant.io>
 
