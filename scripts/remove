@@ -31,8 +31,6 @@ ynh_remove_fail2ban_config
 
 ynh_secure_remove --file="/etc/sudoers.d/$app"
 
-ynh_secure_remove --file="$(dirname "$log_file")"
-
 #=================================================
 # END OF SCRIPT
 #=================================================
