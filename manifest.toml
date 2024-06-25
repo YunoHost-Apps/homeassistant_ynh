@@ -5,7 +5,7 @@ name = "Home Assistant"
 description.en = "Home automation platform"
 description.fr = "Plateforme domotique"
 
-version = "2024.6.4~ynh1"
+version = "2024.6.4~ynh2"
 
 maintainers = ["ewilly"]
 
@@ -108,7 +108,7 @@ ram.runtime = "2G"
     main.default = 8123
     
     [resources.apt]
-    packages = "mariadb-server, python3-dev, python3-venv, python3-pip, libffi-dev, autoconf, build-essential, libopenjp2-7-dev, libtiff-dev, libturbojpeg0-dev, libmariadb-dev-compat, rustc, tk-dev, libreadline-dev, libdb5.3-dev, libgdbm-dev, libsqlite3-dev, libbz2-dev, libexpat1-dev, liblzma-dev, wget, tar, libnss3-dev, ffmpeg"
+    packages = "build-essential, zlib1g-dev, libncurses5-dev, libgdbm-dev, libnss3-dev, libssl-dev, libreadline-dev, libffi-dev, libsqlite3-dev, libbz2-dev, wget, curl, llvm, libncursesw5-dev, xz-utils, tk-dev, liblzma-dev, python3-openssl, git, wget, checkinstall, libc6-dev, mariadb-server, libmariadb-dev-compat, python3-dev, python3-venv, python3-pip, bluez, libjpeg-dev, autoconf, libopenjp2-7, libtiff-dev, libturbojpeg0-dev, tzdata, ffmpeg, liblapack3, liblapack-dev, libatlas-base-dev"
     
     [resources.database]
     type = "mysql"
