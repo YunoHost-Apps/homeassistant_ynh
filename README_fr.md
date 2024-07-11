@@ -27,7 +27,7 @@ Home Assistant zst une application domotique open source qui donne la priorité 
 - Applications mobiles compagnons ;
 - Gestion de l'énergie domestique.
 
-**Version incluse :** 2024.7.1~ynh1
+**Version incluse :** 2024.7.2~ynh1
 
 **Démo :** <https://demo.home-assistant.io>
 
