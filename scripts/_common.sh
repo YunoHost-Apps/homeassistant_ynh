@@ -160,16 +160,25 @@ myynh_install_homeassistant () {
 myynh_upgrade_venv_directory () {
 	
 	# Remove old python links before recreating them
-	find "$install_dir/bin/" -type l -name 'python*' \
-		-exec bash -c 'rm --force "$1"' _ {} \;
+	if [ -e "$install_dir/bin/" ]
+	then
+		find "$install_dir/bin/" -type l -name 'python*' \
+			-exec bash -c 'rm --force "$1"' _ {} \;
+	fi
 	
 	# Remove old python directories before recreating them
-	find "$install_dir/lib/" -mindepth 1 -maxdepth 1 -type d -name "python*" \
-		-not -path "*/python${py_required_version%.*}" \
-		-exec bash -c 'rm --force --recursive "$1"' _ {} \;
-	find "$install_dir/include/site/" -mindepth 1 -maxdepth 1 -type d -name "python*" \
-		-not -path "*/python${py_required_version%.*}" \
-		-exec bash -c 'rm --force --recursive "$1"' _ {} \;
+	if [ -e "$install_dir/lib/" ]
+	then
+		find "$install_dir/lib/" -mindepth 1 -maxdepth 1 -type d -name "python*" \
+			-not -path "*/python${py_required_version%.*}" \
+			-exec bash -c 'rm --force --recursive "$1"' _ {} \;
+	fi
+	if [ -e "$install_dir/include/site/" ]
+	then
+		find "$install_dir/include/site/" -mindepth 1 -maxdepth 1 -type d -name "python*" \
+			-not -path "*/python${py_required_version%.*}" \
+			-exec bash -c 'rm --force --recursive "$1"' _ {} \;
+	fi
 	
 	# Upgrade the virtual environment directory
 	ynh_exec_as $app $py_app_version -m venv --upgrade "$install_dir"
@@ -184,11 +193,11 @@ myynh_set_permissions () {
 	chown -R $app: "$data_dir"
 	chmod 750 "$data_dir"
 	chmod -R o-rwx "$data_dir"
-	[ ! -e "$data_dir/bin/" ] || chmod -R +x "$data_dir/bin/"
+	[ -e "$data_dir/bin/" ] && chmod -R +x "$data_dir/bin/"
 
-	[ ! -e "$(dirname "$log_file")" ] || chown -R $app: "$(dirname "$log_file")"
+	[ -e "$(dirname "$log_file")" ] && chown -R $app: "$(dirname "$log_file")"
 
-	[ ! -e "/etc/sudoers.d/$app" ] || chown -R root: "/etc/sudoers.d/$app"
+	[ -e "/etc/sudoers.d/$app" ] && chown -R root: "/etc/sudoers.d/$app"
 
 	# Upgade user groups
 	user_groups=""
