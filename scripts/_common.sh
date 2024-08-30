@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #=================================================
-# COMMON VARIABLES
+# COMMON VARIABLES AND CUSTOM HELPERS
 #=================================================
 
 # App version
@@ -24,10 +24,6 @@ py_required_version=$(curl -Ls https://www.python.org/ftp/python/ \
 # Fail2ban
 failregex="^%(__prefix_line)s.*\[homeassistant.components.http.ban\] Login attempt or request with invalid authentication from.* \(<HOST>\).* Requested URL: ./auth/.*"
 
-#=================================================
-# PERSONAL HELPERS
-#=================================================
-
 # Check if directory/file already exists (path in argument)
 myynh_check_path () {
 	[ -z "$1" ] && ynh_die "No argument supplied"
@@ -45,18 +41,18 @@ myynh_create_dir () {
 # | arg: -p, --python=    - the python version to install
 myynh_install_python () {
 	# Declare an array to define the options of this helper.
-	local legacy_args=u
+	#REMOVEME? local legacy_args=u
 	local -A args_array=( [p]=python= )
 	local python
 	# Manage arguments with getopts
 	ynh_handle_getopts_args "$@"
-	
+
 	# Check python version from APT
 	local py_apt_version=$(python3 --version | cut -d ' ' -f 2)
-	
+
 	# Usefull variables
 	local python_major=${python%.*}
-	
+
 	# Check existing built version of python in /usr/local/bin
 	if [ -e "/usr/local/bin/python$python_major" ]
 	then
@@ -65,107 +61,110 @@ myynh_install_python () {
 	else
 		local py_built_version=0
 	fi
-	
+
 	# Compare version
 	if $(dpkg --compare-versions $py_apt_version ge $python)
 	then
 		# APT >= Required
-		ynh_print_info --message="Using provided python3..."
-		
+		ynh_print_info "Using provided python3..."
+
 		py_app_version="python3"
-		
+
 	else
-		# Either python already built or to build 
+		# Either python already built or to build
+
 		if $(dpkg --compare-versions $py_built_version ge $python)
 		then
 			# Built >= Required
-			ynh_print_info --message="Using already used python3 built version..."
-			
+			ynh_print_info "Using already used python3 built version..."
+
 			py_app_version="/usr/local/bin/python${py_built_version%.*}"
-			
+
 		else
 			# APT < Minimal & Actual < Minimal => Build & install Python into /usr/local/bin
-			ynh_print_info --message="Building python (may take a while)..."
-			
-			# Store current direcotry 
+			ynh_print_info "Building python (may take a while)..."
+
+			# Store current direcotry
+
 			local MY_DIR=$(pwd)
-			
+
 			# Create a temp direcotry
 			tmpdir="$(mktemp --directory)"
 			cd "$tmpdir"
-			
+
 			# Download
 			wget --output-document="Python-$python.tar.xz" \
 				"https://www.python.org/ftp/python/$python/Python-$python.tar.xz" 2>&1
-			
+
 			# Extract
 			tar xf "Python-$python.tar.xz"
-			
+
 			# Install
 			cd "Python-$python"
 			./configure --enable-optimizations
-			ynh_exec_warn_less make -j4
-			ynh_exec_warn_less make altinstall
-			
+			ynh_hide_warnings make -j4
+			ynh_hide_warnings make altinstall
+
 			# Go back to working directory
 			cd "$MY_DIR"
-			
+
 			# Clean
-			ynh_secure_remove "$tmpdir"
-			
+			ynh_safe_rm "$tmpdir"
+
 			# Set version
 			py_app_version="/usr/local/bin/python$python_major"
 		fi
 	fi
-	# Save python version in settings 
-	ynh_app_setting_set --app=$app --key=python --value="$python"
+	# Save python version in settings
+
+	ynh_app_setting_set --key=python --value="$python"
 }
-	
+
 # Install/Upgrade Homeassistant in virtual environement
 myynh_install_homeassistant () {
 	# Requirements
 	pip_required=$(curl -Ls https://pypi.org/pypi/$app/$app_version/json | jq -r '.info.requires_dist[]' | grep 'pip') #pip (<23.1,>=21.0)
 
 	# Create the virtual environment
-	ynh_exec_as $app $py_app_version -m venv --without-pip "$install_dir"
-	
+	ynh_exec_as_app $py_app_version -m venv --without-pip "$install_dir"
+
 	# Run source in a 'sub shell'
 	(
 		# activate the virtual environment
 		set +o nounset
 		source "$install_dir/bin/activate"
 		set -o nounset
-		
+
 		# add pip
-		ynh_exec_as $app "$install_dir/bin/python3" -m ensurepip
-		
+		ynh_exec_as_app "$install_dir/bin/python3" -m ensurepip
+
 		# install last version of pip
-		ynh_exec_warn_less ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade "$pip_required"
+		ynh_hide_warnings ynh_exec_as_app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade "$pip_required"
 
 		# install last version of wheel
-		ynh_exec_warn_less ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade wheel
+		ynh_hide_warnings ynh_exec_as_app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade wheel
 
 		# install last version of setuptools
-		ynh_exec_warn_less ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade setuptools
+		ynh_hide_warnings ynh_exec_as_app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade setuptools
 
 		# install last version of mysqlclient
-		ynh_exec_warn_less ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade mysqlclient
-		
+		ynh_hide_warnings ynh_exec_as_app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade mysqlclient
+
 		# install Home Assistant
-		ynh_exec_warn_less ynh_exec_as $app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade "$app==$app_version"
+		ynh_hide_warnings ynh_exec_as_app "$install_dir/bin/pip3" --cache-dir "$data_dir/.cache" install --upgrade "$app==$app_version"
 	)
 }
 
 # Upgrade the virtual environment directory
 myynh_upgrade_venv_directory () {
-	
+
 	# Remove old python links before recreating them
 	if [ -e "$install_dir/bin/" ]
 	then
 		find "$install_dir/bin/" -type l -name 'python*' \
 			-exec bash -c 'rm --force "$1"' _ {} \;
 	fi
-	
+
 	# Remove old python directories before recreating them
 	if [ -e "$install_dir/lib/" ]
 	then
@@ -179,17 +178,16 @@ myynh_upgrade_venv_directory () {
 			-not -path "*/python${py_required_version%.*}" \
 			-exec bash -c 'rm --force --recursive "$1"' _ {} \;
 	fi
-	
+
 	# Upgrade the virtual environment directory
-	ynh_exec_as $app $py_app_version -m venv --upgrade "$install_dir"
+	ynh_exec_as_app $py_app_version -m venv --upgrade "$install_dir"
 }
 
 # Set permissions
 myynh_set_permissions () {
-	chown -R $app: "$install_dir"
-	chmod 750 "$install_dir"
-	chmod -R o-rwx "$install_dir"
-
+	#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app: "$install_dir"
+	#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 750 "$install_dir"
+	#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R o-rwx "$install_dir"
 	chown -R $app: "$data_dir"
 	chmod 750 "$data_dir"
 	chmod -R o-rwx "$data_dir"
