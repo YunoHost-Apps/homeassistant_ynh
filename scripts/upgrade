@@ -8,7 +8,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 
 ynh_script_progression "Stopping $app's systemd service..."
-ynh_systemctl --service=$app --action=stop
+ynh_systemctl --service="$app" --action="stop"
 
 #=================================================
 # "REBUILD" THE APP (DEPLOY NEW SOURCES, RERUN NPM BUILD, ETC...)
@@ -16,15 +16,11 @@ ynh_systemctl --service=$app --action=stop
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 
-# FIXME: this is still supported but the recommendation is now to *always* re-setup the app sources wether or not the upstream sources changed
-if ynh_app_upstream_version_changed
-then
-	ynh_script_progression "Upgrading source files..."
+ynh_script_progression "Upgrading source files..."
 
-	myynh_install_python --python="$py_required_version"
-	myynh_upgrade_venv_directory
-	myynh_install_homeassistant
-fi
+myynh_install_python --python="$py_required_version"
+myynh_upgrade_venv_directory
+myynh_install_homeassistant
 
 #=================================================
 # REAPPLY SYSTEM CONFIGURATIONS
@@ -36,7 +32,7 @@ ynh_config_add_nginx
 
 ynh_config_add_systemd
 
-yunohost service add $app --description="Home Assistant server" --log="$log_file"
+yunohost service add "$app" --description="Home Assistant server" --log="$log_file"
 
 ynh_config_add_logrotate "$log_file"
 
@@ -66,13 +62,13 @@ ynh_script_progression "Starting $app's systemd service..."
 
 # start systemd service with --verbose
 
-ynh_systemctl --service=$app --action=start --wait_until="Home Assistant initialized" --log_path="$log_file" --timeout=3600
+ynh_systemctl --service="$app" --action="start" --wait_until="Home Assistant initialized" --log_path="$log_file" --timeout=3600
 
 # remove --verbose from service
 ynh_replace --match=" --verbose" --replace="" --file="/etc/systemd/system/$app.service"
 ynh_store_file_checksum "/etc/systemd/system/$app.service"
 systemctl daemon-reload
-ynh_systemctl --service=$app --action=restart
+ynh_systemctl --service="$app" --action="restart"
 
 #=================================================
 # END OF SCRIPT

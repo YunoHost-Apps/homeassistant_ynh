@@ -41,7 +41,7 @@ myynh_create_dir () {
 # | arg: -p, --python=    - the python version to install
 myynh_install_python () {
 	# Declare an array to define the options of this helper.
-	#REMOVEME? local legacy_args=u
+	local legacy_args=u
 	local -A args_array=( [p]=python= )
 	local python
 	# Manage arguments with getopts
@@ -185,11 +185,12 @@ myynh_upgrade_venv_directory () {
 
 # Set permissions
 myynh_set_permissions () {
-	#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app: "$install_dir"
-	#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 750 "$install_dir"
-	#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R o-rwx "$install_dir"
+	chown -R $app: "$install_dir"
+	chmod u=rwX,g=rX,o= "$install_dir"
+	chmod -R o-rwx "$install_dir"
+
 	chown -R $app: "$data_dir"
-	chmod 750 "$data_dir"
+	chmod u=rwX,g=rX,o= "$data_dir"
 	chmod -R o-rwx "$data_dir"
 	[ -e "$data_dir/bin/" ] && chmod -R +x "$data_dir/bin/"
 

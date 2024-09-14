@@ -53,7 +53,7 @@ ynh_config_add_nginx
 ynh_config_add_systemd
 
 # Create a dedicated service in YunoHost
-yunohost service add $app --description="Home Assistant server" --log="$log_file"
+yunohost service add "$app" --description="Home Assistant server" --log="$log_file"
 
 # Use logrotate to manage application logfile(s)
 ynh_config_add_logrotate "$log_file"
@@ -89,14 +89,13 @@ myynh_set_permissions
 ynh_script_progression "Starting $app's systemd service..."
 
 # start systemd service with --verbose
-
-ynh_systemctl --service=$app --action=start --wait_until="Home Assistant initialized" --log_path="$log_file" --timeout=3600
+ynh_systemctl --service="$app" --action="start" --wait_until="Home Assistant initialized" --log_path="$log_file" --timeout=3600
 
 # remove --verbose from systemd service
 ynh_replace --match=" --verbose" --replace="" --file="/etc/systemd/system/$app.service"
 ynh_store_file_checksum "/etc/systemd/system/$app.service"
 systemctl daemon-reload
-ynh_systemctl --service=$app --action=restart
+ynh_systemctl --service="$app" --action="restart"
 
 #=================================================
 # END OF SCRIPT
