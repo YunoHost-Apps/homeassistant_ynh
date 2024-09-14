@@ -46,7 +46,7 @@ Home Assistant is an open source home automation that puts local control and pri
 
 ## Información para desarrolladores
 
-Por favor enviar sus correcciones a la [`branch testing`](https://github.com/YunoHost-Apps/homeassistant_ynh/tree/testing
+Por favor enviar sus correcciones a la [rama `testing`](https://github.com/YunoHost-Apps/homeassistant_ynh/tree/testing).
 
 Para probar la rama `testing`, sigue asÍ:
 
