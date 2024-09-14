@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source /usr/share/yunohost/helpers
-
 #=================================================
 # COMMON VARIABLES AND CUSTOM HELPERS
 #=================================================
@@ -9,7 +7,9 @@ source /usr/share/yunohost/helpers
 # App version
 ## yq is not a dependencie of yunohost package so tomlq command is not available
 ## (see https://github.com/YunoHost/yunohost/blob/dev/debian/control)
-app_version=$(ynh_read_manifest "version" | cut -d '~' -f 1 ) #2024.2.5
+app_version=$(cat ../manifest.toml 2>/dev/null \
+				| grep '^version = ' | cut -d '=' -f 2 \
+				| cut -d '~' -f 1 | tr -d ' "') #2024.2.5
 
 # Python required version
 ## jq is a dependencie of yunohost package
