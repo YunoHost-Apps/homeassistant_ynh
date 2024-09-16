@@ -1,11 +1,5 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -14,7 +8,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 
 log_file="/var/log/$app/$app.log"
-ynh_app_setting_set --app=$app --key=log_file --value="$log_file"
+ynh_app_setting_set --key=log_file --value="$log_file"
 
 #=================================================
 # APP "BUILD" (DEPLOYING SOURCES, VENV, COMPILING ETC)
@@ -22,14 +16,14 @@ ynh_app_setting_set --app=$app --key=log_file --value="$log_file"
 # CHECK PYTHON VERSION AND COMPILE IF NEEDED
 #=================================================
 
-ynh_script_progression --message="Check Python version & compile the required one if needed..." --weight=1
+ynh_script_progression "Check Python version & compile the required one if needed..."
 myynh_install_python --python="$py_required_version"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 
-ynh_script_progression --message="Setting up source files..."
+ynh_script_progression "Setting up source files..."
 
 # create a directory for the installation of Home Assistant
 myynh_create_dir "$install_dir"
@@ -43,33 +37,33 @@ mkdir -p "$(dirname "$log_file")"
 touch "$log_file"
 
 # installation in a virtual environment
-ynh_script_progression --message="Installing Home Assistant in a virtual environment..."
+ynh_script_progression "Installing Home Assistant in a virtual environment..."
 myynh_install_homeassistant
 
 #=================================================
 # SYSTEM CONFIGURATION
 #=================================================
 
-ynh_script_progression --message="Adding system configurations related to $app ..." --weight=1
+ynh_script_progression "Adding system configurations related to $app ..."
 
 # Create a dedicated NGINX config using the conf/nginx.conf template
-ynh_add_nginx_config
+ynh_config_add_nginx
 
 # Create a dedicated systemd config
-ynh_add_systemd_config
+ynh_config_add_systemd
 
 # Create a dedicated service in YunoHost
-yunohost service add $app --description="Home Assistant server" --log="$log_file"
+yunohost service add "$app" --description="Home Assistant server" --log="$log_file"
 
 # Use logrotate to manage application logfile(s)
-ynh_use_logrotate --logfile="$log_file"
+ynh_config_add_logrotate "$log_file"
 
 # Create a dedicated Fail2Ban config
-ynh_add_fail2ban_config --logpath="$log_file" --failregex="$failregex"
+ynh_config_add_fail2ban --logpath="$log_file" --failregex="$failregex"
 
 # Grant sudo permissions to the user to manage his own systemd service
 myynh_create_dir "/etc/sudoers.d"
-ynh_add_config --template="../conf/sudoers" --destination="/etc/sudoers.d/$app"
+ynh_config_add --template="sudoers" --destination="/etc/sudoers.d/$app"
 
 #=================================================
 # APP INITIAL CONFIGURATION
@@ -77,10 +71,10 @@ ynh_add_config --template="../conf/sudoers" --destination="/etc/sudoers.d/$app"
 # ADD A CONFIGURATION
 #=================================================
 
-ynh_script_progression --message="Adding a configuration file..." --weight=1
+ynh_script_progression "Adding $app's configuration..."
 
 cp -r "../conf/homeassistant_conf_files/." "$data_dir/"
-ynh_add_config --template="../conf/homeassistant_conf_files/configuration.yaml" --destination="$data_dir/configuration.yaml"
+ynh_config_add --template="homeassistant_conf_files/configuration.yaml" --destination="$data_dir/configuration.yaml"
 
 #=================================================
 # SET FILE OWNERSHIP / PERMISSIONS
@@ -92,19 +86,19 @@ myynh_set_permissions
 # START SYSTEMD SERVICE
 #=================================================
 
-ynh_script_progression --message="Starting a systemd service..."
+ynh_script_progression "Starting $app's systemd service..."
 
-# start systemd service with --verbose 
-ynh_systemd_action --service_name=$app --action=start --line_match="Home Assistant initialized" --log_path="$log_file" --timeout=3600
+# start systemd service with --verbose
+ynh_systemctl --service="$app" --action="start" --wait_until="Home Assistant initialized" --log_path="$log_file" --timeout=3600
 
 # remove --verbose from systemd service
-ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app.service"
-ynh_store_file_checksum --file="/etc/systemd/system/$app.service"
+ynh_replace --match=" --verbose" --replace="" --file="/etc/systemd/system/$app.service"
+ynh_store_file_checksum "/etc/systemd/system/$app.service"
 systemctl daemon-reload
-ynh_systemd_action --service_name=$app --action=restart
+ynh_systemctl --service="$app" --action="restart"
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Installation of $app completed" --last
+ynh_script_progression "Installation of $app completed"
