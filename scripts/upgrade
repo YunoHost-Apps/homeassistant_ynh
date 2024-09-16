@@ -1,24 +1,14 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
-upgrade_type=$(ynh_check_app_version_changed)
-
-#=================================================
-# STANDARD UPGRADE STEPS
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
 
-ynh_script_progression --message="Stopping a systemd service..."
-ynh_systemd_action --service_name=$app --action=stop --log_path="/var/log/$app/$app.log"
+ynh_script_progression "Stopping $app's systemd service..."
+ynh_systemctl --service="$app" --action="stop"
 
 #=================================================
 # "REBUILD" THE APP (DEPLOY NEW SOURCES, RERUN NPM BUILD, ETC...)
@@ -26,30 +16,27 @@ ynh_systemd_action --service_name=$app --action=stop --log_path="/var/log/$app/$
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 
-if [ "$upgrade_type" == "UPGRADE_APP" ]
-then
-	ynh_script_progression --message="Upgrading source files..."
-	
-	myynh_install_python --python="$py_required_version"
-	myynh_upgrade_venv_directory
-	myynh_install_homeassistant
-fi
+ynh_script_progression "Upgrading source files..."
+
+myynh_install_python --python="$py_required_version"
+myynh_upgrade_venv_directory
+myynh_install_homeassistant
 
 #=================================================
 # REAPPLY SYSTEM CONFIGURATIONS
 #=================================================
 
-ynh_script_progression --message="Upgrading system configurations related to $app..." --weight=1
+ynh_script_progression "Upgrading system configurations related to $app..."
 
-ynh_add_nginx_config
+ynh_config_add_nginx
 
-ynh_add_systemd_config
+ynh_config_add_systemd
 
-yunohost service add $app --description="Home Assistant server" --log="$log_file"
+yunohost service add "$app" --description="Home Assistant server" --log="$log_file"
 
-ynh_use_logrotate --logfile="$log_file" --non-append
+ynh_config_add_logrotate "$log_file"
 
-ynh_add_fail2ban_config --logpath="$log_file" --failregex="$failregex"
+ynh_config_add_fail2ban --logpath="$log_file" --failregex="$failregex"
 
 #=================================================
 # RECONFIGURE THE APP (UPDATE CONF, APPLY MIGRATIONS, ...)
@@ -57,9 +44,9 @@ ynh_add_fail2ban_config --logpath="$log_file" --failregex="$failregex"
 # UPDATE A CONFIG FILE
 #=================================================
 
-ynh_script_progression --message="Updating a configuration file..."
+ynh_script_progression "Updating configuration..."
 cp -r "../conf/homeassistant_conf_files/bin/." "$data_dir/bin/"
-ynh_add_config --template="../conf/sudoers" --destination="/etc/sudoers.d/$app"
+ynh_config_add --template="sudoers" --destination="/etc/sudoers.d/$app"
 
 #=================================================
 # SET FILE OWNERSHIP / PERMISSIONS
@@ -71,19 +58,20 @@ myynh_set_permissions
 # START SYSTEMD SERVICE
 #=================================================
 
-ynh_script_progression --message="Starting a systemd service..."
+ynh_script_progression "Starting $app's systemd service..."
 
-# start systemd service with --verbose 
-ynh_systemd_action --service_name=$app --action=start --line_match="Home Assistant initialized" --log_path="$log_file" --timeout=3600
+# start systemd service with --verbose
+
+ynh_systemctl --service="$app" --action="start" --wait_until="Home Assistant initialized" --log_path="$log_file" --timeout=3600
 
 # remove --verbose from service
-ynh_replace_string --match_string=" --verbose" --replace_string="" --target_file="/etc/systemd/system/$app.service"
-ynh_store_file_checksum --file="/etc/systemd/system/$app.service"
+ynh_replace --match=" --verbose" --replace="" --file="/etc/systemd/system/$app.service"
+ynh_store_file_checksum "/etc/systemd/system/$app.service"
 systemctl daemon-reload
-ynh_systemd_action --service_name=$app --action=restart
+ynh_systemctl --service="$app" --action="restart"
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Upgrade of $app completed" --last
+ynh_script_progression "Upgrade of $app completed"
