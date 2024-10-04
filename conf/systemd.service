@@ -7,6 +7,7 @@ Type=simple
 User=__APP__
 WorkingDirectory=__DATA_DIR__
 ExecStart=__INSTALL_DIR__/bin/hass --config "__DATA_DIR__" --log-file "__LOG_FILE__" --verbose
+Environment="PATH=__INSTALL_DIR__/bin:__DATA_DIR__/bin:$PATH"
 RestartForceExitStatus=100
 Restart=on-failure
 RestartSec=5s

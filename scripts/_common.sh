@@ -123,7 +123,10 @@ myynh_install_python () {
 # Install/Upgrade Homeassistant in virtual environement
 myynh_install_homeassistant () {
 	# Requirements
-	pip_required=$(curl -Ls https://pypi.org/pypi/$app/$app_version/json | jq -r '.info.requires_dist[]' | grep 'pip') #pip (<23.1,>=21.0)
+	pip_required=$(curl -Ls https://pypi.org/pypi/$app/$app_version/json \
+		| jq -r '.info.requires_dist[]' \
+		| grep 'pip' \
+		|| echo "pip" ) #pip (<23.1,>=21.0) if exist otherwise pip
 
 	# Create the virtual environment
 	ynh_exec_as_app $py_app_version -m venv --without-pip "$install_dir"
