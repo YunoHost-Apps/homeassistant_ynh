@@ -5,7 +5,7 @@ name = "Home Assistant"
 description.en = "Home automation platform"
 description.fr = "Plateforme domotique"
 
-version = "2024.10.1~ynh1"
+version = "2024.10.2~ynh1"
 
 maintainers = ["ewilly"]
 
@@ -81,8 +81,8 @@ ram.runtime = "2G"
     [resources.sources]
 
         [resources.sources.main]
-        url = "https://github.com/home-assistant/core/archive/refs/tags/2024.10.1.tar.gz"
-        sha256 = "f67c337b1406a6d0744e85b37560055463c4eae20c5412b9618a760a841b38a9"
+        url = "https://github.com/home-assistant/core/archive/refs/tags/2024.10.2.tar.gz"
+        sha256 = "d736fef911d224877f1d9bfbb5906fbd70bcd79d688e33706c461a1cb879c255"
 
         autoupdate.strategy = "latest_github_release"
 
