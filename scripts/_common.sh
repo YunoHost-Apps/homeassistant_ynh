@@ -24,6 +24,9 @@ py_required_version=$(curl -Ls https://www.python.org/ftp/python/ \
 # Fail2ban
 failregex="^%(__prefix_line)s.*\[homeassistant.components.http.ban\] Login attempt or request with invalid authentication from.* \(<HOST>\).* Requested URL: ./auth/.*"
 
+# Path
+path_with_homeassistant="$install_dir/bin:$data_dir/bin:$PATH"
+
 # Check if directory/file already exists (path in argument)
 myynh_check_path () {
 	[ -z "$1" ] && ynh_die "No argument supplied"
