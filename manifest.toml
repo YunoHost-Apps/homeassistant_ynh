@@ -53,7 +53,7 @@ ram.runtime = "2G"
 
     [install.elevation]
     ask.en = "Altitude above sea level in meters. Impacts sunrise data."
-    type = "number"
+    type = "string"
     default = 430
 
     [install.unit_system]
