@@ -45,7 +45,6 @@ yunohost service add "$app" --description="Home Assistant server" --log="$log_fi
 
 ynh_restore "/etc/logrotate.d/$app"
 
-ynh_script_progression "Restoring the Fail2Ban configuration..."
 ynh_restore "/etc/fail2ban/jail.d/$app.conf"
 ynh_restore "/etc/fail2ban/filter.d/$app.conf"
 ynh_systemctl --service="fail2ban" --action="restart"
