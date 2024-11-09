@@ -5,7 +5,7 @@ name = "Home Assistant"
 description.en = "Home automation platform"
 description.fr = "Plateforme domotique"
 
-version = "2024.10.4~ynh1"
+version = "2024.11.0~ynh1"
 
 maintainers = ["ewilly"]
 
@@ -18,7 +18,7 @@ code = "https://github.com/home-assistant/core"
 cpe = "cpe:2.3:a:home-assistant:home-assistant"
 
 [integration]
-yunohost = ">= 11.2.18"
+yunohost = ">= 11.2.30"
 helpers_version = "2.1"
 architectures = ["amd64", "arm64"]
 multi_instance = false
@@ -38,21 +38,25 @@ ram.runtime = "2G"
 
     [install.home]
     ask.en = "Name of the location where Home Assistant is running."
+    ask.fr = "Nom de l'emplacement où Home Assistant s'exécute."
     type = "string"
     default = "Home"
 
     [install.latitude]
     ask.en = "Latitude of your location required to calculate the time the sun rises and sets--> https://www.openstreetmap.org"
+    ask.fr = "Latitude de votre emplacement requise pour calculer l'heure à laquelle le soleil se lève et se couche --> https://www.openstreetmap.org"
     type = "string"
     default = 32.87336
 
     [install.longitude]
     ask.en = "Longitude of your location required to calculate the time the sun rises and sets --> https://www.openstreetmap.org"
+    ask.fr = "Longitude de votre emplacement requise pour calculer l'heure à laquelle le soleil se lève et se couche --> https://www.openstreetmap.org"
     type = "string"
     default = 117.22743
 
     [install.elevation]
     ask.en = "Altitude above sea level in meters. Impacts sunrise data."
+    ask.fr = "Altitude au-dessus du niveau de la mer en mètres. Impacte les données sur le lever du soleil."
     type = "number"
     default = 430
 
@@ -64,16 +68,19 @@ ram.runtime = "2G"
 
     [install.currency]
     ask.en = "Pick your currency code from the column Code of Wikipedia’s list of ISO 4217 active codes --> https://en.wikipedia.org/wiki/ISO_4217#Active_codes"
+    ask.fr = "Choisissez votre code de devise dans la colonne Code de la liste des codes actifs ISO 4217 de Wikipédia --> https://en.wikipedia.org/wiki/ISO_4217#Active_codes"
     type = "string"
     default = "USD"
 
     [install.country]
     ask.en = "Country in which Home Assistant is running. This may, for example, influence radio settings to comply with local regulations. The country should be specified as an ISO 3166.1 alpha-2 code. Pick your country from the column Code of Wikipedia’s list of ISO 31661 alpha-2 officially assigned code --> https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements"
-    type = "string"
+    ask.fr = "Pays dans lequel Home Assistant est exécuté. Cela peut, par exemple, influencer les paramètres radio pour se conformer aux réglementations locales. Le pays doit être spécifié sous forme de code alpha-2 ISO 3166.1. Choisissez votre pays dans la colonne Code de la liste des codes alpha-2 ISO 31661 officiellement attribués de Wikipédia --> https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements"
+        type = "string"
     default = "US"
 
     [install.time_zone]
     ask.en = "Pick your time zone from the column TZ of Wikipedia’s list of tz database time zones --> https://en.wikipedia.org/wiki/List_of_tz_database_time_zones"
+    ask.fr = "Choisissez votre fuseau horaire dans la colonne TZ de la liste des fuseaux horaires de la base de données tz de Wikipédia --> https://en.wikipedia.org/wiki/List_of_tz_database_time_zones"
     type = "string"
     default = "America/Los_Angeles"
 
@@ -81,8 +88,8 @@ ram.runtime = "2G"
     [resources.sources]
 
         [resources.sources.main]
-        url = "https://github.com/home-assistant/core/archive/refs/tags/2024.10.4.tar.gz"
-        sha256 = "577523ef04a78476959bc48b02778d8af754bbbb92c850a16339f32220791e89"
+        url = "https://github.com/home-assistant/core/archive/refs/tags/2024.11.0.tar.gz"
+        sha256 = "1e9a928a7c9bd9c0471530e605fdcdbf65b5d3faea56d02e539f3e7b197d3891"
 
         autoupdate.strategy = "latest_github_release"
 
