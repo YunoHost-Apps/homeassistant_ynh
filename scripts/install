@@ -11,12 +11,10 @@ log_file="/var/log/$app/$app.log"
 ynh_app_setting_set --key=log_file --value="$log_file"
 
 #=================================================
-# APP "BUILD" (DEPLOYING SOURCES, VENV, COMPILING ETC)
-#=================================================
 # CHECK PYTHON VERSION AND COMPILE IF NEEDED
 #=================================================
-
 ynh_script_progression "Check Python version & compile the required one if needed..."
+
 myynh_install_python --python="$py_required_version"
 
 #=================================================
@@ -43,7 +41,6 @@ myynh_install_homeassistant
 #=================================================
 # SYSTEM CONFIGURATION
 #=================================================
-
 ynh_script_progression "Adding system configurations related to $app ..."
 
 # Create a dedicated NGINX config using the conf/nginx.conf template
@@ -66,11 +63,8 @@ myynh_create_dir "/etc/sudoers.d"
 ynh_config_add --template="sudoers" --destination="/etc/sudoers.d/$app"
 
 #=================================================
-# APP INITIAL CONFIGURATION
-#=================================================
 # ADD A CONFIGURATION
 #=================================================
-
 ynh_script_progression "Adding $app's configuration..."
 
 cp -r "../conf/homeassistant_conf_files/." "$data_dir/"
@@ -85,7 +79,6 @@ myynh_set_permissions
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-
 ynh_script_progression "Starting $app's systemd service..."
 
 # start systemd service with --verbose
