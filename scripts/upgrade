@@ -6,16 +6,13 @@ source /usr/share/yunohost/helpers
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
-
 ynh_script_progression "Stopping $app's systemd service..."
+
 ynh_systemctl --service="$app" --action="stop"
 
 #=================================================
-# "REBUILD" THE APP (DEPLOY NEW SOURCES, RERUN NPM BUILD, ETC...)
-#=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-
 ynh_script_progression "Upgrading source files..."
 
 myynh_install_python --python="$py_required_version"
@@ -25,7 +22,6 @@ myynh_install_homeassistant
 #=================================================
 # REAPPLY SYSTEM CONFIGURATIONS
 #=================================================
-
 ynh_script_progression "Upgrading system configurations related to $app..."
 
 ynh_config_add_nginx
@@ -39,12 +35,10 @@ ynh_config_add_logrotate "$log_file"
 ynh_config_add_fail2ban --logpath="$log_file" --failregex="$failregex"
 
 #=================================================
-# RECONFIGURE THE APP (UPDATE CONF, APPLY MIGRATIONS, ...)
-#=================================================
 # UPDATE A CONFIG FILE
 #=================================================
-
 ynh_script_progression "Updating configuration..."
+
 cp -r "../conf/homeassistant_conf_files/bin/." "$data_dir/bin/"
 ynh_config_add --template="sudoers" --destination="/etc/sudoers.d/$app"
 
@@ -57,10 +51,7 @@ myynh_set_permissions
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-
 ynh_script_progression "Starting $app's systemd service..."
-
-# start systemd service with --verbose
 
 ynh_systemctl --service="$app" --action="start" --wait_until="Home Assistant initialized" --log_path="$log_file" --timeout=3600
 

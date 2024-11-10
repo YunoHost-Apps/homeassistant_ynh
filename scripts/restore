@@ -11,23 +11,23 @@ source /usr/share/yunohost/helpers
 #=================================================
 # RESTORE THE APP MAIN DIR
 #=================================================
-
 ynh_script_progression "Restoring the app main directory..."
+
 ynh_restore "$install_dir"
 
 #=================================================
 # RESTORE THE DATA DIRECTORY
 #=================================================
-
 ynh_script_progression "Restoring the data directory..."
+
 ynh_restore "$data_dir"
 mkdir -p "$data_dir"
 
 #=================================================
 # RESTORE THE MYSQL DATABASE
 #=================================================
-
 ynh_script_progression "Restoring the MySQL database..."
+
 ynh_mysql_db_shell < ./db.sql
 
 #=================================================
@@ -45,7 +45,6 @@ yunohost service add "$app" --description="Home Assistant server" --log="$log_fi
 
 ynh_restore "/etc/logrotate.d/$app"
 
-ynh_script_progression "Restoring the Fail2Ban configuration..."
 ynh_restore "/etc/fail2ban/jail.d/$app.conf"
 ynh_restore "/etc/fail2ban/filter.d/$app.conf"
 ynh_systemctl --service="fail2ban" --action="restart"
@@ -54,19 +53,17 @@ ynh_restore "/etc/sudoers.d/$app"
 ynh_restore "$(dirname "$log_file")"
 
 #=================================================
-# SPECIFIC RESTORATION
-#=================================================
 # CHECK PYTHON VERSION AND COMPILE IF NEEDED
 #=================================================
-
 ynh_script_progression "Restoring Python..."
+
 myynh_install_python --python="$python"
 
 #=================================================
 # IF NEEDED UPDATE THE PYHTON LINK IN THE VIRUTAL ENV.
 #=================================================
-
 ynh_script_progression "Updating the pyhton link in the pyhton virtual environment..."
+
 hass_python_link=$(head -1 /var/www/homeassistant/bin/hass | sed 's/#!//')
 if [ ! -e "$hass_python_link" ] ; then
     hass_python_new_dest=$(which `basename "$hass_python_link"`)
@@ -82,8 +79,8 @@ myynh_set_permissions
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-
 ynh_script_progression "Starting $app's systemd service..."
+
 # start systemd service with --verbose
 ynh_systemctl --service=$app --action=start --wait_until="Home Assistant initialized" --log_path="$log_file" --timeout=3600
 
@@ -96,8 +93,8 @@ ynh_systemctl --service="$app" --action="restart"
 #=================================================
 # RELOAD NGINX AND PHP-FPM
 #=================================================
-
 ynh_script_progression "Reloading NGINX web server and PHP-FPM..."
+
 ynh_systemctl --service="nginx" --action="reload"
 
 #=================================================
