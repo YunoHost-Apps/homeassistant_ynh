@@ -1,13 +1,4 @@
 homeassistant:
-  name: __HOME__
-  latitude: __LATITUDE__
-  longitude: __LONGITUDE__
-  elevation: __ELEVATION__
-  unit_system: __UNIT_SYSTEM__
-  currency: __CURRENCY__
-  country: __COUNTRY__
-  time_zone: "__TIME_ZONE__"
-  external_url: "https://__DOMAIN__"
   auth_providers:
    - type: command_line
      command: __DATA_DIR__/bin/ynh_ldap-auth.sh
