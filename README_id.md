@@ -5,7 +5,9 @@ Ini TIDAK boleh diedit dengan tangan.
 
 # Home Assistant untuk YunoHost
 
-[![Tingkat integrasi](https://dash.yunohost.org/integration/homeassistant.svg)](https://ci-apps.yunohost.org/ci/apps/homeassistant/) ![Status kerja](https://ci-apps.yunohost.org/ci/badges/homeassistant.status.svg) ![Status pemeliharaan](https://ci-apps.yunohost.org/ci/badges/homeassistant.maintain.svg)
+[![Tingkat integrasi](https://apps.yunohost.org/badge/integration/homeassistant)](https://ci-apps.yunohost.org/ci/apps/homeassistant/)
+![Status kerja](https://apps.yunohost.org/badge/state/homeassistant)
+![Status pemeliharaan](https://apps.yunohost.org/badge/maintained/homeassistant)
 
 [![Pasang Home Assistant dengan YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=homeassistant)
 
@@ -28,7 +30,7 @@ Home Assistant is an open source home automation that puts local control and pri
 - Home Energy Management." 
 
 
-**Versi terkirim:** 2024.11.3~ynh1
+**Versi terkirim:** 2024.12.0~ynh1
 
 **Demo:** <https://demo.home-assistant.io>
 

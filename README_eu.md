@@ -5,7 +5,9 @@ EZ editatu eskuz.
 
 # Home Assistant YunoHost-erako
 
-[![Integrazio maila](https://dash.yunohost.org/integration/homeassistant.svg)](https://ci-apps.yunohost.org/ci/apps/homeassistant/) ![Funtzionamendu egoera](https://ci-apps.yunohost.org/ci/badges/homeassistant.status.svg) ![Mantentze egoera](https://ci-apps.yunohost.org/ci/badges/homeassistant.maintain.svg)
+[![Integrazio maila](https://apps.yunohost.org/badge/integration/homeassistant)](https://ci-apps.yunohost.org/ci/apps/homeassistant/)
+![Funtzionamendu egoera](https://apps.yunohost.org/badge/state/homeassistant)
+![Mantentze egoera](https://apps.yunohost.org/badge/maintained/homeassistant)
 
 [![Instalatu Home Assistant YunoHost-ekin](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=homeassistant)
 
@@ -28,7 +30,7 @@ Home Assistant is an open source home automation that puts local control and pri
 - Home Energy Management." 
 
 
-**Paketatutako bertsioa:** 2024.11.3~ynh1
+**Paketatutako bertsioa:** 2024.12.0~ynh1
 
 **Demoa:** <https://demo.home-assistant.io>
 

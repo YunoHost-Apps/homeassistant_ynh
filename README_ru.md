@@ -5,7 +5,9 @@
 
 # Home Assistant для YunoHost
 
-[![Уровень интеграции](https://dash.yunohost.org/integration/homeassistant.svg)](https://ci-apps.yunohost.org/ci/apps/homeassistant/) ![Состояние работы](https://ci-apps.yunohost.org/ci/badges/homeassistant.status.svg) ![Состояние сопровождения](https://ci-apps.yunohost.org/ci/badges/homeassistant.maintain.svg)
+[![Уровень интеграции](https://apps.yunohost.org/badge/integration/homeassistant)](https://ci-apps.yunohost.org/ci/apps/homeassistant/)
+![Состояние работы](https://apps.yunohost.org/badge/state/homeassistant)
+![Состояние сопровождения](https://apps.yunohost.org/badge/maintained/homeassistant)
 
 [![Установите Home Assistant с YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=homeassistant)
 
@@ -28,7 +30,7 @@ Home Assistant is an open source home automation that puts local control and pri
 - Home Energy Management." 
 
 
-**Поставляемая версия:** 2024.11.3~ynh1
+**Поставляемая версия:** 2024.12.0~ynh1
 
 **Демо-версия:** <https://demo.home-assistant.io>
 
