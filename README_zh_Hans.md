@@ -5,7 +5,9 @@
 
 # YunoHost 上的 Home Assistant
 
-[![集成程度](https://dash.yunohost.org/integration/homeassistant.svg)](https://ci-apps.yunohost.org/ci/apps/homeassistant/) ![工作状态](https://ci-apps.yunohost.org/ci/badges/homeassistant.status.svg) ![维护状态](https://ci-apps.yunohost.org/ci/badges/homeassistant.maintain.svg)
+[![集成程度](https://apps.yunohost.org/badge/integration/homeassistant)](https://ci-apps.yunohost.org/ci/apps/homeassistant/)
+![工作状态](https://apps.yunohost.org/badge/state/homeassistant)
+![维护状态](https://apps.yunohost.org/badge/maintained/homeassistant)
 
 [![使用 YunoHost 安装 Home Assistant](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=homeassistant)
 
@@ -28,7 +30,7 @@ Home Assistant is an open source home automation that puts local control and pri
 - Home Energy Management." 
 
 
-**分发版本：** 2024.11.3~ynh1
+**分发版本：** 2024.12.1~ynh1
 
 **演示：** <https://demo.home-assistant.io>
 
