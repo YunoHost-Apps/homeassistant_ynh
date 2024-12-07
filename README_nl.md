@@ -5,7 +5,9 @@ Hij mag NIET handmatig aangepast worden.
 
 # Home Assistant voor Yunohost
 
-[![Integratieniveau](https://dash.yunohost.org/integration/homeassistant.svg)](https://ci-apps.yunohost.org/ci/apps/homeassistant/) ![Mate van functioneren](https://ci-apps.yunohost.org/ci/badges/homeassistant.status.svg) ![Onderhoudsstatus](https://ci-apps.yunohost.org/ci/badges/homeassistant.maintain.svg)
+[![Integratieniveau](https://apps.yunohost.org/badge/integration/homeassistant)](https://ci-apps.yunohost.org/ci/apps/homeassistant/)
+![Mate van functioneren](https://apps.yunohost.org/badge/state/homeassistant)
+![Onderhoudsstatus](https://apps.yunohost.org/badge/maintained/homeassistant)
 
 [![Home Assistant met Yunohost installeren](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=homeassistant)
 
@@ -28,7 +30,7 @@ Home Assistant is an open source home automation that puts local control and pri
 - Home Energy Management." 
 
 
-**Geleverde versie:** 2024.11.3~ynh1
+**Geleverde versie:** 2024.12.1~ynh1
 
 **Demo:** <https://demo.home-assistant.io>
 
