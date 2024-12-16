@@ -1,7 +1,4 @@
 #!/bin/bash
-# to test the functionnality :
-# yunohost backup create -n "homeassistant-test" --apps homeassistant
-# yunohost backup delete homeassistant-test
 
 source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers

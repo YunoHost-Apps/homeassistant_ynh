@@ -15,8 +15,8 @@ ynh_systemctl --service="$app" --action="stop"
 #=================================================
 ynh_script_progression "Upgrading source files..."
 
-myynh_install_python --python="$py_required_version"
-myynh_upgrade_venv_directory
+ynh_safe_rm "$install_dir"
+mkdir -p "$install_dir"
 myynh_install_homeassistant
 
 #=================================================
