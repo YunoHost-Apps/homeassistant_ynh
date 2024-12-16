@@ -11,28 +11,10 @@ log_file="/var/log/$app/$app.log"
 ynh_app_setting_set --key=log_file --value="$log_file"
 
 #=================================================
-# CHECK PYTHON VERSION AND COMPILE IF NEEDED
-#=================================================
-ynh_script_progression "Check Python version & compile the required one if needed..."
-
-myynh_install_python --python="$py_required_version"
-
-#=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 
 ynh_script_progression "Setting up source files..."
-
-# create a directory for the installation of Home Assistant
-myynh_create_dir "$install_dir"
-
-# create a directory for the datas of Home Assistant
-myynh_create_dir "$data_dir/.cache"
-chown -R $app: "$data_dir"
-
-# create a directory for the logs of Home Assistant
-mkdir -p "$(dirname "$log_file")"
-touch "$log_file"
 
 # installation in a virtual environment
 ynh_script_progression "Installing Home Assistant in a virtual environment..."

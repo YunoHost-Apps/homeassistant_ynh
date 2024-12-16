@@ -1,6 +1,4 @@
 #!/bin/bash
-# to test the functionnality :
-# yunohost app remove homeassistant --purge
 
 source _common.sh
 source /usr/share/yunohost/helpers

@@ -6,7 +6,7 @@ After=network.target mysql.service
 Type=simple
 User=__APP__
 WorkingDirectory=__DATA_DIR__
-ExecStart=__INSTALL_DIR__/bin/hass --config "__DATA_DIR__" --log-file "__LOG_FILE__" --verbose
+ExecStart=__INSTALL_DIR__/venv/bin/hass --config "__DATA_DIR__" --log-file "__LOG_FILE__" --verbose
 Environment="PATH=__PATH_WITH_HOMEASSISTANT__"
 RestartForceExitStatus=100
 Restart=on-failure
