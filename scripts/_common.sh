@@ -40,7 +40,7 @@ myynh_install_homeassistant () {
 	(
 		cd "$install_dir"
 		chown -R "$app:" "$install_dir"
-		ynh_hide_warnings ynh_exec_as_app "$uv" venv "$install_dir/venv" --python "$py_required_major"
+		ynh_exec_as_app "$uv" --quiet venv "$install_dir/venv" --python "$py_required_major"
 
 		# activate the virtual environment
 		set +o nounset
@@ -48,13 +48,13 @@ myynh_install_homeassistant () {
 		set -o nounset
 
 		# install required version of pip
-		ynh_hide_warnings ynh_exec_as_app "$uv" pip --no-cache-dir install --upgrade "$pip_required"
+		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade "$pip_required"
 
 		# install dependencies
-		ynh_hide_warnings ynh_exec_as_app "$uv" pip --no-cache-dir install --upgrade webrtcvad wheel mysqlclient psycopg2-binary isal
+		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade webrtcvad wheel mysqlclient psycopg2-binary isal
 
 		# install Home Assistant
-		ynh_hide_warnings ynh_exec_as_app "$uv" pip --no-cache-dir install --upgrade "$app==$app_version"
+		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade "$app==$app_version"
 	)
 }
 
