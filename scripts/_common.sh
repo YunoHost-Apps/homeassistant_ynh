@@ -54,7 +54,7 @@ myynh_install_homeassistant () {
 		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade webrtcvad wheel mysqlclient psycopg2-binary isal
 
 		# install Home Assistant
-		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade "$app==$app_version"
+		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade "$app==$app_version" --prerelease=allow
 	)
 }
 
