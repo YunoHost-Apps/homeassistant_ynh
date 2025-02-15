@@ -1,6 +1,23 @@
+#:schema https://raw.githubusercontent.com/YunoHost/apps/master/schemas/tests.v1.schema.json
+
 test_format = 1.0
 
 [default]
+
+    # ------------
+    # Tests to run
+    # ------------
+
+    # -------------------------------
+    # Default args to use for install
+    # -------------------------------
+
+    # -------------------------------
+    # Commits to test upgrade from
+    # -------------------------------
+
+    # test_upgrade_from.bbe1fcf0fa8bbba0be9c6ab36f1ed34e40d1c931.name = "Upgrade from 2025.2.3~ynh1"
+
 	# -------------------------------
 	# Commits to test upgrade from c831b0817c6283bd76ad902a7dd81e647cc9880d
 	# 2024.6.4~ynh1 with old apt dependencies
