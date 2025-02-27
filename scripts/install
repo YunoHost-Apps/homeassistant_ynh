@@ -13,7 +13,6 @@ ynh_app_setting_set --key=log_file --value="$log_file"
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-
 ynh_script_progression "Setting up source files..."
 
 # installation in a virtual environment
