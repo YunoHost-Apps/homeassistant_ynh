@@ -1,5 +1,5 @@
 [Unit]
-Description=Home Assistant
+Description=Home Assistant: automation platform
 After=network.target mysql.service
 
 [Service]

@@ -22,8 +22,10 @@ yunohost = ">= 12"
 helpers_version = "2.1"
 architectures = ["amd64", "arm64"]
 multi_instance = false
+
 ldap = true
 sso = false
+
 disk = "2G"
 ram.build = "2G"
 ram.runtime = "2G"
