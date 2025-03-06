@@ -5,7 +5,7 @@ name = "Home Assistant"
 description.en = "Home automation platform"
 description.fr = "Plateforme domotique"
 
-version = "2025.2.5~ynh1"
+version = "2025.3.0~ynh1"
 
 maintainers = ["ewilly"]
 
@@ -22,8 +22,10 @@ yunohost = ">= 12"
 helpers_version = "2.1"
 architectures = ["amd64", "arm64"]
 multi_instance = false
+
 ldap = true
 sso = false
+
 disk = "2G"
 ram.build = "2G"
 ram.runtime = "2G"
@@ -40,8 +42,8 @@ ram.runtime = "2G"
     [resources.sources]
 
         [resources.sources.main]
-        url = "https://github.com/home-assistant/core/archive/refs/tags/2025.2.5.tar.gz"
-        sha256 = "06d83613dad3d107cee94fa8542b13837d8b45609ea6cf7f843e65929782c49a"
+        url = "https://github.com/home-assistant/core/archive/refs/tags/2025.3.0.tar.gz"
+        sha256 = "420cf0c83d88daf0ce8cc4a82ec42f20584775a6f438a2166f2e168a91bc8275"
 
         autoupdate.strategy = "latest_github_release"
 

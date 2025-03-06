@@ -22,14 +22,14 @@ Home Assistant zst une application domotique open source qui donne la priorité 
 
 ### Caractéristiques
 
-- Fonctionne avec plus de 1000 marques ;
-- Des automatismes puissants ;
-- Étendez votre système avec des modules complémentaires ;
-- Toutes les données de votre maison intelligente restent locales ;
-- Applications mobiles compagnons ;
-- Gestion de l'énergie domestique.
+- Fonctionne avec plus de 1000 marques
+- Des automatismes puissants
+- Étendez votre système avec des modules complémentaires
+- Toutes les données de votre maison intelligente restent locales
+- Applications mobiles compagnons
+- Gestion de l'énergie domestique
 
-**Version incluse :** 2025.2.5~ynh1
+**Version incluse :** 2025.3.0~ynh1
 
 **Démo :** <https://demo.home-assistant.io>
 

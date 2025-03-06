@@ -22,15 +22,15 @@ Home Assistant is an open source home automation that puts local control and pri
 
 ### Features
 
-- Works with over 1000 brands ;
-- Powerful automations ;
-- Extend your system with add-ons ;
-- All your smart home data stays local ;
-- Companion Mobile Apps ;
-- Home Energy Management." 
+- Works with over 1000 brands
+- Powerful automations
+- Extend your system with add-ons
+- All your smart home data stays local
+- Companion Mobile Apps
+- Home Energy Management
 
 
-**分发版本：** 2025.2.5~ynh1
+**分发版本：** 2025.3.0~ynh1
 
 **演示：** <https://demo.home-assistant.io>
 
