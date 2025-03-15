@@ -32,7 +32,7 @@ ynh_restore "/etc/nginx/conf.d/$domain.d/$app.conf"
 
 ynh_restore "/etc/systemd/system/$app.service"
 # add --verbose to track restart
-sed -i 's/ExecStart=.*/& --verbose/g' "/etc/systemd/system/$app.service"
+ynh_replace --match="hass" --replace="hass --verbose" --file="/etc/systemd/system/$app.service"
 ynh_systemctl --service="$app" --action="enable"
 
 yunohost service add "$app" --description="Home Assistant server" --log="$log_file"
