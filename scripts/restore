@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+# Keep this path for calling _common.sh inside the execution's context of backup and restore scripts
 source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
@@ -25,14 +30,15 @@ ynh_script_progression "Restoring the MySQL database..."
 ynh_mysql_db_shell < ./db.sql
 
 #=================================================
-# RESTORE SYSTEM CONFIGURATIONS
+# RESTORE SYSTEM CONFIGURATION
 #=================================================
+ynh_script_progression "Restoring system configurations related to $app..."
 
 ynh_restore "/etc/nginx/conf.d/$domain.d/$app.conf"
 
 ynh_restore "/etc/systemd/system/$app.service"
 # add --verbose to track restart
-sed -i 's/ExecStart=.*/& --verbose/g' "/etc/systemd/system/$app.service"
+ynh_replace --match="hass" --replace="hass --verbose" --file="/etc/systemd/system/$app.service"
 ynh_systemctl --service="$app" --action="enable"
 
 yunohost service add "$app" --description="Home Assistant server" --log="$log_file"
@@ -71,7 +77,7 @@ ynh_systemctl --service="$app" --action="restart"
 #=================================================
 ynh_script_progression "Reloading NGINX web server and PHP-FPM..."
 
-ynh_systemctl --service="nginx" --action="reload"
+ynh_systemctl --service=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT
