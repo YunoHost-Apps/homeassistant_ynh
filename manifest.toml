@@ -1,3 +1,5 @@
+#:schema https://raw.githubusercontent.com/YunoHost/apps/master/schemas/manifest.v2.schema.json
+
 packaging_format = 2
 
 id = "homeassistant"
@@ -5,7 +7,7 @@ name = "Home Assistant"
 description.en = "Home automation platform"
 description.fr = "Plateforme domotique"
 
-version = "2025.3.3~ynh1"
+version = "2025.3.4~ynh1"
 
 maintainers = ["ewilly"]
 
@@ -41,11 +43,11 @@ ram.runtime = "2G"
 [resources]
     [resources.sources]
 
-        [resources.sources.main]
-        url = "https://github.com/home-assistant/core/archive/refs/tags/2025.3.3.tar.gz"
-        sha256 = "24c5cb24586fce345bb88154499682347503be556b09be74439b060d932e4c1d"
+    [resources.sources.main]
+    url = "https://github.com/home-assistant/core/archive/refs/tags/2025.3.4.tar.gz"
+    sha256 = "858391abede9e6c1b0063bb85078827867635582c32baa608135a19756e4b183"
 
-        autoupdate.strategy = "latest_github_release"
+    autoupdate.strategy = "latest_github_release"
 
     [resources.system_user]
 
@@ -68,9 +70,9 @@ ram.runtime = "2G"
     
     [resources.ports]
     main.default = 8123
-    
+
     [resources.apt]
     packages = "mariadb-server, pipx, python3, clang, bluez, libffi-dev, libssl-dev, libjpeg-dev, zlib1g-dev, autoconf, build-essential, libopenjp2-7, libturbojpeg0-dev, ffmpeg, liblapack3, liblapack-dev, libpcap-dev, libavdevice-dev, libavformat-dev, libavcodec-dev, libavutil-dev, libavfilter-dev, libmariadb-dev-compat, libatlas-base-dev"
-    
+
     [resources.database]
     type = "mysql"
