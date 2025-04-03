@@ -16,7 +16,9 @@ test_format = 1.0
     # Commits to test upgrade from
     # -------------------------------
 
-    test_upgrade_from.04b90806c3e1f1b91a3c6ea018f2368358b09ea3.name = "Upgrade from 2025.3.3~ynh1"
+    test_upgrade_from.a0bc9f24e53749be0df58cc3735e1a8f01026d6b.name = "Upgrade from 2025.3.4~ynh1"
+
+    # test_upgrade_from.04b90806c3e1f1b91a3c6ea018f2368358b09ea3.name = "Upgrade from 2025.3.3~ynh1"
 
     # test_upgrade_from.bbe1fcf0fa8bbba0be9c6ab36f1ed34e40d1c931.name = "Upgrade from 2025.2.3~ynh1"
 
@@ -24,6 +26,6 @@ test_format = 1.0
 	# Commits to test upgrade from c831b0817c6283bd76ad902a7dd81e647cc9880d
 	# 2024.6.4~ynh1 with old apt dependencies
 	# -------------------------------
-		# test_upgrade_from.c831b08.name = "2024.12.3~ynh1"
-		# test_upgrade_from.c831b08.args.domain = "sub.domain.tld"
-		# test_upgrade_from.c831b08.args.init_main_permission = "visitors"
+	# test_upgrade_from.c831b08.name = "2024.12.3~ynh1"
+	# test_upgrade_from.c831b08.args.domain = "sub.domain.tld"
+	# test_upgrade_from.c831b08.args.init_main_permission = "visitors"
