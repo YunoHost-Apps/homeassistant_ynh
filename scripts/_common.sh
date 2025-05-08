@@ -34,7 +34,8 @@ myynh_install_homeassistant () {
 
 	# Install uv
 	PIPX_HOME="/opt/pipx" PIPX_BIN_DIR="/usr/local/bin" pipx install uv --force 2>&1
-	uv="/usr/local/bin/uv"
+	PIPX_HOME="/opt/pipx" PIPX_BIN_DIR="/usr/local/bin" pipx upgrade uv --force 2>&1
+	local uv="/usr/local/bin/uv"
 
 	# Create the virtual environment
 	(
