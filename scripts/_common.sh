@@ -35,13 +35,13 @@ myynh_install_homeassistant () {
 	# Install uv
 	PIPX_HOME="/opt/pipx" PIPX_BIN_DIR="/usr/local/bin" pipx install uv --force 2>&1
 	PIPX_HOME="/opt/pipx" PIPX_BIN_DIR="/usr/local/bin" pipx upgrade uv --force 2>&1
-	local uv="/usr/local/bin/uv --quiet "
+	local uv="/usr/local/bin/uv "
 
 	# Create the virtual environment
 	(
 		cd "$install_dir"
 		chown -R "$app:" "$install_dir"
-		ynh_exec_as_app "$uv" venv "$install_dir/venv" --python "$py_required_major"
+		ynh_exec_as_app "$uv" --quiet venv "$install_dir/venv" --python "$py_required_major"
 
 		# activate the virtual environment
 		set +o nounset
@@ -49,16 +49,16 @@ myynh_install_homeassistant () {
 		set -o nounset
 
 		# install required version of pip
-		ynh_exec_as_app "$uv" pip --no-cache-dir install --upgrade "$pip_required"
+		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade "$pip_required"
 
 		# install dependencies
-		ynh_exec_as_app "$uv" pip --no-cache-dir install --upgrade webrtcvad wheel mysqlclient psycopg2-binary isal
+		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade webrtcvad wheel mysqlclient psycopg2-binary isal
 
 		# Temp hack to fix install issue https://forum.yunohost.org/t/home-assistant-failing-to-install/37560
-		ynh_exec_as_app "$uv" pip --no-cache-dir install --upgrade "bleak>=0.21.1,<1.0.0"
+		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade "bleak>=0.21.1,<1.0.0"
 
 		# install Home Assistant
-		ynh_exec_as_app "$uv" pip --no-cache-dir install --upgrade "$app==$app_version"
+		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade "$app==$app_version"
 	)
 }
 
