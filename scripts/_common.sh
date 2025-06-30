@@ -75,7 +75,7 @@ myynh_set_permissions () {
 	[ -e "/etc/sudoers.d/$app" ] && chown -R root: "/etc/sudoers.d/$app"
 
 	# Upgade user groups
-	local user_groups
+	local user_groups=""
 	[ -n $(getent group dialout) ] && user_groups="${user_groups} dialout"
 	[ -n $(getent group gpio) ] && user_groups="${user_groups} gpio"
 	[ -n $(getent group i2c) ] && user_groups="${user_groups} i2c"
