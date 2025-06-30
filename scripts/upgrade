@@ -56,7 +56,7 @@ myynh_set_permissions
 #=================================================
 ynh_script_progression "Starting $app's systemd service..."
 
-ynh_systemctl --service="$app" --action="start" --wait_until="Home Assistant initialized" --log_path="$log_file" --timeout=3600
+ynh_systemctl --service="$app" --action="start" --wait_until="Home Assistant initialized" --log_path="$log_file" --timeout=600
 
 # remove --verbose from service
 ynh_replace --match=" --verbose" --replace="" --file="/etc/systemd/system/$app.service"
