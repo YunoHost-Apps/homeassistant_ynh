@@ -51,14 +51,9 @@ myynh_install_homeassistant () {
 		# install required version of pip
 		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade "$pip_required"
 
-		# install dependencies
-		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade webrtcvad wheel mysqlclient psycopg2-binary isal
-
-		# Temp hack to fix install issue https://forum.yunohost.org/t/home-assistant-failing-to-install/37560
-		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade "bleak>=0.21.1,<1.0.0"
-
 		# install Home Assistant
-		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade "$app==$app_version"
+		# force bleak <1.0.0 = temp hack to fix install issue https://forum.yunohost.org/t/home-assistant-failing-to-install/37560
+		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade "bleak>=0.21.1,<1.0.0" "$app==$app_version" webrtcvad wheel mysqlclient psycopg2-binary isal
 	)
 }
 
