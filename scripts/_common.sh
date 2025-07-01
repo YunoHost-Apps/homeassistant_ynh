@@ -51,11 +51,9 @@ myynh_install_homeassistant () {
 		# install required version of pip
 		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade "$pip_required"
 
-		# install dependencies
-		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade webrtcvad wheel mysqlclient psycopg2-binary isal
-
 		# install Home Assistant
-		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade "$app==$app_version" --prerelease=allow
+		# force bleak <1.0.0 = temp hack to fix install issue https://forum.yunohost.org/t/home-assistant-failing-to-install/37560
+		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade "bleak>=0.21.1,<1.0.0" "$app==$app_version" webrtcvad wheel mysqlclient psycopg2-binary isal
 	)
 }
 
@@ -75,9 +73,9 @@ myynh_set_permissions () {
 	[ -e "/etc/sudoers.d/$app" ] && chown -R root: "/etc/sudoers.d/$app"
 
 	# Upgade user groups
-	user_groups=""
-	[ $(getent group dialout) ] && user_groups="${user_groups} dialout"
-	[ $(getent group gpio) ] && user_groups="${user_groups} gpio"
-	[ $(getent group i2c) ] && user_groups="${user_groups} i2c"
+	local user_groups=""
+	[[ -n $(getent group dialout) ]] && user_groups="${user_groups} dialout"
+	[[ -n $(getent group gpio) ]] && user_groups="${user_groups} gpio"
+	[[ -n $(getent group i2c) ]] && user_groups="${user_groups} i2c"
 	ynh_system_user_create --username="$app" --groups="$user_groups"
 }
