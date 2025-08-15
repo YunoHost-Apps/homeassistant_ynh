@@ -77,7 +77,7 @@ ram.runtime = "2G"
     if [[ $YNH_DEBIAN_VERSION == "bookworm" ]]; then
         echo "libatlas-base-dev";
     elif [[ $YNH_DEBIAN_VERSION == "trixie" ]]; then
-        echo ""
+        echo "";
         # FIXME : libatlas-base-dev doesn't exist in trixie anymore ? It doesn't look like there's any obvious replacement...
     fi
     """
