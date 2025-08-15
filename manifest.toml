@@ -72,7 +72,15 @@ ram.runtime = "2G"
     main.default = 8123
 
     [resources.apt]
-    packages = "mariadb-server, pipx, python3, clang, bluez, libffi-dev, libssl-dev, libjpeg-dev, zlib1g-dev, autoconf, build-essential, libopenjp2-7, libturbojpeg0-dev, ffmpeg, liblapack3, liblapack-dev, libpcap-dev, libavdevice-dev, libavformat-dev, libavcodec-dev, libavutil-dev, libavfilter-dev, libmariadb-dev-compat, libatlas-base-dev"
+    packages = "mariadb-server, pipx, python3, clang, bluez, libffi-dev, libssl-dev, libjpeg-dev, zlib1g-dev, autoconf, build-essential, libopenjp2-7, libturbojpeg0-dev, ffmpeg, liblapack3, liblapack-dev, libpcap-dev, libavdevice-dev, libavformat-dev, libavcodec-dev, libavutil-dev, libavfilter-dev, libmariadb-dev-compat"
+    packages_from_raw_bash = """
+    if [[ $YNH_DEBIAN_VERSION == "bookworm" ]]; then
+        echo "libatlas-base-dev";
+    elif [[ $YNH_DEBIAN_VERSION == "trixie" ]]; then
+        echo "";
+        # FIXME : libatlas-base-dev doesn't exist in trixie anymore ? It doesn't look like there's any obvious replacement...
+    fi
+    """
 
     [resources.database]
     type = "mysql"
