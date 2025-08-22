@@ -78,7 +78,7 @@ ram.runtime = "2G"
         echo "libatlas-base-dev";
     elif [[ $YNH_DEBIAN_VERSION == "trixie" ]]; then
         echo "python3-dev";
-        # FIXME : libatlas-base-dev doesn't exist in trixie anymore ? It doesn't look like there's any obvious replacement...
+        # TODO : libatlas-base-dev is deprecated with Trixie, need to see if something like libopenblas-dev | libblis-dev is needed.
     fi
     """
 
