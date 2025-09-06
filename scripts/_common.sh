@@ -26,8 +26,6 @@ path_with_homeassistant="$install_dir/bin:$data_dir/bin:$PATH"
 
 # Install/Upgrade Homeassistant in virtual environement
 myynh_install_homeassistant () {
-	cd "$install_dir"
-	chown -R "$app:" "$install_dir"
 	# Requirements
 		pip_required=$(curl -Ls https://pypi.org/pypi/$app/$app_version/json \
 			| jq -r '.info.requires_dist[]' \
@@ -39,6 +37,8 @@ myynh_install_homeassistant () {
 		local uv="/usr/local/bin/uv"
 	# Create the virtual environment
 	(
+		cd "$install_dir"
+		chown -R "$app:" "$install_dir"
 		# Define some options for uv
 			export UV_PYTHON_INSTALL_DIR="$install_dir"
 			export UV_NO_CACHE=true
