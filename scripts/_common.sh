@@ -27,32 +27,36 @@ path_with_homeassistant="$install_dir/bin:$data_dir/bin:$PATH"
 # Install/Upgrade Homeassistant in virtual environement
 myynh_install_homeassistant () {
 	# Requirements
-	pip_required=$(curl -Ls https://pypi.org/pypi/$app/$app_version/json \
-		| jq -r '.info.requires_dist[]' \
-		| grep 'pip' \
-		|| echo "pip" ) #pip (<23.1,>=21.0) if exist otherwise pip
-
+		pip_required=$(curl -Ls https://pypi.org/pypi/$app/$app_version/json \
+			| jq -r '.info.requires_dist[]' \
+			| grep 'pip' \
+			|| echo "pip" ) #pip (<23.1,>=21.0) if exist otherwise pip
 	# Install uv
-	PIPX_HOME="/opt/pipx" PIPX_BIN_DIR="/usr/local/bin" pipx install uv --force 2>&1
-	PIPX_HOME="/opt/pipx" PIPX_BIN_DIR="/usr/local/bin" pipx upgrade uv --force 2>&1
-	local uv="/usr/local/bin/uv"
-
+		PIPX_HOME="/opt/pipx" PIPX_BIN_DIR="/usr/local/bin" pipx install uv --force 2>&1
+		PIPX_HOME="/opt/pipx" PIPX_BIN_DIR="/usr/local/bin" pipx upgrade uv --force 2>&1
+		local uv="/usr/local/bin/uv"
 	# Create the virtual environment
 	(
 		cd "$install_dir"
 		chown -R "$app:" "$install_dir"
-		ynh_exec_as_app "$uv" --quiet venv "$install_dir/venv" --python "$py_required_major"
-
-		# activate the virtual environment
-		set +o nounset
-		source "$install_dir/venv/bin/activate"
-		set -o nounset
-
-		# install required version of pip
-		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade "$pip_required"
-
-		# install Home Assistant
-		ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install "$app==$app_version" webrtcvad wheel mysqlclient psycopg2-binary isal
+		# Define some options for uv
+			export UV_PYTHON_INSTALL_DIR="$install_dir"
+			export UV_NO_CACHE=true
+			export UV_NO_MODIFY_PATH=true
+		# Create the virtual environment
+			ynh_exec_as_app "$uv" --quiet venv "$install_dir/venv" --python "$py_required_major"
+		# Activate the virtual environment
+			set +o nounset
+			source "$install_dir/venv/bin/activate"
+			set -o nounset
+		# Install required version of pip
+			ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade "$pip_required"
+		# Install Home Assistant with uv
+			ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install "$app==$app_version" webrtcvad wheel mysqlclient psycopg2-binary isal
+		# Clear uv options
+			unset UV_PYTHON_INSTALL_DIR
+			unset UV_NO_CACHE
+			unset UV_NO_MODIFY_PATH
 	)
 }
 
