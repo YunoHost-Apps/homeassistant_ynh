@@ -63,15 +63,19 @@ myynh_install_homeassistant () {
 # Set permissions
 myynh_set_permissions () {
 	chown -R $app: "$install_dir"
-	chmod u=rwX,g=rX,o= "$install_dir"
+	chmod u=rwx,g=rx,o= "$install_dir"
 	chmod -R o-rwx "$install_dir"
 
 	chown -R $app: "$data_dir"
-	chmod u=rwX,g=rX,o= "$data_dir"
+	chmod u=rwx,g=rx,o= "$data_dir"
 	chmod -R o-rwx "$data_dir"
 	[ -e "$data_dir/bin/" ] && chmod -R +x "$data_dir/bin/"
 
-	[ -e "$(dirname "$log_file")" ] && chown -R $app: "$(dirname "$log_file")"
+	if [ -e "$(dirname "$log_file")" ]
+	then
+		chown -R $app: "$(dirname "$log_file")"
+		chmod u=rwx,g=rx,o= "$(dirname "$log_file")"
+	fi
 
 	[ -e "/etc/sudoers.d/$app" ] && chown -R root: "/etc/sudoers.d/$app"
 
