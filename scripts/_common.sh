@@ -74,8 +74,7 @@ myynh_set_permissions () {
 	if [ -e "$(dirname "$log_file")" ]
 	then
 		chown -R $app: "$(dirname "$log_file")"
-		#chmod -R u=rw,g=r,o=r "$(dirname "$log_file")"
-		ls -ali "$(dirname "$log_file")"
+		chmod u=rwx,g=rx,o= "$(dirname "$log_file")"
 	fi
 
 	[ -e "/etc/sudoers.d/$app" ] && chown -R root: "/etc/sudoers.d/$app"
