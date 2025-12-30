@@ -51,8 +51,6 @@ myynh_install_homeassistant () {
 			set -o nounset
 		# Install required version of pip
 			ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade "$pip_required"
-		# Fix for 2025.12.03
-			ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install pycares==4.11.0
 		# Install Home Assistant with uv
 			ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install "$app==$app_version" webrtcvad wheel mysqlclient psycopg2-binary isal
 		# Clear uv options
