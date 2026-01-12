@@ -20,7 +20,7 @@ code = "https://github.com/home-assistant/core"
 cpe = "cpe:2.3:a:home-assistant:home-assistant"
 
 [integration]
-yunohost = ">= 12.1.38"
+yunohost = ">= 12.1.39"
 helpers_version = "2.1"
 architectures = ["amd64", "arm64"]
 multi_instance = false
