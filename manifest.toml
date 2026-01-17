@@ -7,7 +7,7 @@ name = "Home Assistant"
 description.en = "Home automation platform"
 description.fr = "Plateforme domotique"
 
-version = "2026.1.0~ynh1"
+version = "2026.1.2~ynh1"
 
 maintainers = ["ewilly"]
 
@@ -20,7 +20,7 @@ code = "https://github.com/home-assistant/core"
 cpe = "cpe:2.3:a:home-assistant:home-assistant"
 
 [integration]
-yunohost = ">= 12.1.38"
+yunohost = ">= 12.1.39"
 helpers_version = "2.1"
 architectures = ["amd64", "arm64"]
 multi_instance = false
@@ -44,8 +44,8 @@ ram.runtime = "2G"
     [resources.sources]
 
     [resources.sources.main]
-    url = "https://github.com/home-assistant/core/archive/refs/tags/2026.1.0.tar.gz"
-    sha256 = "08759b45a7e62535384891b204eb28b7e5b63b55fbed4777785e4af9bcc52ced"
+    url = "https://github.com/home-assistant/core/archive/refs/tags/2026.1.2.tar.gz"
+    sha256 = "21e8144473f10eca5f901177f609f46d3244c07f84d1ffacef968ce2252d949a"
 
     autoupdate.strategy = "latest_github_release"
 
