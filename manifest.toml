@@ -72,13 +72,10 @@ ram.runtime = "2G"
     main.default = 8123
 
     [resources.apt]
-    packages = "mariadb-server, pipx, python3, clang, bluez, libffi-dev, libssl-dev, libjpeg-dev, zlib1g-dev, autoconf, build-essential, libopenjp2-7, libturbojpeg0-dev, ffmpeg, liblapack3, liblapack-dev, libpcap-dev, libavdevice-dev, libavformat-dev, libavcodec-dev, libavutil-dev, libavfilter-dev, libmariadb-dev-compat"
+    packages = "mariadb-server, pipx, python3, clang, bluez, libffi-dev, libssl-dev, libjpeg-dev, zlib1g-dev, autoconf, build-essential, libopenjp2-7, libturbojpeg0-dev, ffmpeg, liblapack3, liblapack-dev, libpcap-dev, libavdevice-dev, libavformat-dev, libavcodec-dev, libavutil-dev, libavfilter-dev, libmariadb-dev-compat, libopenblas-dev"
     packages_from_raw_bash = """
-    if [[ $YNH_DEBIAN_VERSION == "bookworm" ]]; then
-        echo "libatlas-base-dev";
-    elif [[ $YNH_DEBIAN_VERSION == "trixie" ]]; then
+    if [[ $YNH_DEBIAN_VERSION == "trixie" ]]; then
         echo "python3-dev";
-        # TODO : libatlas-base-dev is deprecated with Trixie, need to see if something like libopenblas-dev | libblis-dev is needed.
     fi
     """
 
