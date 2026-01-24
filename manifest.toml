@@ -7,7 +7,7 @@ name = "Home Assistant"
 description.en = "Home automation platform"
 description.fr = "Plateforme domotique"
 
-version = "2026.1.2~ynh1"
+version = "2026.1.3~ynh1"
 
 maintainers = ["ewilly"]
 
@@ -44,8 +44,8 @@ ram.runtime = "2G"
     [resources.sources]
 
     [resources.sources.main]
-    url = "https://github.com/home-assistant/core/archive/refs/tags/2026.1.2.tar.gz"
-    sha256 = "21e8144473f10eca5f901177f609f46d3244c07f84d1ffacef968ce2252d949a"
+    url = "https://github.com/home-assistant/core/archive/refs/tags/2026.1.3.tar.gz"
+    sha256 = "122b2b87698d410856bea6f6aa2ca2d2ff4f41e86132257ddbb8538784ae278e"
 
     autoupdate.strategy = "latest_github_release"
 
@@ -72,13 +72,10 @@ ram.runtime = "2G"
     main.default = 8123
 
     [resources.apt]
-    packages = "mariadb-server, pipx, python3, clang, bluez, libffi-dev, libssl-dev, libjpeg-dev, zlib1g-dev, autoconf, build-essential, libopenjp2-7, libturbojpeg0-dev, ffmpeg, liblapack3, liblapack-dev, libpcap-dev, libavdevice-dev, libavformat-dev, libavcodec-dev, libavutil-dev, libavfilter-dev, libmariadb-dev-compat"
+    packages = "mariadb-server, pipx, python3, clang, bluez, libffi-dev, libssl-dev, libjpeg-dev, zlib1g-dev, autoconf, build-essential, libopenjp2-7, libturbojpeg0-dev, ffmpeg, liblapack3, liblapack-dev, libpcap-dev, libavdevice-dev, libavformat-dev, libavcodec-dev, libavutil-dev, libavfilter-dev, libmariadb-dev-compat, libopenblas-dev"
     packages_from_raw_bash = """
-    if [[ $YNH_DEBIAN_VERSION == "bookworm" ]]; then
-        echo "libatlas-base-dev";
-    elif [[ $YNH_DEBIAN_VERSION == "trixie" ]]; then
+    if [[ $YNH_DEBIAN_VERSION == "trixie" ]]; then
         echo "python3-dev";
-        # TODO : libatlas-base-dev is deprecated with Trixie, need to see if something like libopenblas-dev | libblis-dev is needed.
     fi
     """
 
