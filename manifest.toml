@@ -7,7 +7,7 @@ name = "Home Assistant"
 description.en = "Home automation platform"
 description.fr = "Plateforme domotique"
 
-version = "2026.1.2~ynh1"
+version = "2026.1.3~ynh1"
 
 maintainers = ["ewilly"]
 
@@ -44,8 +44,8 @@ ram.runtime = "2G"
     [resources.sources]
 
     [resources.sources.main]
-    url = "https://github.com/home-assistant/core/archive/refs/tags/2026.1.2.tar.gz"
-    sha256 = "21e8144473f10eca5f901177f609f46d3244c07f84d1ffacef968ce2252d949a"
+    url = "https://github.com/home-assistant/core/archive/refs/tags/2026.1.3.tar.gz"
+    sha256 = "122b2b87698d410856bea6f6aa2ca2d2ff4f41e86132257ddbb8538784ae278e"
 
     autoupdate.strategy = "latest_github_release"
 
