@@ -52,7 +52,7 @@ myynh_install_homeassistant () {
 		# Install required version of pip
 			ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade "$pip_required"
 		# Install Home Assistant with uv
-			ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install "$app==$app_version" webrtcvad wheel mysqlclient psycopg2-binary isal
+			ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install "$app==$app_version" webrtcvad wheel mysqlclient psycopg2-binary isal aiohasupervisor
 		# Clear uv options
 			unset UV_PYTHON_INSTALL_DIR
 			unset UV_NO_CACHE
