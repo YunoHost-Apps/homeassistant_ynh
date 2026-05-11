@@ -52,9 +52,9 @@ myynh_install_homeassistant () {
 		# Install required version of pip
 			ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install --upgrade "$pip_required"
 		# Install Home Assistant with uv
-			ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install "$app==$app_version" webrtcvad wheel mysqlclient psycopg2-binary isal
+			ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install "$app==$app_version" wheel mysqlclient zlib_ng isal
 		# Fix missing python modules
-			ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install aioesphomeapi
+			ynh_exec_as_app "$uv" --quiet pip --no-cache-dir install aioesphomeapi # Fix #591
 		# Clear uv options
 			unset UV_PYTHON_INSTALL_DIR
 			unset UV_NO_CACHE
