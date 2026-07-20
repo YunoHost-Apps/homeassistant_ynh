@@ -26,9 +26,11 @@ USERNAME_PATTERN='^[a-z|A-Z|0-9|_|-|.]+$'
 # Adapt to your needs.
 SERVER="ldap://127.0.0.1:389"
 USERDN="uid=$username,ou=users,dc=yunohost,dc=org"
+GROUPDN="ou=groups,dc=yunohost,dc=org"
 BASEDN="$USERDN"
 SCOPE="base"
 FILTER="(&(uid=$username)(objectClass=posixAccount))"
+ADMINFILTER="(&(cn=admins)(memberUid=$username))"
 NAME_ATTR="cn"
 ATTRS="$ATTRS $NAME_ATTR"
 
@@ -63,11 +65,27 @@ ldap_auth_ldapsearch() {
 	return 0
 }
 
+is_in_admin_group() {
+	common_opts="-o nettimeout=$TIMEOUT -H $SERVER -x"
+	group_output=$(ldapsearch $common_opts -LLL \
+		-D "$USERDN" -w "$password" \
+		-b "$GROUPDN" \
+		"$ADMINFILTER" dn)
+	echo "$group_output" | grep -qi "^dn:" && return 0
+	return 1
+}
+
 on_auth_success() {
 	# print the meta entries for use in HA
 	if [ ! -z "$NAME_ATTR" ]; then
 		name=$(echo "$output" | sed -nr "s/^\s*$NAME_ATTR:\s*(.+)\s*\$/\1/Ip")
 		[ -z "$name" ] || echo "name=$name"
+	fi
+
+	if is_in_admin_group; then
+		echo "group=system-admin"
+	else
+		echo "group=system-users"
 	fi
 }
 
