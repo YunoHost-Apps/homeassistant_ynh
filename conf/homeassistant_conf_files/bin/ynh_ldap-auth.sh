@@ -1,166 +1,104 @@
-#!/bin/sh
+#!/bin/bash
 #
 # ldap-auth.sh - Simple shell script to authenticate users against LDAP
 #
 
-# Uncomment to enable debugging to stderr (prints full client output
-# and more).
-#DEBUG=1
+#=================================================
+# DEBUGGING
+#=================================================
+#DEBUG=1 # Uncomment to enable debugging
+LOG_FILE=$(cd -P -- "$(dirname -- "$0")" && pwd -P)"/ldap-auth.log"
 
-# Must be one of "curl" and "ldapsearch".
-# NOTE:
-# - When choosing "curl", make sure "curl --version | grep ldap" outputs
-#   something. Otherwise, curl was compiled without LDAP support.
-# - When choosing "ldapsearch", make sure the ldapwhoami command is
-#   available as well, as that might be needed in some cases.
-CLIENT="ldapsearch"
-
-# Usernames should be validated using a regular expression to be of
-# a known format. Special characters will be escaped anyway, but it is
-# generally not recommended to allow more than necessary.
-# This pattern is set by default. In your config file, you can either
-# overwrite it with a different one or use "unset USERNAME_PATTERN" to
-# disable validation completely.
-USERNAME_PATTERN='^[a-z|A-Z|0-9|_|-|.]+$'
-
-# Adapt to your needs.
-SERVER="ldap://127.0.0.1:389"
-USERDN="uid=$username,ou=users,dc=yunohost,dc=org"
-GROUPDN="ou=groups,dc=yunohost,dc=org"
+#=================================================
+# CONFIGURATION
+#=================================================
+LDAPSEARCH_OPTS="-o nettimeout=3 -H ldap://127.0.0.1:389 -x -LLL"
+ORG="dc=yunohost,dc=org"
+USERDN="uid=$username,ou=users,$ORG"
+GROUPDN="ou=groups,$ORG"
 BASEDN="$USERDN"
 SCOPE="base"
-FILTER="(&(uid=$username)(objectClass=posixAccount))"
-ADMINFILTER="(&(cn=admins)(memberUid=$username))"
-NAME_ATTR="cn"
-ATTRS="$ATTRS $NAME_ATTR"
+FILTER_AUTH="(&(uid=$username)(objectClass=userPermissionYnh))"
+FILTER_PERM="${FILTER_AUTH::-1}(permission=cn=homeassistant.main,ou=permission,$ORG))"
+FILTER_ADMIN="${FILTER_AUTH::-1}(memberOf=cn=admins,ou=groups,$ORG))"
+ATTRS="cn"
 
-# When the timeout (in seconds) is exceeded (e.g. due to slow networking),
-# authentication fails.
-TIMEOUT=3
-
-########## END OF CONFIGURATION ##########
-
-
-########## SCRIPT CODE FOLLOWS, DON'T TOUCH!  ##########
-
+#=================================================
+# FUNCTIONS
+#=================================================
 # Log messages to log file.
 log() {
-	echo "$(date)\t$1" >> $LOG_FILE
+	echo -e "$(date)\t$1" >> "$LOG_FILE"
 }
 
-# Check permission of ynh user.
-ynh_user_app_permission() {
-	access=$(cat "/etc/ssowat/conf.json" | jq ".permissions.\"homeassistant.main\".users | index(\"$username\")")
-	[ ! -z "$access" ] && return 1
-	return 0
-}
-
-ldap_auth_ldapsearch() {
-	common_opts="-o nettimeout=$TIMEOUT -H $SERVER -x"
-	[ ! -z "$DEBUG" ] && common_opts="-v $common_opts"
-	output=$(ldapsearch $common_opts -LLL \
+# Full ldap debug
+ldap_debug() {
+	output=$(ldapsearch $LDAPSEARCH_OPTS -v \
 		-D "$USERDN" -w "$password" \
-		-s "$SCOPE" -b "$BASEDN" "$FILTER" dn $ATTRS)
-	[ $? -ne 0 ] && return 1
-	return 0
+		-s "$SCOPE" -b "$BASEDN" "$FILTER_AUTH" cn permission memberOf)
+	result=$?
+	log "ldap debug result: $result"
+	log "ldap debug output:"
+	echo -e "$output" >> "$LOG_FILE"
 }
 
-is_in_admin_group() {
-	common_opts="-o nettimeout=$TIMEOUT -H $SERVER -x"
-	group_output=$(ldapsearch $common_opts -LLL \
+# Check credentials of this ynh user with ldap.
+check_credentials() {
+	ldapsearch $LDAPSEARCH_OPTS \
 		-D "$USERDN" -w "$password" \
-		-b "$GROUPDN" \
-		"$ADMINFILTER" dn)
-	echo "$group_output" | grep -qi "^dn:" && return 0
-	return 1
-}
-
-on_auth_success() {
-	# print the meta entries for use in HA
-	if [ ! -z "$NAME_ATTR" ]; then
-		name=$(echo "$output" | sed -nr "s/^\s*$NAME_ATTR:\s*(.+)\s*\$/\1/Ip")
-		[ -z "$name" ] || echo "name=$name"
-	fi
-
-	if is_in_admin_group; then
-		echo "group=system-admin"
+		-s "$SCOPE" -b "$BASEDN" "$FILTER_AUTH" $ATTRS
+	if [ $? -ne 0 ]; then
+		[ ! -z "$DEBUG" ] && log "Wrong credentials, user '$username' failed to authenticate."
+		return 1
 	else
-		echo "group=system-users"
+		[ ! -z "$DEBUG" ] && log "User '$username' authenticated successfully."
+		return 0
 	fi
 }
 
-# Reset log file.
+# Check if this ynh user has the permission to access Home-Assistant.
+check_app_permission() {
+	output=$(ldapsearch $LDAPSEARCH_OPTS \
+		-D "$USERDN" -w "$password" \
+		-s "$SCOPE" -b "$BASEDN" "$FILTER_PERM" $ATTRS)
+	if [ $? -ne 0 ] || [ -z "$output" ]; then
+		[ ! -z "$DEBUG" ] && log "User '$username' does NOT have the permission to access HA."
+		return 1
+	else
+		name=$(echo "$output" | sed -nr "s/^\s*cn:\s*(.+)\s*\$/\1/Ip")
+		[ ! -z "$DEBUG" ] && log "User '$username' has '$name' as fullname and have the permission to access HA."
+		echo "name=$name"
+		return 0
+	fi
+}
+
+# Check if this ynh user is member of the ynh admins group.
+check_admin_group() {
+	output=$(ldapsearch $LDAPSEARCH_OPTS \
+		-D "$USERDN" -w "$password" \
+		-s "$SCOPE" -b "$BASEDN" "$FILTER_ADMIN" $ATTRS)
+	if [ $? -ne 0 ] || [ -z "$output" ]; then
+		[ ! -z "$DEBUG" ] && log "User '$username' is NOT in the ynh admin group and so, if not already existing as HA user, created as HA simple user."
+		echo "group=system-users"
+	else
+		[ ! -z "$DEBUG" ] && log "User '$username' is in the ynh admins group and so, if not already existing as HA user, created as HA admin."
+		echo "group=system-admin"
+	fi
+}
+
+#=================================================
+# MAIN SCRIPT
+#=================================================
+# Prepare log file and pint ldap full output
 if [ ! -z "$DEBUG" ]; then
-	LOG_FILE=$(cd -P -- "$(dirname -- "$0")" && pwd -P)"/ldap-auth.log"
 	[ -f "$LOG_FILE" ] && :> "$LOG_FILE"
+	ldap_debug
 fi
 
-# Check app access permisssion for the ynh user.
-ynh_user_app_permission
-if [ $? -eq 0 ]; then
-	[ ! -z "$DEBUG" ] && log "User '$username' does not have the permission to access these app."
-	exit 1
-else
-	[ ! -z "$DEBUG" ] && log "User '$username' have the permission to access these app."
-fi
+# Execute checks
+check_credentials || exit 1
+check_app_permission || exit 1
+check_admin_group
 
-# Validate config.
-err=0
-if [ -z "$SERVER" ] || [ -z "$USERDN" ]; then
-	[ ! -z "$DEBUG" ] && log "SERVER and USERDN need to be configured."
-	err=1
-fi
-if [ -z "$TIMEOUT" ]; then
-	[ ! -z "$DEBUG" ] && log "TIMEOUT needs to be configured."
-	err=1
-fi
-if [ ! -z "$BASEDN" ]; then
-	if [ -z "$SCOPE" ] || [ -z "$FILTER" ]; then
-		[ ! -z "$DEBUG" ] && log "BASEDN, SCOPE and FILTER may only be configured together."
-		err=1
-	fi
-elif [ ! -z "$ATTRS" ]; then
-	[ ! -z "$DEBUG" ] && log "Configuring ATTRS only makes sense when enabling searching."
-	err=1
-fi
-
-# Check username and password are present and not malformed.
-if [ -z "$username" ] || [ -z "$password" ]; then
-	[ ! -z "$DEBUG" ] && log "Need username and password environment variables."
-	err=1
-elif [ ! -z "$USERNAME_PATTERN" ]; then
-	username_match=$(echo "$username" | sed -r "s/$USERNAME_PATTERN/x/")
-	if [ "$username_match" != "x" ]; then
-		[ ! -z "$DEBUG" ] && log "Username '$username' has an invalid format."
-		err=1
-	fi
-fi
-
-[ $err -ne 0 ] && exit 2
-
-# Do the authentication.
-ldap_auth_ldapsearch
-result=$?
-
-entries=0
-if [ $result -eq 0 ]; then
-	entries=$(echo "$output" | grep -cie '^dn\s*:')
-	[ "$entries" != "1" ] && result=1
-fi
-
-if [ ! -z "$DEBUG" ]; then
-	log "Result: $result"
-	log "Number of entries: $entries"
-	log "Client output:"
-	log "$output"
-fi
-
-if [ $result -ne 0 ]; then
-	[ ! -z "$DEBUG" ] && log "User '$username' failed to authenticate."
-	type on_auth_failure > /dev/null && on_auth_failure
-	exit 1
-fi
-
-[ ! -z "$DEBUG" ] && log "User '$username' authenticated successfully."
-type on_auth_success > /dev/null && on_auth_success
+# Exit successfully
 exit 0
