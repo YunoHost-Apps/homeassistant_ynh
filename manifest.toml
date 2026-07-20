@@ -68,6 +68,10 @@ ram.runtime = "2G"
     api.show_tile = false
     api.protected= true
     api.allowed = ["visitors", "all_users"]
+    admin.auth_header = false
+    admin.show_tile = false
+    admin.protected= false
+    admin.allowed = "admins"
     
     [resources.ports]
     main.default = 8123
