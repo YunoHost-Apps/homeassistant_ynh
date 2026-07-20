@@ -20,7 +20,7 @@ BASEDN="$USERDN"
 SCOPE="base"
 FILTER_AUTH="(&(uid=$username)(objectClass=userPermissionYnh))"
 FILTER_PERM="${FILTER_AUTH::-1}(permission=cn=homeassistant.main,ou=permission,$ORG))"
-FILTER_ADMIN="${FILTER_AUTH::-1}(memberOf=cn=admins,ou=groups,$ORG))"
+FILTER_ADMIN="${FILTER_AUTH::-1}(permission=cn=homeassistant.admin,ou=permission,$ORG))"
 ATTRS="cn"
 
 #=================================================
