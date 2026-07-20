@@ -8,3 +8,8 @@ Home Assistant is an open source home automation that puts local control and pri
 - All your smart home data stays local
 - Companion Mobile Apps
 - Home Energy Management
+
+### Limitations
+
+- This package offers the `Home Assistant Core` flavor which is still working but not anymore officialy supported upstream
+- If you need upstream support or addons, eihter use `Home Assistant Container` or `Home Assistant Operating System` (see https://www.home-assistant.io/installation/linux/)
