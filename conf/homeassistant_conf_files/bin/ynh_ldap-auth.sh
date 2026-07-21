@@ -22,6 +22,7 @@ FILTER_AUTH="(&(uid=$username)(objectClass=userPermissionYnh))"
 FILTER_PERM="${FILTER_AUTH::-1}(permission=cn=homeassistant.main,ou=permission,$ORG))"
 FILTER_ADMIN="${FILTER_AUTH::-1}(permission=cn=homeassistant.admin,ou=permission,$ORG))"
 ATTRS="cn"
+AUTH_FILE="__DATA_DIR__/.storage/auth"
 
 #=================================================
 # FUNCTIONS
@@ -74,15 +75,41 @@ check_app_permission() {
 
 # Check if this ynh user is member of the ynh admins group.
 check_admin_group() {
+	group_user="system-users"
+	group_admin="system-admin"
 	output=$(ldapsearch $LDAPSEARCH_OPTS \
 		-D "$USERDN" -w "$password" \
 		-s "$SCOPE" -b "$BASEDN" "$FILTER_ADMIN" $ATTRS)
 	if [ $? -ne 0 ] || [ -z "$output" ]; then
 		[ ! -z "$DEBUG" ] && log "User '$username' is NOT in the ynh admin group and so, if not already existing as HA user, created as HA simple user."
-		echo "group=system-users"
+		update_group "$name" "$group_admin" "$group_user"
+		echo "group=$group_user"
 	else
-		[ ! -z "$DEBUG" ] && log "User '$username' is in the ynh admins group and so, if not already existing as HA user, created as HA admin."
-		echo "group=system-admin"
+		[ ! -z "$DEBUG" ] && log "User '$username' has in the admin perm in ynh and so, if not already existing as HA user, created as HA admin."
+		update_group "$name" "$group_user" "$group_admin"
+		echo "group=$group_admin"
+	fi
+}
+
+# Update if needed the ha group in the auth file
+update_group() {
+	name="$1"
+	old_group="$2"
+	new_group="$3"
+	is_current_up_to_date=$( \
+		jq \
+			--arg new_group "$new_group" \
+			'.data.users[] | select(.name == $name) | .group_ids[] == $new_group' \
+			"$AUTH_FILE"\
+		)
+	if ! $is_current_up_to_date; then
+		[ ! -z "$DEBUG" ] && log "The HA group of '$username' is going to be updated to '$new_group'."
+		cat <<< "$( \
+			jq \
+				--arg name "$name" --arg old_group "$old_group" --arg new_group "$new_group" \
+				'(.data.users[] | select(.name == $name) | .group_ids[]) |= sub($old_group ; $new_group)' \
+				"$AUTH_FILE" \
+		)" > "$AUTH_FILE"
 	fi
 }
 
