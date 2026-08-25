@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "minor_version": 2,
+  "key": "http",
+  "data": {
+    "stable": {
+      "server_port": __PORT__,
+      "use_x_forwarded_for": true,
+      "trusted_proxies": [
+        "127.0.0.1/32",
+        "::1/128"
+      ]
+    }
+  }
+}

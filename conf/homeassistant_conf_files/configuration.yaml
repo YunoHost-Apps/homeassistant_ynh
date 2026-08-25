@@ -4,13 +4,6 @@ homeassistant:
      command: __DATA_DIR__/bin/ynh_ldap-auth.sh
      meta: true
 
-http:
-  server_port: __PORT__
-  use_x_forwarded_for: True
-  trusted_proxies:
-    - 127.0.0.1
-    - ::1
-
 recorder:
   db_url: mysql://__DB_USER__:__DB_PWD__@127.0.0.1/__DB_NAME__?unix_socket=/var/run/mysqld/mysqld.sock&charset=utf8mb4
     
