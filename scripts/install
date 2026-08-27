@@ -29,6 +29,7 @@ myynh_install_homeassistant
 ynh_script_progression "Adding $app's configuration files..."
 
 cp -r "../conf/homeassistant_conf_files/." "$data_dir/"
+ynh_config_add --template="homeassistant_conf_files/.storage/http" --destination="$data_dir/.storage/http"
 ynh_config_add --template="homeassistant_conf_files/configuration.yaml" --destination="$data_dir/configuration.yaml"
 
 #=================================================
