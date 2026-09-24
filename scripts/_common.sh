@@ -88,3 +88,35 @@ myynh_set_permissions () {
 	[[ -n $(getent group i2c) ]] && user_groups="${user_groups} i2c"
 	ynh_system_user_create --username="$app" --groups="$user_groups"
 }
+
+# Workaround used to fix https://github.com/home-assistant/core/issues/181437
+fix_cmd_missing_arg() {
+    FILE="/home/yunohost.app/$app/configuration.yaml"
+
+    # Retrive line number of all line matching "- type: command_line"
+    line_start_with_type_cmd=$(grep -n '\- type: command_line' "$FILE" | cut -d: -f1)
+        # Exit if not finding
+        if [[ -z "$line_start_with_type_cmd" ]]; then
+            return
+        fi
+
+    # Extract the block of 4 lines
+    extract=$(grep -ws '\- type: command_line' $FILE -A 3)
+
+    # exit if is args: is existing between line_start_with_type_cmd and line_end
+    if echo "$extract" | grep -q 'args:'
+    then
+        return
+    fi
+
+    # Definie the arg line to insert with right padding
+    padding=$(echo "$extract" | grep -bo "type:" | cut -d: -f1)
+    new_line="args: []"
+    new_line=$(printf "%*s%s" $padding '' "$new_line")
+
+    # Backup the file
+    /bin/cp -f "$FILE" "$FILE.bak"
+
+    # Add arg line
+    sed -i "$((line_start_with_type_cmd+1))i\\$new_line" "$FILE"
+}
