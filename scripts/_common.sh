@@ -110,7 +110,7 @@ fix_cmd_missing_arg() {
     fi
 
     # Definie the arg line to insert with right padding
-    padding=$(/usr/bin/grep -bo "type: command_line" "$FILE" | cut -d: -f1)
+    padding=$(echo "$extract" | /usr/bin/grep -bo "type: command_line" | head -1 | cut -d: -f1)
     new_line="args: []"
     new_line=$(printf "%*s%s" $padding '' "$new_line")
 
