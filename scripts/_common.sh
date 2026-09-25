@@ -8,7 +8,7 @@
 ## yq is not a dependencie of yunohost package so tomlq command is not available
 ## (see https://github.com/YunoHost/yunohost/blob/dev/debian/control)
 app_version=$(cat ../manifest.toml 2>/dev/null \
-				| grep '^version = ' | cut -d '=' -f 2 \
+				| /usr/bin/grep '^version = ' | cut -d '=' -f 2 \
 				| cut -d '~' -f 1 | tr -d ' "') #2024.2.5
 
 # Python required version
@@ -29,7 +29,7 @@ myynh_install_homeassistant () {
 	# Requirements
 		pip_required=$(curl -Ls https://pypi.org/pypi/$app/$app_version/json \
 			| jq -r '.info.requires_dist[]' \
-			| grep 'pip' \
+			| /usr/bin/grep 'pip' \
 			|| echo "pip" ) #pip (<23.1,>=21.0) if exist otherwise pip
 	# Install uv
 		PIPX_HOME="/opt/pipx" PIPX_BIN_DIR="/usr/local/bin" pipx install uv --force 2>&1
@@ -87,4 +87,36 @@ myynh_set_permissions () {
 	[[ -n $(getent group gpio) ]] && user_groups="${user_groups} gpio"
 	[[ -n $(getent group i2c) ]] && user_groups="${user_groups} i2c"
 	ynh_system_user_create --username="$app" --groups="$user_groups"
+}
+
+# Workaround used to fix https://github.com/home-assistant/core/issues/181437
+fix_cmd_missing_arg() {
+    FILE="/home/yunohost.app/$app/configuration.yaml"
+
+    # Retrive line number of all line matching "- type: command_line"
+    line_start_with_type_cmd=$(/usr/bin/grep -n '\- type: command_line' "$FILE" | cut -d: -f1)
+        # Exit if not finding
+        if [[ -z "$line_start_with_type_cmd" ]]; then
+            return
+        fi
+
+    # Extract the block of 4 lines
+    extract=$(/usr/bin/grep -ws '\- type: command_line' $FILE -A 3)
+
+    # exit if is args: is existing between line_start_with_type_cmd and line_end
+    if echo "$extract" | /usr/bin/grep -q 'args:'
+    then
+        return
+    fi
+
+    # Definie the arg line to insert with right padding
+    padding=$(echo "$extract" | /usr/bin/grep -bo "type: command_line" | head -1 | cut -d: -f1)
+    new_line="args: []"
+    new_line=$(printf "%*s%s" $padding '' "$new_line")
+
+    # Backup the file
+    /bin/cp -f "$FILE" "$FILE.bak"
+
+    # Add arg line
+    sed -i "$((line_start_with_type_cmd+1))i\\$new_line" "$FILE"
 }

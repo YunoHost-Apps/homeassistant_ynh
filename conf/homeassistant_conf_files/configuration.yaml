@@ -1,8 +1,9 @@
 homeassistant:
   auth_providers:
-   - type: command_line
-     command: __DATA_DIR__/bin/ynh_ldap-auth.sh
-     meta: true
+    - type: command_line
+      command: __DATA_DIR__/bin/ynh_ldap-auth.sh
+      meta: true
+      args: []
 
 recorder:
   db_url: mysql://__DB_USER__:__DB_PWD__@127.0.0.1/__DB_NAME__?unix_socket=/var/run/mysqld/mysqld.sock&charset=utf8mb4
